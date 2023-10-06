@@ -1,4 +1,4 @@
-[![MasterHead](file:///C:/Users/doruk/OneDrive/Masa%C3%BCst%C3%BC/github.png)
+[![MasterHead](https://previews.123rf.com/images/karpenkoilia/karpenkoilia1801/karpenkoilia180100060/94056117-vector-line-concept-for-computer-science-web-linear-banner-for-programming.jpg)
 <h1 align="center">Hi 👋, I'm Dorukan Kılınç</h1>
 <h3 align="center">A passionate full stack developer, game developer and 3D artist from Turkey</h3>
 
