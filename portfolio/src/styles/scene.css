@@ -1,0 +1,260 @@
+/* ── Room scene ─────────────────────────────────────────────────────────── */
+
+.scene {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: var(--room);
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.camera {
+  position: absolute;
+  inset: 0;
+  transform-origin: 0 0;
+}
+
+.stage {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
+  /* 1 / stage scale, set by the director; keeps HTML labels readable at any scale. */
+  --inv: 1;
+}
+
+.layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.layer > svg,
+.console-svg,
+.slot-lip,
+.cart-svg {
+  display: block;
+  overflow: visible;
+}
+
+.room-dim {
+  position: absolute;
+  inset: 0;
+  background: #120804;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.console-wrap,
+.slot-lip-wrap {
+  position: absolute;
+  width: 520px;
+  height: 520px;
+  pointer-events: none;
+}
+
+.slot-lip-wrap {
+  z-index: 6;
+}
+
+/* Compact layout: a small wall shelf grounds the top row of cartridges. */
+.wall-shelf {
+  position: absolute;
+  border: 4px solid #2a1a10;
+  border-radius: 5px;
+  background: linear-gradient(#b67a44, #94602f);
+  box-shadow: 6px 10px 0 rgba(30, 14, 5, 0.35);
+  pointer-events: none;
+}
+
+.wall-shelf span {
+  position: absolute;
+  top: 100%;
+  width: 26px;
+  height: 34px;
+  background: #7e4b26;
+  border: 4px solid #2a1a10;
+  border-top: 0;
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+}
+
+.wall-shelf span:first-child {
+  left: 40px;
+}
+
+.wall-shelf span:last-child {
+  right: 40px;
+  transform: scaleX(-1);
+}
+
+/* ── Cartridges ─────────────────────────────────────────────────────────── */
+
+.carts {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.cart {
+  position: absolute;
+  width: 100px;
+  height: 128px;
+  pointer-events: none;
+}
+
+.cart.is-active {
+  z-index: 5;
+}
+
+.cart-flight,
+.cart-idle {
+  position: absolute;
+  inset: 0;
+}
+
+.cart-flight {
+  transform-origin: 50% 0;
+  transform-style: preserve-3d;
+}
+
+.cart-idle {
+  transform-style: preserve-3d;
+}
+
+/* The cartridge's bottom end face. Edge-on (invisible) while upright; it becomes
+   visible as the cartridge tilts back to lie flat in the slot. */
+.cart-edge {
+  position: absolute;
+  left: 6px;
+  top: 125px;
+  width: 91px;
+  height: 11px;
+  transform-origin: 50% 0;
+  transform: rotateX(-90deg);
+  border: 2px solid #120e0f;
+  border-radius: 0 0 4px 4px;
+  background: linear-gradient(#2a2427, #171314);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.12);
+  backface-visibility: hidden;
+  pointer-events: none;
+}
+
+.cart-hit {
+  all: unset;
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  cursor: pointer;
+  pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cart-art {
+  display: block;
+  border-radius: 10px;
+  transform-origin: 50% 70%;
+  transition: transform 0.24s cubic-bezier(0.3, 0.7, 0.35, 1.35), box-shadow 0.2s;
+}
+
+.cart.is-active .cart-art {
+  transform: none;
+  transition: transform 0.45s ease;
+}
+
+@media (hover: hover) {
+  .cart:not(.is-active) .cart-hit:hover .cart-art {
+    transform: translateY(-10px) scale(1.06);
+  }
+}
+
+.cart:not(.is-active) .cart-hit:focus-visible .cart-art {
+  transform: translateY(-10px) scale(1.06);
+}
+
+.cart-hit:focus-visible {
+  outline: none;
+}
+
+.cart-hit:focus-visible .cart-art {
+  box-shadow:
+    0 0 0 calc(3px * var(--inv)) #1f1a17,
+    0 0 0 calc(7px * var(--inv)) #ffd45e;
+}
+
+.cart-shadow {
+  position: absolute;
+  left: 8px;
+  width: 84px;
+  height: 20px;
+  margin-top: -10px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(28, 12, 4, 0.5), rgba(28, 12, 4, 0));
+  pointer-events: none;
+}
+
+.cart-tag {
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  transform: translate(-50%, calc(8px * var(--inv)));
+  padding: calc(3px * var(--inv)) calc(9px * var(--inv));
+  border: calc(2px * var(--inv)) solid var(--ink);
+  border-radius: 999px;
+  background: var(--cream);
+  color: var(--ink);
+  width: max-content;
+  max-width: 180px;
+  font: 600 calc(11.5px * var(--inv)) / 1.25 var(--font-mono);
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+@media (hover: hover) {
+  .cart-hit:hover ~ .cart-tag {
+    opacity: 1;
+  }
+}
+
+.cart-hit:focus-visible ~ .cart-tag {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .cart-tag {
+    opacity: 1;
+  }
+}
+
+.cart.is-active .cart-tag {
+  opacity: 0 !important;
+}
+
+/* The boot screen's loading bar */
+.screen-boot rect:last-of-type {
+  animation: boot-bar 0.7s ease-out both;
+}
+
+@keyframes boot-bar {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cart-art,
+  .cart-tag {
+    transition: none;
+  }
+  .screen-boot rect:last-of-type {
+    animation: none;
+  }
+}

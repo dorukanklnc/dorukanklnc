@@ -1,0 +1,104 @@
+:root {
+  --ink: #1f1a17;
+  --ink-soft: #3a302a;
+  --cream: #f6eed9;
+  --paper: #efe4c8;
+  /* Matches the console screen, so the project page feels like the screen itself. */
+  --screen: #dff2e2;
+  --screen-deep: #c9e4cf;
+  --console: #86d4c4;
+  --teal: #2f7d74;
+  --mustard: #e0b33f;
+  --pink: #e26d7a;
+  --violet: #8e6ccf;
+  --lime: #b9d35a;
+  --wood: #7a4e2b;
+  --room: #2a170b;
+
+  --font-display: 'Pixelify Sans', ui-monospace, monospace;
+  --font-body: 'Nunito Variable', 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  color-scheme: light;
+  font-family: var(--font-body);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--room);
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+img,
+svg {
+  max-width: none;
+}
+
+a {
+  color: inherit;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid #ffd45e;
+  outline-offset: 3px;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.sr-status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.skip-link {
+  position: fixed;
+  left: 12px;
+  top: -60px;
+  z-index: 100;
+  padding: 10px 16px;
+  border: 3px solid var(--ink);
+  border-radius: 999px;
+  background: var(--cream);
+  font: 600 14px/1 var(--font-mono);
+  text-decoration: none;
+  transition: top 0.15s;
+}
+
+.skip-link:focus {
+  top: 12px;
+}
