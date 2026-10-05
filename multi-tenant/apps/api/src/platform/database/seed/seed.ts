@@ -331,6 +331,8 @@ async function seedOrganization(tx: Transaction, definition: DemoOrganization, c
           status: 'active',
           enrolledOn: grade > 9 && random.chance(0.6) ? formatIsoDate(startYear - (grade - 9), 9, 1) : yearStart,
           address: `${random.pick(['Moda', 'Fenerbahçe', 'Göztepe', 'Kozyatağı', 'Bahçelievler', 'Kavaklıdere'])} Mah. Kurgu Sok. No:${random.int(1, 80)}`,
+          // Registered during the spring/summer registration season, not "today".
+          createdAt: new Date(`${formatIsoDate(startYear, random.int(3, 7), random.int(1, 28))}T10:00:00+03:00`),
         })
         .returning({ id: students.id });
       const studentId = student!.id;

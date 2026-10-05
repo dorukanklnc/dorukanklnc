@@ -9,6 +9,6 @@ import { AuditService } from './audit.service.js';
 @Module({
   controllers: [AuditLogController],
   providers: [AuditService, OutboxService, AuditLogService],
-  exports: [AuditService, OutboxService],
+  exports: [AuditService, OutboxService, AuditLogService],
 })
 export class AuditModule {}
