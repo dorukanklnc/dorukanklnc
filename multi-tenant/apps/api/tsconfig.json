@@ -1,0 +1,10 @@
+{
+  "extends": "@repo/tsconfig/nest.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "./dist",
+    "noEmit": true,
+    "types": ["node", "vitest/globals"]
+  },
+  "include": ["src", "test", "*.config.ts"]
+}

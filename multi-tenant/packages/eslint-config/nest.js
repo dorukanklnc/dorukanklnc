@@ -20,7 +20,7 @@ export function nest(options) {
       },
     },
     {
-      files: ['src/scripts/**/*.ts', 'src/database/seed/**/*.ts'],
+      files: ['**/scripts/**/*.ts', '**/seed/**/*.ts'],
       rules: { 'no-console': 'off' },
     },
   ];
