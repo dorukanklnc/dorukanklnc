@@ -1,0 +1,8 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Node/universal ESM library",
+  "extends": "./base.json",
+  "compilerOptions": {
+    "verbatimModuleSyntax": true
+  }
+}

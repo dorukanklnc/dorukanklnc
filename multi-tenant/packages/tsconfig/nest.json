@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "NestJS (ESM)",
+  "extends": "./base.json",
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "removeComments": false,
+    "declaration": false,
+    "declarationMap": false,
+    "types": ["node"]
+  }
+}

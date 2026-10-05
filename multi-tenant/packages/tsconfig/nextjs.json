@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Next.js application",
+  "extends": "./base.json",
+  "compilerOptions": {
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "preserve",
+    "allowJs": false,
+    "noEmit": true,
+    "incremental": true,
+    "verbatimModuleSyntax": true,
+    "declaration": false,
+    "declarationMap": false,
+    "plugins": [{ "name": "next" }]
+  }
+}

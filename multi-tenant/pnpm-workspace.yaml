@@ -1,0 +1,16 @@
+packages:
+  - apps/*
+  - packages/*
+
+# pnpm 10 blocks dependency lifecycle scripts by default. Only packages that
+# genuinely need a native/postinstall step are allowed to run one.
+onlyBuiltDependencies:
+  - esbuild
+  - sharp
+  - '@swc/core'
+  - unrs-resolver
+  - msgpackr-extract
+
+# Keep the dependency graph strict: no phantom dependencies.
+shamefullyHoist: false
+strictPeerDependencies: false

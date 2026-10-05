@@ -1,0 +1,32 @@
+{
+  "name": "@repo/authorization",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Permission catalog, scopes, role templates and pure authorization logic shared by API and web.",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/tsconfig": "workspace:*",
+    "eslint": "9.39.5",
+    "typescript": "6.0.3",
+    "vite": "8.3.2",
+    "vitest": "5.0.3"
+  }
+}
