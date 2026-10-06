@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "CampusOS API \u2014 NestJS modular monolith and background worker.",
+  "description": "CampusOS API — NestJS modular monolith and background worker.",
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "dev": "tsc-watch -p tsconfig.build.json --noClear --onSuccess \"node --enable-source-maps dist/main.js\"",
@@ -28,7 +28,6 @@
     "@nestjs/swagger": "12.0.2",
     "@nestjs/throttler": "6.7.1",
     "@node-rs/argon2": "2.2.1",
-    "@opentelemetry/api": "1.9.1",
     "@repo/authorization": "workspace:*",
     "@repo/contracts": "workspace:*",
     "bullmq": "6.3.11",

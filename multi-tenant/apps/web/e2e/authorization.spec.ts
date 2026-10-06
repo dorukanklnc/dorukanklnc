@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { USERS, apiAs, login } from './fixtures';
+import { USERS, apiAs, apiPost, login, uniqueSuffix } from './fixtures';
 
 test.describe('authorization in the interface', () => {
   test('teachers never see finance and cannot open it by URL', async ({ page }) => {
@@ -56,13 +56,27 @@ test.describe('authorization in the interface', () => {
   });
 });
 
-test('command palette finds records Turkish-insensitively', async ({ page }) => {
+test('command palette finds records Turkish-insensitively', async ({ page, baseURL }) => {
+  // Own fixture with Turkish letters, independent of the demo data.
+  const suffix = uniqueSuffix();
+  const owner = await apiAs(USERS.atlasOwner, baseURL ?? 'http://localhost:3000');
+  const branches = await (await owner.get('/api/v1/branches')).json();
+  const branchId = (branches as { id: string }[])[0]?.id;
+  await apiPost(owner, '/api/v1/students', {
+    branchId,
+    firstName: 'Işıl',
+    lastName: `Çağlıyan${suffix}`,
+  });
+  await owner.dispose();
+
   await login(page, USERS.atlasOwner);
   await page.keyboard.press('Control+k');
-  await page.getByPlaceholder('Öğrenci, veli, makbuz ara veya bir işlem seç…').fill('isiklar');
-  const option = page.getByRole('option', { name: /Deniz Işıklar/ }).first();
+  await page
+    .getByPlaceholder('Öğrenci, veli, makbuz ara veya bir işlem seç…')
+    .fill(`isil cagliyan${suffix.toLowerCase()}`);
+  const option = page.getByRole('option', { name: new RegExp(`Işıl Çağlıyan${suffix}`) }).first();
   await expect(option).toBeVisible();
   await option.click();
   await expect(page).toHaveURL(/\/students\/[0-9a-f-]{36}/);
-  await expect(page.getByRole('heading', { name: 'Deniz Işıklar' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: `Işıl Çağlıyan${suffix}` })).toBeVisible();
 });

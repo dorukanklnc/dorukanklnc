@@ -35,3 +35,19 @@ export async function apiAs(email: string, baseURL: string): Promise<APIRequestC
 export function uniqueSuffix(): string {
   return Date.now().toString(36).slice(-5).toUpperCase();
 }
+
+/** POST with the CSRF header the API requires on state-changing requests. */
+export async function apiPost<T>(
+  context: APIRequestContext,
+  path: string,
+  data: unknown,
+): Promise<T> {
+  const { cookies } = await context.storageState();
+  const csrf = cookies.find((cookie) => cookie.name === 'csrf' || cookie.name === '__Host-csrf');
+  const response = await context.post(path, {
+    data,
+    headers: csrf ? { 'x-csrf-token': decodeURIComponent(csrf.value) } : {},
+  });
+  expect(response.ok(), `${path} → ${response.status()}`).toBeTruthy();
+  return (await response.json()) as T;
+}
