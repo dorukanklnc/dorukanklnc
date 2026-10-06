@@ -709,7 +709,8 @@
       "submitInvite": "Davet gönder",
       "invited": "{email} adresine davet gönderildi",
       "updated": "Erişim güncellendi",
-      "emptyTitle": "Kullanıcı bulunamadı"
+      "emptyTitle": "Kullanıcı bulunamadı",
+      "systemRole": "Hazır rol"
     },
     "roles": {
       "title": "Roller ve yetkiler",
@@ -736,7 +737,13 @@
         "personal": "Kişisel veri",
         "financial": "Finansal",
         "restricted": "Hassas"
-      }
+      },
+      "copyName": "{name} (kopya)",
+      "editorHint": "Her yetki için bir kapsam seçin. Sahip olmadığınız kapsamlar devre dışıdır.",
+      "dependenciesTitle": "Eksik bağımlı yetkiler",
+      "dependency": "\"{permission}\" için \"{missing}\" yetkisi de gerekir.",
+      "grantCount": "{count, plural, =0 {Yetki seçilmedi} one {# yetki seçildi} other {# yetki seçildi}}",
+      "systemHint": "Hazır roller güvenlik güncellemeleriyle birlikte yönetilir. Değiştirmek için kopyalayarak özel rol oluşturun."
     },
     "branches": {
       "title": "Şubeler",
@@ -867,6 +874,19 @@
           "password_reset": "Şifre sıfırlandı",
           "password_reset_requested": "Şifre sıfırlama istendi"
         }
+      },
+      "resources": {
+        "branch": "Şube",
+        "membership": "Üyelik",
+        "organization": "Kurum",
+        "payment": "Tahsilat",
+        "payment_intent": "Ödeme bağlantısı",
+        "receivable": "Alacak",
+        "role": "Rol",
+        "session": "Oturum",
+        "student": "Öğrenci",
+        "tuition_agreement": "Sözleşme",
+        "user": "Kullanıcı"
       }
     }
   },
@@ -903,6 +923,11 @@
         "starter": "Başlangıç",
         "standard": "Standart",
         "enterprise": "Kurumsal"
+      },
+      "status": {
+        "active": "Aktif",
+        "suspended": "Askıda",
+        "archived": "Arşivlendi"
       }
     }
   },
@@ -1062,5 +1087,29 @@
     "tooShort": "En az {min} karakter olmalıdır",
     "tooLong": "En fazla {max} karakter olabilir",
     "passwordTooShort": "Şifre en az {min} karakter olmalıdır"
+  },
+  "account": {
+    "title": "Hesabım",
+    "description": "Profil bilgileriniz, şifreniz ve açık oturumlarınız.",
+    "profile": "Profil",
+    "name": "Ad soyad",
+    "email": "E-posta",
+    "organization": "Kurum",
+    "roles": "Roller",
+    "password": "Şifre değiştir",
+    "passwordHint": "Şifrenizi değiştirdiğinizde diğer cihazlardaki oturumlarınız kapatılır.",
+    "currentPassword": "Mevcut şifre",
+    "passwordChanged": "Şifreniz güncellendi",
+    "sessions": "Açık oturumlar",
+    "sessionsHint": "Tanımadığınız bir oturum görürseniz tüm cihazlardan çıkış yapın ve şifrenizi değiştirin.",
+    "currentSession": "Bu cihaz",
+    "unknownDevice": "Bilinmeyen cihaz",
+    "lastSeen": "son etkinlik {time}",
+    "signedInAt": "giriş {date}"
+  },
+  "pay": {
+    "title": "Test ödeme sayfası",
+    "badge": "Geliştirme ortamı",
+    "description": "Bu bağlantı sahte (mock) ödeme sağlayıcısına aittir; gerçek ödeme alınmaz ve kart bilgisi istenmez. Canlı ortamda bu sayfayı anlaşmalı ödeme kuruluşu sunar. Test ödemesi, yetkili personel tarafından öğrenci finans ekranından tamamlanır."
   }
 }

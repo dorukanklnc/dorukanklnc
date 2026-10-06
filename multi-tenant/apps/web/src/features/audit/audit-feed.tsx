@@ -5,7 +5,7 @@ import { Tooltip, cn } from '@repo/ui';
 import { Bot, ChevronDown, CreditCard, LifeBuoy, UserRound } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
-import { useAuditActionLabel } from '@/lib/messages';
+import { useAuditActionLabel, useAuditResourceLabel } from '@/lib/messages';
 import { useFormat } from '@/lib/use-format';
 
 const ACTOR_ICONS = {
@@ -43,6 +43,7 @@ function AuditEntry({ item, showResource }: { item: AuditLogItem; showResource: 
   const t = useTranslations('admin.audit');
   const format = useFormat();
   const actionLabel = useAuditActionLabel();
+  const resourceLabel = useAuditResourceLabel();
   const [open, setOpen] = useState(false);
   const Icon = ACTOR_ICONS[item.actor.type];
   const changes = Object.entries(item.changes ?? {});
@@ -58,7 +59,7 @@ function AuditEntry({ item, showResource }: { item: AuditLogItem; showResource: 
           <p className="text-sm text-fg">
             <span className="font-medium">{actionLabel(item.action)}</span>
             {showResource && item.resourceType ? (
-              <span className="text-fg-muted"> · {item.resourceType}</span>
+              <span className="text-fg-muted"> · {resourceLabel(item.resourceType)}</span>
             ) : null}
           </p>
           <Tooltip content={format.dateTime(item.occurredAt)}>

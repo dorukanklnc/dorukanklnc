@@ -27,10 +27,15 @@ export function useDynamicLabel(namespace: readonly string[]) {
 }
 
 const AUDIT_ACTIONS = ['admin', 'audit', 'actions'] as const;
+const AUDIT_RESOURCES = ['admin', 'audit', 'resources'] as const;
 const PERMISSIONS = ['permissions'] as const;
 
 export function useAuditActionLabel() {
   return useDynamicLabel(AUDIT_ACTIONS);
+}
+
+export function useAuditResourceLabel() {
+  return useDynamicLabel(AUDIT_RESOURCES);
 }
 
 export function usePermissionLabel() {

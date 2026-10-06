@@ -709,7 +709,8 @@
       "submitInvite": "Send invitation",
       "invited": "Invitation sent to {email}",
       "updated": "Access updated",
-      "emptyTitle": "No users found"
+      "emptyTitle": "No users found",
+      "systemRole": "Built-in role"
     },
     "roles": {
       "title": "Roles & permissions",
@@ -736,7 +737,13 @@
         "personal": "Personal data",
         "financial": "Financial",
         "restricted": "Restricted"
-      }
+      },
+      "copyName": "{name} (copy)",
+      "editorHint": "Choose a scope for each permission. Scopes you do not hold yourself are disabled.",
+      "dependenciesTitle": "Missing required permissions",
+      "dependency": "\"{permission}\" also requires \"{missing}\".",
+      "grantCount": "{count, plural, =0 {No permissions selected} one {# permission selected} other {# permissions selected}}",
+      "systemHint": "Built-in roles are maintained with security updates. Clone one to create a custom role."
     },
     "branches": {
       "title": "Branches",
@@ -867,6 +874,19 @@
           "password_reset": "Password reset",
           "password_reset_requested": "Password reset requested"
         }
+      },
+      "resources": {
+        "branch": "Branch",
+        "membership": "Membership",
+        "organization": "Organization",
+        "payment": "Payment",
+        "payment_intent": "Payment link",
+        "receivable": "Receivable",
+        "role": "Role",
+        "session": "Session",
+        "student": "Student",
+        "tuition_agreement": "Agreement",
+        "user": "User"
       }
     }
   },
@@ -903,6 +923,11 @@
         "starter": "Starter",
         "standard": "Standard",
         "enterprise": "Enterprise"
+      },
+      "status": {
+        "active": "Active",
+        "suspended": "Suspended",
+        "archived": "Archived"
       }
     }
   },
@@ -1062,5 +1087,29 @@
     "tooShort": "Must be at least {min} characters",
     "tooLong": "Must be at most {max} characters",
     "passwordTooShort": "The password must be at least {min} characters"
+  },
+  "account": {
+    "title": "My account",
+    "description": "Your profile, password and signed-in sessions.",
+    "profile": "Profile",
+    "name": "Full name",
+    "email": "Email",
+    "organization": "Organization",
+    "roles": "Roles",
+    "password": "Change password",
+    "passwordHint": "Changing your password signs you out on your other devices.",
+    "currentPassword": "Current password",
+    "passwordChanged": "Your password was updated",
+    "sessions": "Signed-in sessions",
+    "sessionsHint": "If you see a session you do not recognize, sign out everywhere and change your password.",
+    "currentSession": "This device",
+    "unknownDevice": "Unknown device",
+    "lastSeen": "last active {time}",
+    "signedInAt": "signed in {date}"
+  },
+  "pay": {
+    "title": "Test checkout page",
+    "badge": "Development environment",
+    "description": "This link belongs to the mock payment provider: no real payment is taken and no card details are requested. In production the contracted payment institution hosts this page. Authorized staff complete test payments from the student's finance screen."
   }
 }
