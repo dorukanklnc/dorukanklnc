@@ -42,7 +42,9 @@ PostgreSQL 17.
 3. The first start takes a few minutes: dependencies are installed, the database is created with
    demo data and the apps are built (`.devcontainer/setup.sh`). Then the API and the web app
    start (`.devcontainer/start.sh`) and port 3000 opens in a new browser tab. If it does not, open
-   the **Ports** tab and click the address of port 3000.
+   the **Ports** tab and click the address of port 3000. If the port is missing or the page
+   fails, run `bash .devcontainer/start.sh` in a terminal: it finishes an interrupted setup, stops
+   leftovers of an earlier start and prints the address once the app answers.
 4. Sign in with a demo account (§3).
 
 The forwarded address is private to your GitHub account. Codespaces stop after 30 minutes of
