@@ -107,7 +107,8 @@
     "branchScope": "{count, plural, one {# şube} other {# şube}}",
     "navigation": "Ana menü",
     "account": "Hesabım",
-    "openMenu": "Menüyü aç"
+    "openMenu": "Menüyü aç",
+    "breadcrumb": "Sayfa konumu"
   },
   "command": {
     "placeholder": "Öğrenci, veli, makbuz ara veya bir işlem seç…",

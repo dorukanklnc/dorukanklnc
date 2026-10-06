@@ -3,11 +3,12 @@ import { cn } from '../lib/cn';
 
 export interface FieldProps {
   label: ReactNode;
-  /** Render prop receives ids for accessible wiring (id, aria-describedby, aria-invalid). */
+  /** Render prop receives ids for accessible wiring (id, aria-describedby, aria-invalid, aria-required). */
   children: (props: {
     id: string;
     'aria-describedby'?: string;
     'aria-invalid'?: boolean;
+    'aria-required'?: boolean;
   }) => ReactNode;
   hint?: ReactNode;
   error?: string | undefined;
@@ -43,7 +44,13 @@ export function Field({
           <span className="text-xs font-normal text-fg-subtle">{optionalLabel}</span>
         ) : null}
       </label>
-      {children({ id, 'aria-describedby': describedBy, 'aria-invalid': error ? true : undefined })}
+      {children({
+        id,
+        'aria-describedby': describedBy,
+        'aria-invalid': error ? true : undefined,
+        // The asterisk is visual only; assistive technology learns about it from the control.
+        'aria-required': required ? true : undefined,
+      })}
       {error ? (
         <p id={errorId} className="text-xs text-danger-fg" role="alert">
           {error}

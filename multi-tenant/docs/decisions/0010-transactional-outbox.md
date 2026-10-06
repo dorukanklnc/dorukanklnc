@@ -28,3 +28,14 @@ a change commits, without dual-write problems and without putting Kafka in the r
 
 - Publishing to a broker inside the request — dual-write inconsistency.
 - Event sourcing — powerful but disproportionate for an MVP.
+
+## Implementation notes (2026-10-06)
+
+- The relay lives in `apps/api/src/worker` (entrypoint `dist/worker.js`, `pnpm dev:worker`).
+- Instead of in-process handlers, the relay hands each event to an `OutboxPublisher` port:
+  `log` (default; one structured log line per event) or `bullmq` (queue `domain-events`, job id =
+  outbox id so re-deliveries are deduplicated). Business handlers will consume that queue; none
+  exist yet.
+- Batches of `WORKER_OUTBOX_BATCH_SIZE` (default 50) rows; retry delay `min(2^attempts, 3600)`
+  seconds; parked as `failed` after `WORKER_OUTBOX_MAX_ATTEMPTS` (default 10).
+- Retention cleanup of published rows is not implemented yet.

@@ -38,28 +38,30 @@ flowchart LR
   Platform -->|HTTPS| Web
   Web[web<br/>Next.js 16] -->|same-origin /api proxy| API[api<br/>NestJS 12 modular monolith]
   API --> PG[(PostgreSQL<br/>RLS · outbox)]
-  API --> Redis[(Redis<br/>queues · rate limits)]
-  API --> S3[(Object storage<br/>S3 / MinIO / local)]
+  API --> Redis[(Redis<br/>rate limits · queues)]
+  API --> SMTP[E-mail<br/>console · SMTP]
+  API -. planned .-> S3[(Object storage<br/>S3 / MinIO)]
   Worker[worker<br/>same codebase] --> PG
-  Worker --> Redis
-  Worker --> SMTP[E-mail / SMS / WhatsApp<br/>provider adapters]
-  PSP[Payment providers<br/>Mock · iyzico · PayTR · Stripe] -->|signed webhooks| API
+  Worker -->|BullMQ publisher| Redis
+  Worker -. planned .-> MSG[SMS / WhatsApp<br/>adapters]
+  PSP[Payment providers<br/>mock now · iyzico · PayTR · Stripe planned] -->|signed webhooks| API
   API -->|adapter| PSP
 ```
 
-Future guardian/student portals and mobile apps are additional clients of the same API.
+Dotted edges are planned. Future guardian/student portals and mobile apps are additional clients of
+the same API.
 
 ## 3. Containers
 
-| Container      | Technology                                    | Responsibility                                                                 |
-| -------------- | --------------------------------------------- | ------------------------------------------------------------------------------ |
-| `web`          | Next.js 16 (App Router), React 19, Tailwind 4 | UI, server-side session gate, same-origin proxy of `/api/*` to the API         |
-| `api`          | NestJS 12 on Node.js 22 (ESM)                 | REST API (`/api/v1`), OpenAPI, authentication, authorization, domain logic     |
-| `worker`       | Same codebase as `api`, separate entrypoint   | Outbox relay, BullMQ jobs (reminders, notifications, exports), scheduled tasks |
-| PostgreSQL 16+ | Shared database, shared schema                | System of record, row-level security, transactional outbox                     |
-| Redis 7        | BullMQ, rate limiting                         | Job queues, distributed rate-limit counters                                    |
-| Object storage | S3-compatible (MinIO locally) or filesystem   | Tenant files behind signed URLs                                                |
-| SMTP / SMS     | Adapters (Mailpit, console, mock)             | Outbound messages; no paid credentials required locally                        |
+| Container      | Technology                                    | Responsibility                                                                    |
+| -------------- | --------------------------------------------- | --------------------------------------------------------------------------------- |
+| `web`          | Next.js 16 (App Router), React 19, Tailwind 4 | UI, server-side session gate, same-origin proxy of `/api/*` to the API            |
+| `api`          | NestJS 12 on Node.js 22 (ESM)                 | REST API (`/api/v1`), OpenAPI, authentication, authorization, domain logic        |
+| `worker`       | Same codebase as `api`, separate entrypoint   | Outbox relay (implemented); notification, reminder and export jobs (planned)      |
+| PostgreSQL 16+ | Shared database, shared schema                | System of record, row-level security, transactional outbox                        |
+| Redis 7        | BullMQ, rate limiting                         | Job queues, distributed rate-limit counters                                       |
+| Object storage | S3-compatible (MinIO locally)                 | Tenant files behind signed URLs (planned; only the container exists today)        |
+| E-mail / SMS   | Mail drivers (console, SMTP/Mailpit, memory)  | Account e-mails today; SMS/WhatsApp adapters planned; no paid credentials locally |
 
 The browser only ever talks to the `web` origin. In production a load balancer routes `/api/*`
 to `api` and everything else to `web`, so cookies stay first-party and no CORS is needed
@@ -80,14 +82,16 @@ apps/api/src
 │   ├── members/       # memberships, branch access, role assignment
 │   ├── roles/         # roles, permission catalog sync
 │   ├── audit/         # append-only audit log
-│   ├── outbox/        # transactional outbox + relay
-│   ├── notifications/ # channels, templates, in-app notifications
-│   ├── files/         # storage abstraction, file metadata
+│   ├── outbox/        # event catalog and transactional outbox writer
+│   ├── dashboard/     # role-aware dashboard read model
 │   └── search/        # permission-aware global search
-├── education/         # students, guardians, academic structure, attendance (phase 4)
-├── finance/           # agreements, plans, receivables, payments, providers, collections
-└── worker/            # worker bootstrap and job processors
+├── education/         # students, guardians, academic structure (attendance: phase 4)
+├── finance/           # agreements, plans, receivables, payments, providers, collections summary
+└── worker/            # worker bootstrap, outbox relay, publishers
 ```
+
+Planned TenantCore modules: `notifications/` (channels, templates, in-app notifications) and
+`files/` (storage abstraction, file metadata).
 
 Dependency rules:
 
@@ -153,34 +157,38 @@ Key properties:
 
 ## 7. Asynchronous processing
 
-- **Transactional outbox** ([ADR-0010](../decisions/0010-transactional-outbox.md)): domain events are
-  rows in `outbox_events`, written in the same transaction as the change. The worker relays them
-  with `SELECT … FOR UPDATE SKIP LOCKED`, dispatches to in-process handlers and marks them
-  published. Debezium can later read the same table for CDC.
-- **BullMQ on Redis** for jobs: notification delivery, reminder scheduling, exports, report
-  generation, webhook processing. Jobs carry idempotency keys; retries use exponential backoff;
-  exhausted jobs stay in the failed set (dead letter) and increment failure metrics. Outbox events
-  that keep failing move to a `failed` state for manual inspection instead of blocking the stream.
-- **Scheduled jobs** (daily overdue detection, reminder planning) are BullMQ repeatable jobs, so
-  only one worker executes each tick.
+- **Transactional outbox** ([ADR-0010](../decisions/0010-transactional-outbox.md), implemented):
+  domain events are rows in `outbox_events`, written in the same transaction as the change. The
+  worker claims pending rows in batches with `SELECT … FOR UPDATE SKIP LOCKED` (so several workers
+  can run), hands each event to a pluggable publisher and marks it published. Failed deliveries are
+  retried with exponential backoff (`min(2^attempts, 3600)` seconds); after the maximum number of
+  attempts the row is parked as `failed` with its last error instead of blocking the stream.
+  Publishers: `log` (default, structured log line) and `bullmq` (queue `domain-events`, job id =
+  outbox id, so a re-delivered event is deduplicated). Delivery is at-least-once; consumers must
+  be idempotent. Debezium can later read the same table for CDC.
+- **BullMQ consumers** (planned): notification delivery, reminder scheduling, exports, report
+  generation. Jobs carry idempotency keys; retries use exponential backoff; exhausted jobs stay in
+  the failed set (dead letter).
+- **Scheduled jobs** (planned: daily overdue marking, reminder planning) will be BullMQ repeatable
+  jobs, so only one worker executes each tick. Today overdue status is computed at query time.
 
 ## 8. Integrations through adapters
 
-| Port                  | Adapters now                                             | Planned                                     |
-| --------------------- | -------------------------------------------------------- | ------------------------------------------- |
-| `PaymentProvider`     | `MockPaymentProvider`                                    | iyzico, PayTR, Stripe                       |
-| `NotificationChannel` | SMTP (Mailpit), console, mock SMS, mock WhatsApp, in-app | Netgsm/İleti Merkezi SMS, WhatsApp Business |
-| `StorageProvider`     | local filesystem, S3-compatible                          | —                                           |
-| `AiGateway`           | none (documented interface only)                         | provider chosen by privacy ADR              |
+| Port              | Adapters now                                    | Planned                                                                                  |
+| ----------------- | ----------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `PaymentProvider` | `MockPaymentProvider`                           | iyzico, PayTR, Stripe                                                                    |
+| Mail driver       | console, SMTP (Mailpit locally), memory (tests) | Generalized `NotificationChannel`: SMS (Netgsm/İleti Merkezi), WhatsApp Business, in-app |
+| `StorageProvider` | none yet (MinIO container only)                 | local filesystem, S3-compatible                                                          |
+| `AiGateway`       | none (documented interface only)                | provider chosen by privacy ADR                                                           |
 
 Provider-specific code never leaks outside its adapter. Webhooks are verified, stored in an inbox
 table with a unique `(provider, event_id)` and processed idempotently.
 
 ## 9. Cross-cutting concerns
 
-- **Observability**: structured JSON logs (pino) with request/correlation ids and PII redaction;
-  OpenTelemetry tracing and metrics activated through standard `OTEL_*` variables; health
-  endpoints for liveness/readiness. See [OBSERVABILITY](OBSERVABILITY.md).
+- **Observability**: structured JSON logs (pino) with request/correlation ids and PII redaction,
+  health endpoints for liveness/readiness (implemented); OpenTelemetry tracing and metrics
+  (planned). See [OBSERVABILITY](OBSERVABILITY.md).
 - **Security**: OWASP-minded defaults — see [SECURITY](SECURITY.md).
 - **Internationalization**: Turkish is the default product language; all UI strings live in
   message catalogs (`next-intl`). The API returns stable error codes; the client localizes them.

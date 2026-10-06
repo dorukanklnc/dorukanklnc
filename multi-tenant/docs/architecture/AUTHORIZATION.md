@@ -153,14 +153,14 @@ built-in role into a custom role (so platform upgrades can evolve built-in roles
 
 ## 5. Enforcement layers
 
-| Layer              | Where                                           | What                                                                               |
-| ------------------ | ----------------------------------------------- | ---------------------------------------------------------------------------------- |
-| Route guard        | `@RequirePermission('finance.payments.create')` | 403 when the permission is missing entirely                                        |
-| Scope predicates   | `ScopeFilters` in each module's queries         | `assigned`/`own`/`branch` translated into SQL `WHERE`/`EXISTS` clauses             |
-| Record checks      | `isWithinScope()` after loading a single record | 404 when the record exists but is outside the scope                                |
-| Field rules        | Serializers                                     | e.g. masked national ID without `students.sensitive.read`                          |
-| Row-level security | PostgreSQL                                      | Tenant isolation and coarse branch boundary ([MULTITENANCY](MULTITENANCY.md))      |
-| UI composition     | `@repo/authorization` in the web app            | Navigation items, actions and profile tabs are **not rendered** without permission |
+| Layer              | Where                                               | What                                                                               |
+| ------------------ | --------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| Route guard        | `@RequirePermission('finance.payments.create')`     | 403 when the permission is missing entirely                                        |
+| Scope predicates   | `scope-filters.ts` helpers in each module's queries | `assigned`/`own`/`branch` translated into SQL `WHERE`/`EXISTS` clauses             |
+| Record checks      | `isWithinScope()` after loading a single record     | 404 when the record exists but is outside the scope                                |
+| Field rules        | Serializers                                         | e.g. masked national ID without `students.sensitive.read`                          |
+| Row-level security | PostgreSQL                                          | Tenant isolation and coarse branch boundary ([MULTITENANCY](MULTITENANCY.md))      |
+| UI composition     | `@repo/authorization` in the web app                | Navigation items, actions and profile tabs are **not rendered** without permission |
 
 **404 vs 403.** A missing permission for a whole feature returns `403 FORBIDDEN`. A record that is
 outside the member's scope, or that belongs to another tenant, returns `404 NOT_FOUND` — the API
@@ -200,9 +200,12 @@ payments.branch_id = ANY(:actorBranchIds)          -- skipped when all_branches 
 | Financial                  | balances, payments, agreements    | `finance.*` permissions only; never returned by non-finance endpoints (student profile omits the finance tab entirely) |
 | Restricted identifiers     | national ID                       | Encrypted at rest (AES-256-GCM), searchable through a keyed hash, masked without `students.sensitive.read`             |
 | Guidance / health (future) | counselling notes, health records | Separate permissions and note categories; never included in exports by default                                         |
-| Personal data              | names, contact details            | Standard permission checks, PII redaction in logs, audited exports                                                     |
+| Personal data              | names, contact details            | Standard permission checks, PII redaction in logs; exports (planned) will be audited                                   |
 
 ## 8. Platform staff and support access
+
+> Status: platform roles and the platform console are implemented. Support sessions are
+> **planned**; until they exist, platform staff cannot read any tenant data.
 
 Platform staff are users with `users.platform_role` (`platform_admin`, `platform_support`). Their
 permissions (`platform.organizations.manage`, `platform.support.access`, `platform.audit.read`) are

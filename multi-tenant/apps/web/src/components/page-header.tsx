@@ -1,6 +1,7 @@
 import { cn } from '@repo/ui';
 import { ChevronRight } from 'lucide-react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import type { ReactNode } from 'react';
 
 export interface Crumb {
@@ -24,6 +25,7 @@ export function PageHeader({
   meta?: ReactNode;
   className?: string;
 }) {
+  const t = useTranslations('shell');
   return (
     <header
       className={cn(
@@ -33,7 +35,7 @@ export function PageHeader({
     >
       <div className="min-w-0">
         {breadcrumbs?.length ? (
-          <nav aria-label="Breadcrumb" className="mb-1.5">
+          <nav aria-label={t('breadcrumb')} className="mb-1.5">
             <ol className="flex flex-wrap items-center gap-1 text-xs text-fg-muted">
               {breadcrumbs.map((crumb, index) => (
                 <li key={index} className="flex items-center gap-1">

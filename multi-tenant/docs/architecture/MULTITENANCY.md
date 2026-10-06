@@ -146,8 +146,9 @@ query; jobs that act on behalf of a tenant open a tenant transaction (`app_runti
 emulated by setting the same session variables) whenever they execute tenant business logic.
 
 **Support access** by platform staff is never implicit: a time-boxed support session with a
-reason is required, it is visible to the tenant, and every action is audited with the support
-session id ([AUTHORIZATION §8](AUTHORIZATION.md#8-platform-staff-and-support-access)).
+reason will be required, visible to the tenant, with every action audited under the support
+session id ([AUTHORIZATION §8](AUTHORIZATION.md#8-platform-staff-and-support-access)). Support
+sessions are planned; until then platform staff have no path to tenant data.
 
 ## 8. Future: chains, franchises, white-label
 

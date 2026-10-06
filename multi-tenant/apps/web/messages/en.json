@@ -107,7 +107,8 @@
     "branchScope": "{count, plural, one {# branch} other {# branches}}",
     "navigation": "Main navigation",
     "account": "My account",
-    "openMenu": "Open menu"
+    "openMenu": "Open menu",
+    "breadcrumb": "Breadcrumb"
   },
   "command": {
     "placeholder": "Search students, guardians, receipts or pick an action…",

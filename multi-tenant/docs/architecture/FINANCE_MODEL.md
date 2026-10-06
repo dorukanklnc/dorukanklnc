@@ -3,6 +3,11 @@
 > Decision records: [ADR-0008 money as integer minor units](../decisions/0008-money-integer-minor-units.md),
 > [ADR-0009 unified receivables](../decisions/0009-unified-receivables.md),
 > [ADR-0010 transactional outbox](../decisions/0010-transactional-outbox.md).
+>
+> Status: the core is implemented and tested — agreements with discounts, payment plans,
+> receivables, payments with allocation and idempotency, reversal, overdue and aging, the KPIs in
+> §9 (except the two marked planned), and online payments through the mock provider. Refunds,
+> due-date changes, the overdue job, reminders and §14 are planned; each section says so.
 
 ## 1. Scope
 
@@ -127,11 +132,11 @@ A completed payment is **never edited or deleted**.
   every active allocation is marked reversed, receivables re-open, an audit record and a
   `payment.reversed` event are written. The original row keeps all its data plus
   `reversed_at`, `reversed_by`, `reversal_reason`. Reversal is refused while refunds exist.
-- **Refund** (`finance.refunds.create`): returns unallocated credit; increments
-  `payments.refunded_minor`.
-- **Receivable corrections**: amount, currency and account are immutable. A wrong installment is
-  cancelled (with reason) and replaced, or the plan is restructured. Due-date changes are allowed
-  and audited.
+- **Refund** (_planned_, `finance.refunds.create`): returns unallocated credit; increments
+  `payments.refunded_minor`. The column and its constraints already exist.
+- **Receivable corrections**: amount, currency and account are immutable. A wrong item is
+  cancelled with a reason (implemented) and replaced. Plan restructuring and audited due-date
+  changes are planned.
 
 ## 8. Overdue and aging
 
@@ -139,22 +144,23 @@ A completed payment is **never edited or deleted**.
 - A receivable is **overdue** when it is open, has an outstanding amount and `due_date < today`.
   Due today is _not_ overdue.
 - Aging buckets by days overdue: **not due**, **1–30**, **31–60**, **61–90**, **90+**.
-- A scheduled job marks newly overdue receivables (`overdue_marked_at`) and emits
-  `installment.overdue` exactly once per receivable.
+- Overdue status and aging are computed at query time from `due_date` and the local date.
+- _Planned:_ a scheduled job marks newly overdue receivables (`overdue_marked_at`, column already
+  present) and emits `installment.overdue` exactly once per receivable, to drive reminders.
 
 ## 9. KPI definitions
 
-| KPI                      | Definition                                                                                                          |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------- |
-| Due today                | Outstanding of open receivables with `due_date = today`                                                             |
-| Overdue receivables      | Outstanding of open receivables with `due_date < today`                                                             |
-| Payments today           | Sum of completed (non-reversed) payments with `received_at` on the local date                                       |
-| Collected this month     | Completed payments received in the current local month                                                              |
-| Expected this month      | Outstanding of open receivables due between today and month end                                                     |
-| Collection rate (period) | `allocated to receivables due in period ÷ amount due in period` (cancelled excluded, reversed allocations excluded) |
-| Aging                    | Outstanding per bucket (§8)                                                                                         |
-| Recurring late payers    | Accounts with ≥ 2 receivables settled after their due date, or ≥ 2 currently overdue, in the last 6 months          |
-| Risky plans              | Active plans with ≥ 2 overdue installments or overdue outstanding ≥ 25 % of plan total                              |
+| KPI                      | Definition                                                                                                            |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------- |
+| Due today                | Outstanding of open receivables with `due_date = today`                                                               |
+| Overdue receivables      | Outstanding of open receivables with `due_date < today`                                                               |
+| Payments today           | Sum of completed (non-reversed) payments with `received_at` on the local date                                         |
+| Collected this month     | Completed payments received in the current local month                                                                |
+| Expected this month      | Outstanding of open receivables due between today and month end                                                       |
+| Collection rate (period) | `allocated to receivables due in period ÷ amount due in period` (cancelled excluded, reversed allocations excluded)   |
+| Aging                    | Outstanding per bucket (§8)                                                                                           |
+| Recurring late payers    | _Planned._ Accounts with ≥ 2 receivables settled after their due date, or ≥ 2 currently overdue, in the last 6 months |
+| Risky plans              | _Planned._ Active plans with ≥ 2 overdue installments or overdue outstanding ≥ 25 % of plan total                     |
 
 ## 10. Invariants and where they are enforced
 
@@ -198,6 +204,9 @@ interface PaymentProvider {
 
 ## 12. Collections automation
 
+> Status: **planned.** Nothing in this section runs yet; the overdue work list and dashboard are
+> the current tools.
+
 Default reminder rules per organization (editable later with `finance.settings.manage`):
 
 | When              | Action                                      |
@@ -214,10 +223,11 @@ a dedupe key `(receivable, rule, date)` and enqueues delivery jobs; channels are
 
 ## 13. Events
 
-`agreement.created`, `payment_plan.created`, `installment.created`, `charge.created`,
-`payment.received`, `payment.reversed`, `refund.created`, `installment.overdue` — all written to the
-outbox in the same transaction as the change (payload: ids, amounts in minor units, currency,
-dates; no personal data beyond ids).
+Emitted today, each written to the outbox in the same transaction as the change: `agreement.created`,
+`payment_plan.created`, `installment.created`, `charge.created`, `payment.received` (manual and
+online payments) and `payment.reversed`. Planned with their features: `installment.overdue`
+(overdue job) and `refund.created`. Payloads carry ids, amounts in minor units, currency and
+dates — no personal data beyond ids. The event catalog is `apps/api/src/core/outbox/events.ts`.
 
 ## 14. Planned
 
