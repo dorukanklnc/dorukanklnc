@@ -210,7 +210,8 @@
       "newThisMonth": "Bu ay eklenen",
       "incomplete": "Eksik kayıt",
       "incompleteHint": "Velisi veya bu yıl sınıfı olmayan aktif öğrenciler",
-      "byBranch": "Şubelere göre aktif öğrenci"
+      "byBranch": "Şubelere göre aktif öğrenci",
+      "viewAll": "Tümünü gör"
     },
     "finance": {
       "title": "Tahsilat",
@@ -243,7 +244,8 @@
     },
     "activity": {
       "title": "Son işlemler",
-      "empty": "Henüz kayıtlı işlem yok."
+      "empty": "Henüz kayıtlı işlem yok.",
+      "viewAll": "Tümünü gör"
     },
     "emptyTitle": "Burada gösterilecek bir şey yok",
     "emptyHint": "Rolünüze tanımlı bir gösterge bulunmuyor. Menüden işlemlerinize devam edebilirsiniz."
@@ -320,7 +322,9 @@
       "financiallyResponsible": "Ödemelerden sorumlu",
       "submit": "Öğrenciyi kaydet",
       "created": "{name} kaydedildi",
-      "updated": "Öğrenci bilgileri güncellendi"
+      "updated": "Öğrenci bilgileri güncellendi",
+      "nationalIdReplaceHint": "Kayıtlı: {masked}. Değiştirmek için yeni numarayı girin; boş bırakırsanız değişmez.",
+      "selectBranch": "Şube seçin"
     },
     "profile": {
       "tabs": {
@@ -345,7 +349,15 @@
       "archiveTitle": "Öğrenci arşivlensin mi?",
       "archiveDescription": "Öğrenci günlük listelerden kalkar. Finansal geçmiş ve denetim kayıtları korunur.",
       "archived": "Öğrenci arşivlendi",
-      "historyEmpty": "Bu öğrenci için kayıtlı işlem yok."
+      "historyEmpty": "Bu öğrenci için kayıtlı işlem yok.",
+      "recordPayment": "Tahsilat al",
+      "edit": "Düzenle",
+      "moreActions": "Diğer işlemler",
+      "allGuardians": "Tümünü gör",
+      "openFinance": "Finans ayrıntıları",
+      "studentNumberLabel": "Öğrenci no",
+      "createdAt": "Kayıt oluşturulma",
+      "updatedAt": "Son güncelleme"
     }
   },
   "guardians": {
@@ -388,7 +400,12 @@
       "upcomingHint": "Önümüzdeki 14 gün",
       "topOverdue": "En yüksek geciken hesaplar",
       "noUpcoming": "Önümüzdeki 14 günde vadesi gelen alacak yok.",
-      "noOverdue": "Vadesi geçmiş alacak yok."
+      "noOverdue": "Vadesi geçmiş alacak yok.",
+      "month": "Ay",
+      "viewOverdue": "Tümünü gör",
+      "oldestDue": "En eski vade {date}",
+      "items": "{count, plural, =0 {Kalem yok} one {# kalem} other {# kalem}}",
+      "recordPayment": "Tahsilat al"
     },
     "aging": {
       "not_due": "Vadesi gelmemiş",
@@ -500,7 +517,11 @@
         "reverseReason": "Gerekçe",
         "reverseReasonHint": "Denetim kaydına işlenir (en az 5 karakter).",
         "reversed": "Tahsilat ters kaydedildi",
-        "backToList": "Tahsilatlara dön"
+        "backToList": "Tahsilatlara dön",
+        "print": "Makbuzu yazdır",
+        "dueDate": "Vade",
+        "item": "Kalem",
+        "branch": "Şube"
       }
     },
     "recordPayment": {
@@ -522,7 +543,11 @@
       "overAllocated": "Dağıtılan tutar tahsilat tutarını aşıyor",
       "noOpenItems": "Açık taksit veya ücret yok; tutar hesap alacağı olarak kaydedilir.",
       "submit": "Tahsilatı kaydet",
-      "success": "Tahsilat kaydedildi · {receipt}"
+      "success": "Tahsilat kaydedildi · {receipt}",
+      "fillOverdue": "Vadesi geçen",
+      "fillNextDue": "Sıradaki taksit",
+      "fillOutstanding": "Kalan borç",
+      "payerName": "Ödeyen adı"
     },
     "agreement": {
       "create": "Ödeme planı oluştur",
@@ -563,7 +588,12 @@
       "downPaymentLine": "Peşinat",
       "installmentLine": "{number}. taksit",
       "submit": "Sözleşmeyi oluştur",
-      "success": "Sözleşme ve {count} taksit oluşturuldu"
+      "success": "Sözleşme ve {count} taksit oluşturuldu",
+      "status": {
+        "active": "Aktif",
+        "completed": "Tamamlandı",
+        "cancelled": "İptal"
+      }
     },
     "discountCategory": {
       "sibling": "Kardeş indirimi",
@@ -602,7 +632,10 @@
         "failed": "Başarısız",
         "expired": "Süresi doldu",
         "cancelled": "İptal"
-      }
+      },
+      "defaultDescription": "{student} eğitim ücreti ödemesi",
+      "expires": "Son geçerlilik: {date}",
+      "simulateTitle": "Test ortamı"
     },
     "student": {
       "balance": "Hesap özeti",
@@ -778,40 +811,62 @@
       "metadata": "Ek bilgiler",
       "emptyTitle": "Kayıt bulunamadı",
       "actions": {
-        "student.created": "Öğrenci oluşturuldu",
-        "student.updated": "Öğrenci güncellendi",
-        "student.archived": "Öğrenci arşivlendi",
-        "student.national_id_revealed": "T.C. kimlik no görüntülendi",
-        "agreement.created": "Sözleşme oluşturuldu",
-        "charge.created": "Ek ücret eklendi",
-        "receivable.cancelled": "Alacak iptal edildi",
-        "payment.created": "Tahsilat kaydedildi",
-        "payment.reversed": "Tahsilat ters kaydedildi",
-        "payment_link.created": "Ödeme bağlantısı oluşturuldu",
-        "member.invited": "Kullanıcı davet edildi",
-        "member.joined": "Kullanıcı katıldı",
-        "member.updated": "Kullanıcı güncellendi",
-        "member.roles_changed": "Kullanıcı rolleri değişti",
-        "member.suspended": "Kullanıcı askıya alındı",
-        "member.reactivated": "Kullanıcı etkinleştirildi",
-        "member.invitation_resent": "Davet yeniden gönderildi",
-        "role.created": "Rol oluşturuldu",
-        "role.updated": "Rol güncellendi",
-        "role.permissions_changed": "Rol yetkileri değişti",
-        "role.archived": "Rol arşivlendi",
-        "branch.created": "Şube oluşturuldu",
-        "branch.updated": "Şube güncellendi",
-        "organization.created": "Kurum oluşturuldu",
-        "organization.updated": "Kurum güncellendi",
-        "auth.login_succeeded": "Giriş yapıldı",
-        "auth.login_failed": "Başarısız giriş",
-        "auth.account_locked": "Hesap geçici olarak kilitlendi",
-        "auth.logout": "Çıkış yapıldı",
-        "auth.logout_all": "Tüm cihazlardan çıkış",
-        "auth.organization_switched": "Kurum değiştirildi",
-        "auth.password_changed": "Şifre değiştirildi",
-        "auth.password_reset": "Şifre sıfırlandı",
-        "auth.password_reset_requested": "Şifre sıfırlama istendi"
+        "student": {
+          "created": "Öğrenci oluşturuldu",
+          "updated": "Öğrenci güncellendi",
+          "archived": "Öğrenci arşivlendi",
+          "national_id_revealed": "T.C. kimlik no görüntülendi"
+        },
+        "agreement": {
+          "created": "Sözleşme oluşturuldu"
+        },
+        "charge": {
+          "created": "Ek ücret eklendi"
+        },
+        "receivable": {
+          "cancelled": "Alacak iptal edildi"
+        },
+        "payment": {
+          "created": "Tahsilat kaydedildi",
+          "reversed": "Tahsilat ters kaydedildi"
+        },
+        "payment_link": {
+          "created": "Ödeme bağlantısı oluşturuldu"
+        },
+        "member": {
+          "invited": "Kullanıcı davet edildi",
+          "joined": "Kullanıcı katıldı",
+          "updated": "Kullanıcı güncellendi",
+          "roles_changed": "Kullanıcı rolleri değişti",
+          "suspended": "Kullanıcı askıya alındı",
+          "reactivated": "Kullanıcı etkinleştirildi",
+          "invitation_resent": "Davet yeniden gönderildi"
+        },
+        "role": {
+          "created": "Rol oluşturuldu",
+          "updated": "Rol güncellendi",
+          "permissions_changed": "Rol yetkileri değişti",
+          "archived": "Rol arşivlendi"
+        },
+        "branch": {
+          "created": "Şube oluşturuldu",
+          "updated": "Şube güncellendi"
+        },
+        "organization": {
+          "created": "Kurum oluşturuldu",
+          "updated": "Kurum güncellendi"
+        },
+        "auth": {
+          "login_succeeded": "Giriş yapıldı",
+          "login_failed": "Başarısız giriş",
+          "account_locked": "Hesap geçici olarak kilitlendi",
+          "logout": "Çıkış yapıldı",
+          "logout_all": "Tüm cihazlardan çıkış",
+          "organization_switched": "Kurum değiştirildi",
+          "password_changed": "Şifre değiştirildi",
+          "password_reset": "Şifre sıfırlandı",
+          "password_reset_requested": "Şifre sıfırlama istendi"
+        }
       }
     }
   },

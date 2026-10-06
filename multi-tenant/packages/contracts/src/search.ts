@@ -20,9 +20,18 @@ export const searchResultSchema = z.object({
   type: searchResultTypeSchema,
   id: uuidSchema,
   title: z.string(),
+  /** Language-neutral context (names, numbers); clients add localized labels. */
   subtitle: z.string().nullable(),
   /** In-app path to open the result. */
   href: z.string(),
+  /** Structured details the client formats for its locale (e.g. a payment's amount). */
+  meta: z
+    .object({
+      amountMinor: z.number().int().optional(),
+      currency: z.string().optional(),
+      reversed: z.boolean().optional(),
+    })
+    .optional(),
 });
 export type SearchResult = z.infer<typeof searchResultSchema>;
 

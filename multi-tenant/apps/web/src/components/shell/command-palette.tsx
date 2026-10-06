@@ -2,13 +2,15 @@
 
 import type { SearchResponse, SearchResult, SearchResultType } from '@repo/contracts';
 import {
+  Badge,
+  Dialog,
   DialogOverlay,
   DialogPortal,
   DialogPrimitiveContent,
   DialogTitle,
-  Dialog,
   Kbd,
   Spinner,
+  cn,
 } from '@repo/ui';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { Command } from 'cmdk';
@@ -40,6 +42,7 @@ import type { NavGroup } from '@/lib/navigation';
 import { queryKeys } from '@/lib/query-keys';
 import { type RecentItem, readRecentItems } from '@/lib/recent-items';
 import { matchesSearch } from '@/lib/search-text';
+import { useFormat } from '@/lib/use-format';
 
 const RESULT_ICONS: Record<SearchResultType, LucideIcon> = {
   student: GraduationCap,
@@ -80,10 +83,12 @@ const groupClass =
  */
 export function CommandPalette({
   open,
+  initialMode = 'default',
   onOpenChange,
   groups,
 }: {
   open: boolean;
+  initialMode?: Mode;
   onOpenChange: (open: boolean) => void;
   groups: readonly NavGroup[];
 }) {
@@ -91,8 +96,15 @@ export function CommandPalette({
   const router = useRouter();
   const session = useSession();
   const permissions = usePermissions();
+  const format = useFormat();
   const [query, setQuery] = useState('');
-  const [mode, setMode] = useState<Mode>('default');
+  const [mode, setMode] = useState<Mode>(initialMode);
+  // Opening the palette (again) starts in the requested mode.
+  const [lastOpen, setLastOpen] = useState(open);
+  if (open !== lastOpen) {
+    setLastOpen(open);
+    if (open) setMode(initialMode);
+  }
   const term = useDebouncedValue(query.trim(), 200);
   const searching = term.length >= 2;
 
@@ -304,6 +316,21 @@ export function CommandPalette({
                       >
                         <Icon />
                         <ResultLabel title={result.title} subtitle={result.subtitle} />
+                        {result.meta?.amountMinor !== undefined && result.meta.currency ? (
+                          <span className="flex shrink-0 items-center gap-2">
+                            {result.meta.reversed ? (
+                              <Badge tone="danger">{t('finance.payments.status.reversed')}</Badge>
+                            ) : null}
+                            <span
+                              className={cn(
+                                'tabular text-xs text-fg-muted',
+                                result.meta.reversed && 'line-through',
+                              )}
+                            >
+                              {format.money(result.meta.amountMinor, result.meta.currency)}
+                            </span>
+                          </span>
+                        ) : null}
                       </Command.Item>
                     ))}
                   </Command.Group>

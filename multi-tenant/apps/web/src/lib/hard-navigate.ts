@@ -4,5 +4,5 @@
  * piece of in-memory state, so no cached data of the previous session or tenant can survive.
  */
 export function hardNavigate(path: string): void {
-  hardNavigate(new URL(path, window.location.origin).toString());
+  window.location.assign(new URL(path, window.location.origin).toString());
 }

@@ -27,7 +27,7 @@ export function Topbar({
   const t = useTranslations('shell');
   const apple = useIsApplePlatform();
   return (
-    <header className="flex h-12 shrink-0 items-center gap-3 border-b border-line bg-surface px-3 md:px-4">
+    <header className="flex h-12 shrink-0 items-center gap-3 border-b border-line bg-surface px-3 md:px-4 print:hidden">
       <Button
         variant="ghost"
         size="icon-sm"

@@ -21,11 +21,6 @@ import {
   studentScopePredicate,
 } from '../authorization/scope-filters.js';
 
-const amountFormatter = new Intl.NumberFormat('tr-TR', {
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
-
 /**
  * Permission-aware global search (⌘K). Each resource type is searched only when the caller
  * holds its read permission, with the same scope predicates as the list endpoints, so search can
@@ -157,8 +152,9 @@ export class SearchService {
         type: 'guardian' as const,
         id: row.id,
         title: `${row.firstName} ${row.lastName}`,
+        // Language-neutral subtitle (the client renders it under its localized group label).
         subtitle:
-          [student ? `Veli: ${student.firstName} ${student.lastName}` : null, row.phone]
+          [student ? `${student.firstName} ${student.lastName}` : null, row.phone]
             .filter(Boolean)
             .join(' · ') || null,
         href: student
@@ -230,9 +226,14 @@ export class SearchService {
     return rows.map((row) => ({
       type: 'payment' as const,
       id: row.id,
-      title: `${row.receiptNumber} · ${amountFormatter.format(row.amountMinor / 100)} ${row.currency}`,
-      subtitle: `${row.firstName} ${row.lastName}${row.status === 'reversed' ? ' · ters kayıt' : ''}`,
+      title: row.receiptNumber,
+      subtitle: `${row.firstName} ${row.lastName}`,
       href: `/finance/payments/${row.id}`,
+      meta: {
+        amountMinor: row.amountMinor,
+        currency: row.currency,
+        reversed: row.status === 'reversed',
+      },
     }));
   }
 }

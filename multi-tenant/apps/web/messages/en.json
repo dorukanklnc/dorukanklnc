@@ -210,7 +210,8 @@
       "newThisMonth": "Added this month",
       "incomplete": "Incomplete records",
       "incompleteHint": "Active students without a guardian or a class this year",
-      "byBranch": "Active students by branch"
+      "byBranch": "Active students by branch",
+      "viewAll": "View all"
     },
     "finance": {
       "title": "Collections",
@@ -243,7 +244,8 @@
     },
     "activity": {
       "title": "Recent activity",
-      "empty": "No activity recorded yet."
+      "empty": "No activity recorded yet.",
+      "viewAll": "View all"
     },
     "emptyTitle": "Nothing to show here",
     "emptyHint": "Your role has no dashboard widgets. Continue from the menu."
@@ -320,7 +322,9 @@
       "financiallyResponsible": "Responsible for payments",
       "submit": "Save student",
       "created": "{name} was saved",
-      "updated": "Student updated"
+      "updated": "Student updated",
+      "nationalIdReplaceHint": "On file: {masked}. Enter a new number to replace it; leave empty to keep it.",
+      "selectBranch": "Select a branch"
     },
     "profile": {
       "tabs": {
@@ -345,7 +349,15 @@
       "archiveTitle": "Archive this student?",
       "archiveDescription": "The student is removed from daily lists. Financial history and audit records are kept.",
       "archived": "Student archived",
-      "historyEmpty": "No activity recorded for this student."
+      "historyEmpty": "No activity recorded for this student.",
+      "recordPayment": "Record payment",
+      "edit": "Edit",
+      "moreActions": "More actions",
+      "allGuardians": "View all",
+      "openFinance": "Finance details",
+      "studentNumberLabel": "Student number",
+      "createdAt": "Record created",
+      "updatedAt": "Last updated"
     }
   },
   "guardians": {
@@ -388,7 +400,12 @@
       "upcomingHint": "Next 14 days",
       "topOverdue": "Largest overdue accounts",
       "noUpcoming": "Nothing falls due in the next 14 days.",
-      "noOverdue": "No overdue receivables."
+      "noOverdue": "No overdue receivables.",
+      "month": "Month",
+      "viewOverdue": "View all",
+      "oldestDue": "Oldest due {date}",
+      "items": "{count, plural, =0 {No items} one {# item} other {# items}}",
+      "recordPayment": "Record payment"
     },
     "aging": {
       "not_due": "Not yet due",
@@ -500,7 +517,11 @@
         "reverseReason": "Reason",
         "reverseReasonHint": "Recorded in the audit log (at least 5 characters).",
         "reversed": "Payment reversed",
-        "backToList": "Back to payments"
+        "backToList": "Back to payments",
+        "print": "Print receipt",
+        "dueDate": "Due date",
+        "item": "Item",
+        "branch": "Branch"
       }
     },
     "recordPayment": {
@@ -522,7 +543,11 @@
       "overAllocated": "Allocated amount exceeds the payment",
       "noOpenItems": "No open installments or charges; the amount is kept as account credit.",
       "submit": "Record payment",
-      "success": "Payment recorded · {receipt}"
+      "success": "Payment recorded · {receipt}",
+      "fillOverdue": "Overdue",
+      "fillNextDue": "Next installment",
+      "fillOutstanding": "Outstanding",
+      "payerName": "Payer name"
     },
     "agreement": {
       "create": "Create payment plan",
@@ -563,7 +588,12 @@
       "downPaymentLine": "Down payment",
       "installmentLine": "Installment {number}",
       "submit": "Create agreement",
-      "success": "Agreement and {count} installments created"
+      "success": "Agreement and {count} installments created",
+      "status": {
+        "active": "Active",
+        "completed": "Completed",
+        "cancelled": "Cancelled"
+      }
     },
     "discountCategory": {
       "sibling": "Sibling discount",
@@ -602,7 +632,10 @@
         "failed": "Failed",
         "expired": "Expired",
         "cancelled": "Cancelled"
-      }
+      },
+      "defaultDescription": "Tuition payment for {student}",
+      "expires": "Expires: {date}",
+      "simulateTitle": "Test environment"
     },
     "student": {
       "balance": "Account summary",
@@ -778,40 +811,62 @@
       "metadata": "Additional details",
       "emptyTitle": "No records found",
       "actions": {
-        "student.created": "Student created",
-        "student.updated": "Student updated",
-        "student.archived": "Student archived",
-        "student.national_id_revealed": "National ID viewed",
-        "agreement.created": "Agreement created",
-        "charge.created": "Charge added",
-        "receivable.cancelled": "Receivable cancelled",
-        "payment.created": "Payment recorded",
-        "payment.reversed": "Payment reversed",
-        "payment_link.created": "Payment link created",
-        "member.invited": "User invited",
-        "member.joined": "User joined",
-        "member.updated": "User updated",
-        "member.roles_changed": "User roles changed",
-        "member.suspended": "User suspended",
-        "member.reactivated": "User reactivated",
-        "member.invitation_resent": "Invitation resent",
-        "role.created": "Role created",
-        "role.updated": "Role updated",
-        "role.permissions_changed": "Role permissions changed",
-        "role.archived": "Role archived",
-        "branch.created": "Branch created",
-        "branch.updated": "Branch updated",
-        "organization.created": "Organization created",
-        "organization.updated": "Organization updated",
-        "auth.login_succeeded": "Signed in",
-        "auth.login_failed": "Failed sign-in",
-        "auth.account_locked": "Account temporarily locked",
-        "auth.logout": "Signed out",
-        "auth.logout_all": "Signed out of all devices",
-        "auth.organization_switched": "Organization switched",
-        "auth.password_changed": "Password changed",
-        "auth.password_reset": "Password reset",
-        "auth.password_reset_requested": "Password reset requested"
+        "student": {
+          "created": "Student created",
+          "updated": "Student updated",
+          "archived": "Student archived",
+          "national_id_revealed": "National ID viewed"
+        },
+        "agreement": {
+          "created": "Agreement created"
+        },
+        "charge": {
+          "created": "Charge added"
+        },
+        "receivable": {
+          "cancelled": "Receivable cancelled"
+        },
+        "payment": {
+          "created": "Payment recorded",
+          "reversed": "Payment reversed"
+        },
+        "payment_link": {
+          "created": "Payment link created"
+        },
+        "member": {
+          "invited": "User invited",
+          "joined": "User joined",
+          "updated": "User updated",
+          "roles_changed": "User roles changed",
+          "suspended": "User suspended",
+          "reactivated": "User reactivated",
+          "invitation_resent": "Invitation resent"
+        },
+        "role": {
+          "created": "Role created",
+          "updated": "Role updated",
+          "permissions_changed": "Role permissions changed",
+          "archived": "Role archived"
+        },
+        "branch": {
+          "created": "Branch created",
+          "updated": "Branch updated"
+        },
+        "organization": {
+          "created": "Organization created",
+          "updated": "Organization updated"
+        },
+        "auth": {
+          "login_succeeded": "Signed in",
+          "login_failed": "Failed sign-in",
+          "account_locked": "Account temporarily locked",
+          "logout": "Signed out",
+          "logout_all": "Signed out of all devices",
+          "organization_switched": "Organization switched",
+          "password_changed": "Password changed",
+          "password_reset": "Password reset",
+          "password_reset_requested": "Password reset requested"
+        }
       }
     }
   },

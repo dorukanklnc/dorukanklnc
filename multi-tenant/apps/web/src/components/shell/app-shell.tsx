@@ -10,10 +10,16 @@ import { Sidebar } from './sidebar';
 import { persistSidebarCollapsed } from './sidebar-state';
 import { Topbar } from './topbar';
 
-const CommandPaletteContext = createContext<() => void>(() => undefined);
+export type PaletteMode = 'default' | 'pick-student';
+type OpenPalette = (options?: { mode?: PaletteMode }) => void;
 
-/** Opens the ⌘K palette from anywhere in the app (e.g. an empty state's "search" button). */
-export function useOpenCommandPalette(): () => void {
+const CommandPaletteContext = createContext<OpenPalette>(() => undefined);
+
+/**
+ * Opens the ⌘K palette from anywhere in the app, optionally straight into a mode (e.g. picking
+ * the student to record a payment for).
+ */
+export function useOpenCommandPalette(): OpenPalette {
   return use(CommandPaletteContext);
 }
 
@@ -30,11 +36,13 @@ export function AppShell({
   const [collapsed, setCollapsed] = useState(initialCollapsed);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const [paletteMode, setPaletteMode] = useState<PaletteMode>('default');
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && !event.altKey && event.key.toLowerCase() === 'k') {
         event.preventDefault();
+        setPaletteMode('default');
         setPaletteOpen((open) => !open);
       }
     };
@@ -48,7 +56,14 @@ export function AppShell({
     persistSidebarCollapsed(next);
   };
 
-  const openPalette = useMemo(() => () => setPaletteOpen(true), []);
+  const openPalette = useMemo<OpenPalette>(
+    () =>
+      (options = {}) => {
+        setPaletteMode(options.mode ?? 'default');
+        setPaletteOpen(true);
+      },
+    [],
+  );
 
   return (
     <CommandPaletteContext value={openPalette}>
@@ -58,10 +73,10 @@ export function AppShell({
       >
         {t('shell.skipToContent')}
       </a>
-      <div className="flex h-dvh overflow-hidden">
+      <div className="flex h-dvh overflow-hidden print:block print:h-auto print:overflow-visible">
         <aside
           className={cn(
-            'hidden shrink-0 border-r border-line bg-sidebar transition-[width] duration-200 lg:block',
+            'hidden shrink-0 border-r border-line bg-sidebar transition-[width] duration-200 lg:block print:hidden',
             collapsed ? 'w-14' : 'w-60',
           )}
         >
@@ -81,15 +96,24 @@ export function AppShell({
         </Sheet>
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <Topbar onOpenMenu={() => setMobileNavOpen(true)} onOpenSearch={openPalette} />
-          <main id="main" tabIndex={-1} className="flex-1 overflow-y-auto focus:outline-none">
+          <Topbar onOpenMenu={() => setMobileNavOpen(true)} onOpenSearch={() => openPalette()} />
+          <main
+            id="main"
+            tabIndex={-1}
+            className="flex-1 overflow-y-auto focus:outline-none print:overflow-visible"
+          >
             <div className="mx-auto w-full max-w-[1440px] px-4 py-5 md:px-6 md:py-6">
               {children}
             </div>
           </main>
         </div>
       </div>
-      <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} groups={groups} />
+      <CommandPalette
+        open={paletteOpen}
+        initialMode={paletteMode}
+        onOpenChange={setPaletteOpen}
+        groups={groups}
+      />
     </CommandPaletteContext>
   );
 }
