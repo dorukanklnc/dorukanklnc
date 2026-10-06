@@ -1,0 +1,1011 @@
+{
+  "app": {
+    "name": "CampusOS",
+    "tagline": "Eğitim kurumları için operasyon platformu"
+  },
+  "common": {
+    "save": "Kaydet",
+    "saveChanges": "Değişiklikleri kaydet",
+    "cancel": "Vazgeç",
+    "create": "Oluştur",
+    "add": "Ekle",
+    "edit": "Düzenle",
+    "close": "Kapat",
+    "back": "Geri",
+    "next": "Devam",
+    "previous": "Geri",
+    "confirm": "Onayla",
+    "retry": "Tekrar dene",
+    "search": "Ara",
+    "filter": "Filtrele",
+    "clearFilters": "Filtreleri temizle",
+    "all": "Tümü",
+    "none": "Yok",
+    "yes": "Evet",
+    "no": "Hayır",
+    "optional": "isteğe bağlı",
+    "loading": "Yükleniyor…",
+    "saving": "Kaydediliyor…",
+    "actions": "İşlemler",
+    "details": "Ayrıntılar",
+    "viewAll": "Tümünü gör",
+    "open": "Aç",
+    "copy": "Kopyala",
+    "copied": "Kopyalandı",
+    "notSet": "Belirtilmemiş",
+    "today": "Bugün",
+    "branch": "Şube",
+    "allBranches": "Tüm şubeler",
+    "status": "Durum",
+    "date": "Tarih",
+    "amount": "Tutar",
+    "createdAt": "Oluşturulma",
+    "dash": "—",
+    "page": "Sayfa {page} / {pages}",
+    "rowsTotal": "{total, plural, =0 {Kayıt yok} one {# kayıt} other {# kayıt}}",
+    "rowsPerPage": "Sayfa başına",
+    "previousPage": "Önceki sayfa",
+    "nextPage": "Sonraki sayfa",
+    "columns": "Sütunlar",
+    "sortAscending": "Artan sırala",
+    "sortDescending": "Azalan sırala",
+    "noResults": "Sonuç bulunamadı",
+    "noResultsHint": "Arama veya filtreleri değiştirmeyi deneyin.",
+    "unexpectedError": "Beklenmeyen bir hata oluştu",
+    "unexpectedErrorHint": "Sorun devam ederse destek ekibine istek kimliğiyle başvurun.",
+    "requestId": "İstek kimliği: {id}",
+    "forbiddenTitle": "Bu sayfaya erişiminiz yok",
+    "forbiddenHint": "Yetkiye ihtiyacınız olduğunu düşünüyorsanız kurum yöneticinize başvurun.",
+    "notFoundTitle": "Sayfa bulunamadı",
+    "notFoundHint": "Aradığınız kayıt silinmiş, taşınmış ya da erişiminiz dışında olabilir.",
+    "goToDashboard": "Gösterge paneline dön",
+    "sinceDate": "{date} itibarıyla"
+  },
+  "nav": {
+    "groups": {
+      "overview": "Genel",
+      "students": "Öğrenci işlemleri",
+      "finance": "Finans",
+      "administration": "Yönetim",
+      "platform": "Platform"
+    },
+    "items": {
+      "dashboard": "Gösterge paneli",
+      "students": "Öğrenciler",
+      "guardians": "Veliler",
+      "classes": "Sınıflar",
+      "collections": "Tahsilat paneli",
+      "installments": "Taksitler ve ücretler",
+      "payments": "Tahsilatlar",
+      "overdue": "Gecikenler",
+      "users": "Kullanıcılar",
+      "roles": "Roller ve yetkiler",
+      "branches": "Şubeler",
+      "organization": "Kurum ayarları",
+      "audit": "Denetim kayıtları",
+      "organizations": "Kurumlar"
+    }
+  },
+  "shell": {
+    "skipToContent": "İçeriğe geç",
+    "search": "Ara veya komut yaz…",
+    "collapseSidebar": "Kenar çubuğunu daralt",
+    "expandSidebar": "Kenar çubuğunu genişlet",
+    "switchOrganization": "Kurum değiştir",
+    "organizations": "Kurumlarınız",
+    "userMenu": "Kullanıcı menüsü",
+    "language": "Dil",
+    "languages": {
+      "tr": "Türkçe",
+      "en": "English"
+    },
+    "logout": "Çıkış yap",
+    "logoutAll": "Tüm cihazlardan çıkış yap",
+    "logoutAllConfirm": "Tüm cihazlardaki oturumlarınız kapatılacak. Devam edilsin mi?",
+    "platformConsole": "Platform konsolu",
+    "signedInAs": "Oturum: {email}",
+    "branchScope": "{count, plural, one {# şube} other {# şube}}",
+    "navigation": "Ana menü",
+    "account": "Hesabım",
+    "openMenu": "Menüyü aç"
+  },
+  "command": {
+    "placeholder": "Öğrenci, veli, makbuz ara veya bir işlem seç…",
+    "navigation": "Sayfalar",
+    "actions": "Hızlı işlemler",
+    "recent": "Son ziyaret edilenler",
+    "searching": "Aranıyor…",
+    "hint": "{open} ile istediğiniz yerden açın",
+    "types": {
+      "student": "Öğrenciler",
+      "guardian": "Veliler",
+      "class": "Sınıflar",
+      "payment": "Tahsilatlar",
+      "personnel": "Personel"
+    },
+    "actionItems": {
+      "addStudent": "Öğrenci ekle",
+      "recordPayment": "Tahsilat al",
+      "overdue": "Geciken ödemeleri göster",
+      "todayPayments": "Bugünkü tahsilatlar",
+      "inviteUser": "Kullanıcı davet et",
+      "createOrganization": "Kurum oluştur"
+    },
+    "keywords": {
+      "addStudent": "öğrenci ekle yeni kayıt",
+      "recordPayment": "tahsilat al ödeme kaydet makbuz",
+      "overdue": "geciken ödemeler borç vadesi geçmiş",
+      "todayPayments": "bugünkü tahsilatlar bugün ödemeler",
+      "inviteUser": "kullanıcı davet et personel ekle",
+      "createOrganization": "kurum oluştur okul ekle"
+    },
+    "title": "Komut paleti",
+    "pickStudent": "Tahsilat alınacak öğrenciyi seçin",
+    "pickStudentPlaceholder": "Öğrenci adı veya numarası…",
+    "noResults": "Sonuç bulunamadı.",
+    "typeMore": "Kayıt aramak için en az 2 karakter yazın.",
+    "footer": {
+      "navigate": "gezin",
+      "open": "aç",
+      "close": "kapat"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Hesabınıza giriş yapın",
+      "subtitle": "Kurumunuzun size verdiği e-posta adresiyle devam edin.",
+      "email": "E-posta",
+      "password": "Şifre",
+      "submit": "Giriş yap",
+      "forgot": "Şifremi unuttum",
+      "demoHint": "Demo ortamı: hesaplar ve şifre geliştirme belgelerinde yer alır."
+    },
+    "forgot": {
+      "title": "Şifrenizi mi unuttunuz?",
+      "description": "E-posta adresinizi girin; kayıtlıysa şifre sıfırlama bağlantısı göndereceğiz.",
+      "submit": "Bağlantı gönder",
+      "sentTitle": "E-postanızı kontrol edin",
+      "sent": "Bu adres sistemde kayıtlıysa birkaç dakika içinde bir bağlantı alacaksınız. Bağlantı 30 dakika geçerlidir.",
+      "backToLogin": "Girişe dön"
+    },
+    "reset": {
+      "title": "Yeni şifre belirleyin",
+      "password": "Yeni şifre",
+      "confirm": "Yeni şifre (tekrar)",
+      "mismatch": "Şifreler eşleşmiyor",
+      "hint": "En az 10 karakter. Uzun bir cümle, karmaşık kısa bir şifreden daha güvenlidir.",
+      "submit": "Şifreyi güncelle",
+      "success": "Şifreniz güncellendi. Yeni şifrenizle giriş yapabilirsiniz.",
+      "missingToken": "Sıfırlama bağlantısı eksik ya da hatalı."
+    },
+    "invitation": {
+      "title": "{organization} sizi davet etti",
+      "description": "{email} adresi için oluşturulan daveti kabul edin.",
+      "fullName": "Ad soyad",
+      "password": "Şifre",
+      "accept": "Daveti kabul et",
+      "acceptExisting": "Daveti kabul et ve giriş yap",
+      "existingAccount": "Bu e-posta için zaten bir hesabınız var. Kabul ettikten sonra mevcut şifrenizle giriş yapın.",
+      "accepted": "Davet kabul edildi. Mevcut şifrenizle giriş yapabilirsiniz.",
+      "invalid": "Bu davet bağlantısı geçersiz ya da süresi dolmuş.",
+      "expires": "Son geçerlilik: {date}"
+    },
+    "selectOrganization": {
+      "title": "Kurum seçin",
+      "description": "Birden fazla kurumda hesabınız var. Çalışmak istediğinizi seçin.",
+      "empty": "Etkin bir kurum üyeliğiniz bulunmuyor.",
+      "invited": "Davet bekliyor",
+      "suspended": "Askıya alındı"
+    },
+    "showPassword": "Şifreyi göster",
+    "hidePassword": "Şifreyi gizle"
+  },
+  "dashboard": {
+    "title": "Gösterge paneli",
+    "greeting": "Merhaba, {name}",
+    "subtitle": "{organization} · {date}",
+    "students": {
+      "title": "Öğrenciler",
+      "active": "Aktif öğrenci",
+      "newThisMonth": "Bu ay eklenen",
+      "incomplete": "Eksik kayıt",
+      "incompleteHint": "Velisi veya bu yıl sınıfı olmayan aktif öğrenciler",
+      "byBranch": "Şubelere göre aktif öğrenci"
+    },
+    "finance": {
+      "title": "Tahsilat",
+      "dueToday": "Bugün vadesi gelen",
+      "overdue": "Vadesi geçmiş alacak",
+      "overdueAccounts": "{count, plural, one {# hesap} other {# hesap}}",
+      "paymentsToday": "Bugünkü tahsilat",
+      "paymentsCount": "{count, plural, =0 {Tahsilat yok} one {# tahsilat} other {# tahsilat}}",
+      "collectedThisMonth": "Bu ay tahsil edilen",
+      "expectedThisMonth": "Bu ay beklenen",
+      "collectionRate": "Bu ayki tahsilat oranı",
+      "collectionRateHint": "Bu ay bugüne kadar vadesi gelenlerin tahsil edilen oranı",
+      "openCollections": "Tahsilat paneline git"
+    },
+    "teaching": {
+      "title": "Sınıflarım",
+      "description": "Atandığınız sınıflar ve öğrenci sayıları",
+      "assignedStudents": "Öğrencilerim",
+      "homeroom": "Sınıf öğretmeni",
+      "subject": "Ders: {subject}",
+      "students": "{count, plural, one {# öğrenci} other {# öğrenci}}",
+      "empty": "Bu akademik yıl için sınıf ataması bulunmuyor.",
+      "attendancePlanned": "Yoklama modülü planlandı (faz 4)."
+    },
+    "administration": {
+      "title": "Kurum",
+      "activeMembers": "Aktif kullanıcı",
+      "pendingInvitations": "Bekleyen davet",
+      "branches": "Şube"
+    },
+    "activity": {
+      "title": "Son işlemler",
+      "empty": "Henüz kayıtlı işlem yok."
+    },
+    "emptyTitle": "Burada gösterilecek bir şey yok",
+    "emptyHint": "Rolünüze tanımlı bir gösterge bulunmuyor. Menüden işlemlerinize devam edebilirsiniz."
+  },
+  "students": {
+    "title": "Öğrenciler",
+    "description": "Öğrenci kayıtlarını arayın, filtreleyin ve yönetin.",
+    "add": "Öğrenci ekle",
+    "searchPlaceholder": "Ad, soyad veya öğrenci no",
+    "includeArchived": "Arşivlenenleri göster",
+    "emptyTitle": "Henüz öğrenci yok",
+    "emptyHint": "İlk öğrenciyi ekleyerek başlayın.",
+    "columns": {
+      "studentNumber": "No",
+      "name": "Ad soyad",
+      "className": "Sınıf",
+      "gradeLevel": "Sınıf düzeyi",
+      "branch": "Şube",
+      "guardian": "Birincil veli",
+      "status": "Durum",
+      "enrolledOn": "Kayıt tarihi"
+    },
+    "filters": {
+      "status": "Durum",
+      "branch": "Şube",
+      "class": "Sınıf"
+    },
+    "status": {
+      "active": "Aktif",
+      "inactive": "Pasif",
+      "graduated": "Mezun",
+      "withdrawn": "Kaydı silindi",
+      "transferred": "Nakil gitti"
+    },
+    "gender": {
+      "female": "Kız",
+      "male": "Erkek",
+      "other": "Diğer",
+      "unspecified": "Belirtilmemiş"
+    },
+    "relationship": {
+      "mother": "Anne",
+      "father": "Baba",
+      "legal_guardian": "Yasal vasi",
+      "grandparent": "Büyükanne / büyükbaba",
+      "sibling": "Kardeş",
+      "other": "Diğer"
+    },
+    "archived": "Arşivlendi",
+    "form": {
+      "createTitle": "Yeni öğrenci",
+      "createDescription": "Öğrenci, veli ve sınıf bilgilerini tek seferde kaydedin.",
+      "editTitle": "Öğrenci bilgilerini düzenle",
+      "studentSection": "Öğrenci",
+      "placementSection": "Şube ve sınıf",
+      "guardianSection": "Veli",
+      "guardianHint": "Veli bilgileri iletişim ve tahsilat süreçlerinde kullanılır.",
+      "addGuardian": "İkinci veli ekle",
+      "removeGuardian": "Veliyi kaldır",
+      "firstName": "Ad",
+      "lastName": "Soyad",
+      "gender": "Cinsiyet",
+      "birthDate": "Doğum tarihi",
+      "nationalId": "T.C. kimlik no",
+      "nationalIdHint": "Şifrelenmiş olarak saklanır; yalnızca yetkili roller görebilir.",
+      "email": "E-posta",
+      "phone": "Telefon",
+      "address": "Adres",
+      "branch": "Şube",
+      "class": "Sınıf",
+      "noClass": "Sınıf atanmadı",
+      "relationship": "Yakınlık",
+      "primaryContact": "Birincil iletişim kişisi",
+      "financiallyResponsible": "Ödemelerden sorumlu",
+      "submit": "Öğrenciyi kaydet",
+      "created": "{name} kaydedildi",
+      "updated": "Öğrenci bilgileri güncellendi"
+    },
+    "profile": {
+      "tabs": {
+        "overview": "Genel bakış",
+        "personal": "Kişisel bilgiler",
+        "guardians": "Veliler",
+        "finance": "Finans",
+        "history": "Geçmiş"
+      },
+      "studentNumber": "Öğrenci no {number}",
+      "enrollment": "Kayıt",
+      "academicYear": "Akademik yıl",
+      "gradeLevel": "Sınıf düzeyi",
+      "classes": "Sınıflar",
+      "enrolledOn": "Kayıt tarihi",
+      "contact": "İletişim",
+      "nationalId": "T.C. kimlik no",
+      "reveal": "Göster",
+      "revealHint": "Görüntüleme denetim kaydına işlenir.",
+      "noGuardians": "Kayıtlı veli yok.",
+      "archive": "Arşivle",
+      "archiveTitle": "Öğrenci arşivlensin mi?",
+      "archiveDescription": "Öğrenci günlük listelerden kalkar. Finansal geçmiş ve denetim kayıtları korunur.",
+      "archived": "Öğrenci arşivlendi",
+      "historyEmpty": "Bu öğrenci için kayıtlı işlem yok."
+    }
+  },
+  "guardians": {
+    "title": "Veliler",
+    "description": "Erişiminizdeki öğrencilerin velileri.",
+    "searchPlaceholder": "Ad, soyad veya telefon",
+    "columns": {
+      "name": "Ad soyad",
+      "phone": "Telefon",
+      "email": "E-posta",
+      "students": "Öğrenciler"
+    },
+    "emptyTitle": "Veli bulunamadı"
+  },
+  "classes": {
+    "title": "Sınıflar",
+    "description": "Güncel akademik yılın sınıfları.",
+    "columns": {
+      "name": "Sınıf",
+      "gradeLevel": "Düzey",
+      "branch": "Şube",
+      "students": "Öğrenci",
+      "capacity": "Kapasite",
+      "homeroom": "Sınıf öğretmeni"
+    },
+    "emptyTitle": "Sınıf bulunamadı",
+    "viewStudents": "Öğrencileri gör"
+  },
+  "finance": {
+    "collections": {
+      "title": "Tahsilat paneli",
+      "description": "Alacaklar, gecikmeler ve beklenen nakit akışı.",
+      "aging": "Alacak yaşlandırma",
+      "agingHint": "Açık alacakların vadeye göre dağılımı",
+      "monthly": "Aylık vade ve tahsilat",
+      "monthlyHint": "Son 5 ay, bu ay ve gelecek 2 ay",
+      "due": "Vadesi gelen",
+      "collected": "Tahsil edilen",
+      "upcoming": "Yaklaşan vadeler",
+      "upcomingHint": "Önümüzdeki 14 gün",
+      "topOverdue": "En yüksek geciken hesaplar",
+      "noUpcoming": "Önümüzdeki 14 günde vadesi gelen alacak yok.",
+      "noOverdue": "Vadesi geçmiş alacak yok."
+    },
+    "aging": {
+      "not_due": "Vadesi gelmemiş",
+      "d1_30": "1–30 gün",
+      "d31_60": "31–60 gün",
+      "d61_90": "61–90 gün",
+      "d90_plus": "90+ gün"
+    },
+    "receivables": {
+      "title": "Taksitler ve ücretler",
+      "description": "Tüm taksitler ve ek ücretler; vade, tahsilat ve gecikme durumu.",
+      "overdueTitle": "Geciken alacaklar",
+      "overdueDescription": "Vadesi geçmiş ve henüz tahsil edilmemiş taksit ve ücretler.",
+      "searchPlaceholder": "Öğrenci adı veya no",
+      "columns": {
+        "dueDate": "Vade",
+        "student": "Öğrenci",
+        "description": "Açıklama",
+        "kind": "Tür",
+        "amount": "Tutar",
+        "paid": "Ödenen",
+        "outstanding": "Kalan",
+        "status": "Durum",
+        "branch": "Şube"
+      },
+      "kind": {
+        "installment": "Taksit",
+        "charge": "Ek ücret"
+      },
+      "status": {
+        "open": "Açık",
+        "paid": "Ödendi",
+        "cancelled": "İptal",
+        "overdue": "{days, plural, one {# gün gecikti} other {# gün gecikti}}",
+        "partial": "Kısmi ödendi"
+      },
+      "filters": {
+        "kind": "Tür",
+        "status": "Durum",
+        "onlyOverdue": "Yalnızca gecikenler",
+        "dueFrom": "Vade başlangıç",
+        "dueTo": "Vade bitiş"
+      },
+      "emptyTitle": "Alacak bulunamadı",
+      "noOverdueTitle": "Vadesi geçmiş alacak yok",
+      "noOverdueHint": "Tüm vadesi gelen taksitler tahsil edilmiş görünüyor."
+    },
+    "category": {
+      "tuition": "Eğitim ücreti",
+      "down_payment": "Peşinat",
+      "books": "Kitap",
+      "uniform": "Kıyafet",
+      "transport": "Servis",
+      "meals": "Yemek",
+      "trip": "Gezi",
+      "exam": "Sınav",
+      "other": "Diğer"
+    },
+    "payments": {
+      "title": "Tahsilatlar",
+      "description": "Kayıtlı tüm tahsilatlar ve makbuzlar.",
+      "searchPlaceholder": "Makbuz no veya öğrenci",
+      "record": "Tahsilat al",
+      "columns": {
+        "receipt": "Makbuz no",
+        "receivedAt": "Tarih",
+        "student": "Öğrenci",
+        "method": "Yöntem",
+        "amount": "Tutar",
+        "unallocated": "Dağıtılmamış",
+        "status": "Durum",
+        "recordedBy": "Kaydeden"
+      },
+      "method": {
+        "cash": "Nakit",
+        "bank_transfer": "Havale / EFT",
+        "credit_card": "Kredi kartı",
+        "pos": "POS",
+        "online": "Online ödeme",
+        "check": "Çek",
+        "other": "Diğer"
+      },
+      "status": {
+        "completed": "Tamamlandı",
+        "reversed": "Ters kayıt"
+      },
+      "filters": {
+        "method": "Yöntem",
+        "status": "Durum",
+        "from": "Başlangıç",
+        "to": "Bitiş"
+      },
+      "emptyTitle": "Tahsilat bulunamadı",
+      "detail": {
+        "title": "Makbuz {receipt}",
+        "payer": "Ödeyen",
+        "reference": "Referans",
+        "notes": "Not",
+        "recordedBy": "Kaydeden",
+        "provider": "Ödeme sağlayıcısı",
+        "allocations": "Dağıtım",
+        "allocationsHint": "Tahsilatın hangi taksit ve ücretlere uygulandığı",
+        "noAllocations": "Bu tahsilat henüz bir alacağa dağıtılmadı (hesap alacağı).",
+        "unallocated": "Dağıtılmamış tutar (hesap alacağı)",
+        "reversedInfo": "{date} tarihinde ters kayıt yapıldı: {reason}",
+        "reverse": "Ters kayıt yap",
+        "reverseTitle": "Tahsilat ters kaydedilsin mi?",
+        "reverseDescription": "Tahsilat silinmez; ters kayıt olarak işaretlenir ve dağıtımları geri alınır. Bu işlem geri alınamaz.",
+        "reverseReason": "Gerekçe",
+        "reverseReasonHint": "Denetim kaydına işlenir (en az 5 karakter).",
+        "reversed": "Tahsilat ters kaydedildi",
+        "backToList": "Tahsilatlara dön"
+      }
+    },
+    "recordPayment": {
+      "title": "Tahsilat al",
+      "description": "{student} için ödeme kaydı",
+      "amount": "Tutar",
+      "method": "Ödeme yöntemi",
+      "receivedAt": "Tahsilat tarihi",
+      "payer": "Ödeyen veli",
+      "payerOther": "Diğer / belirtilmemiş",
+      "reference": "Referans / dekont no",
+      "notes": "Not",
+      "allocation": "Dağıtım",
+      "allocationAuto": "Otomatik (en eski vadeden başlayarak)",
+      "allocationManual": "Elle seç",
+      "outstanding": "Kalan {amount}",
+      "allocated": "Dağıtılan: {amount}",
+      "remainingCredit": "Hesap alacağı olarak kalacak: {amount}",
+      "overAllocated": "Dağıtılan tutar tahsilat tutarını aşıyor",
+      "noOpenItems": "Açık taksit veya ücret yok; tutar hesap alacağı olarak kaydedilir.",
+      "submit": "Tahsilatı kaydet",
+      "success": "Tahsilat kaydedildi · {receipt}"
+    },
+    "agreement": {
+      "create": "Ödeme planı oluştur",
+      "title": "Eğitim sözleşmesi ve ödeme planı",
+      "description": "{student} için ücret, indirim ve taksitleri belirleyin.",
+      "steps": {
+        "amount": "Ücret ve indirimler",
+        "plan": "Taksit planı",
+        "review": "Önizleme"
+      },
+      "agreementTitle": "Sözleşme adı",
+      "defaultTitle": "{year} Eğitim Ücreti",
+      "grossAmount": "Brüt ücret",
+      "discounts": "İndirimler ve burslar",
+      "discountsHint": "İndirimler sırayla uygulanır; yüzde indirimi kalan tutara uygulanır.",
+      "addDiscount": "İndirim ekle",
+      "discountLabel": "Açıklama",
+      "discountCategory": "Tür",
+      "discountKind": "Hesaplama",
+      "percentage": "Yüzde",
+      "fixed": "Sabit tutar",
+      "discountValue": "Değer",
+      "responsibleGuardian": "Ödemeden sorumlu veli",
+      "downPayment": "Peşinat",
+      "downPaymentDueDate": "Peşinat vadesi",
+      "installmentCount": "Taksit sayısı",
+      "firstDueDate": "İlk taksit vadesi",
+      "rounding": "Yuvarlama",
+      "roundingWhole": "Tam TL'ye yuvarla",
+      "roundingKurus": "Kuruş hassasiyeti",
+      "remainder": "Yuvarlama farkı",
+      "remainderLast": "Son taksite ekle",
+      "remainderFirst": "İlk taksite ekle",
+      "gross": "Brüt",
+      "discountTotal": "Toplam indirim",
+      "net": "Net tutar",
+      "schedule": "Taksit takvimi",
+      "downPaymentLine": "Peşinat",
+      "installmentLine": "{number}. taksit",
+      "submit": "Sözleşmeyi oluştur",
+      "success": "Sözleşme ve {count} taksit oluşturuldu"
+    },
+    "discountCategory": {
+      "sibling": "Kardeş indirimi",
+      "early_payment": "Peşin / erken ödeme",
+      "scholarship": "Burs",
+      "staff": "Personel indirimi",
+      "corporate": "Kurumsal anlaşma",
+      "other": "Diğer"
+    },
+    "charge": {
+      "create": "Ek ücret ekle",
+      "title": "Ek ücret",
+      "description": "Kitap, kıyafet, servis, gezi gibi ücretler",
+      "category": "Tür",
+      "label": "Açıklama",
+      "amount": "Tutar",
+      "dueDate": "Vade",
+      "submit": "Ücreti ekle",
+      "success": "Ek ücret eklendi"
+    },
+    "link": {
+      "create": "Ödeme bağlantısı",
+      "title": "Online ödeme bağlantısı",
+      "description": "Veliye gönderilecek güvenli ödeme bağlantısı oluşturun.",
+      "amount": "Tutar",
+      "label": "Açıklama",
+      "submit": "Bağlantı oluştur",
+      "created": "Bağlantı oluşturuldu",
+      "url": "Ödeme bağlantısı",
+      "simulate": "Test ödemesini tamamla",
+      "simulateHint": "Geliştirme ortamı: sağlayıcı ödemesini imzalı webhook ile simüle eder.",
+      "simulated": "Online ödeme alındı",
+      "status": {
+        "created": "Ödeme bekleniyor",
+        "succeeded": "Ödendi",
+        "failed": "Başarısız",
+        "expired": "Süresi doldu",
+        "cancelled": "İptal"
+      }
+    },
+    "student": {
+      "balance": "Hesap özeti",
+      "totalDue": "Toplam borç",
+      "paid": "Ödenen",
+      "outstanding": "Kalan",
+      "overdue": "Vadesi geçen",
+      "credit": "Hesap alacağı",
+      "nextDue": "Sıradaki vade",
+      "nextDueValue": "{amount} · {date}",
+      "agreements": "Sözleşmeler",
+      "noAgreement": "Henüz eğitim sözleşmesi yok",
+      "noAgreementHint": "Ücret ve taksitleri belirlemek için ödeme planı oluşturun.",
+      "receivables": "Taksitler ve ücretler",
+      "payments": "Tahsilatlar",
+      "noPayments": "Henüz tahsilat yok.",
+      "planSummary": "{count, plural, one {# taksit} other {# taksit}} · ilk vade {date}"
+    },
+    "kpi": {
+      "overdue": "Vadesi geçmiş",
+      "collectedThisMonth": "Bu ay tahsilat",
+      "expectedThisMonth": "Bu ay beklenen",
+      "collectionRate": "Tahsilat oranı",
+      "dueThisMonth": "Bu ay vadesi gelen",
+      "noRate": "Bu ay henüz vade yok"
+    }
+  },
+  "admin": {
+    "users": {
+      "title": "Kullanıcılar",
+      "description": "Kurum kullanıcıları, rolleri ve şube erişimleri.",
+      "invite": "Kullanıcı davet et",
+      "searchPlaceholder": "Ad veya e-posta",
+      "columns": {
+        "name": "Kullanıcı",
+        "roles": "Roller",
+        "branches": "Şube erişimi",
+        "status": "Durum",
+        "lastLogin": "Son giriş"
+      },
+      "status": {
+        "invited": "Davet edildi",
+        "active": "Aktif",
+        "suspended": "Askıda"
+      },
+      "allBranches": "Tüm şubeler",
+      "never": "Hiç giriş yapmadı",
+      "actions": {
+        "editAccess": "Erişimi düzenle",
+        "suspend": "Askıya al",
+        "reactivate": "Yeniden etkinleştir",
+        "resendInvitation": "Daveti yeniden gönder"
+      },
+      "suspendTitle": "{name} askıya alınsın mı?",
+      "suspendDescription": "Kullanıcının tüm oturumları hemen sonlandırılır ve kuruma erişemez. Daha sonra yeniden etkinleştirebilirsiniz.",
+      "suspended": "Kullanıcı askıya alındı",
+      "reactivated": "Kullanıcı yeniden etkinleştirildi",
+      "invitationResent": "Davet e-postası yeniden gönderildi",
+      "inviteTitle": "Kullanıcı davet et",
+      "inviteDescription": "Davet bağlantısı e-posta ile gönderilir ve 7 gün geçerlidir.",
+      "editTitle": "Erişimi düzenle",
+      "email": "E-posta",
+      "fullName": "Ad soyad",
+      "jobTitle": "Unvan",
+      "roles": "Roller",
+      "rolesHint": "Yalnızca sahip olduğunuz yetkileri verebilirsiniz.",
+      "branchAccess": "Şube erişimi",
+      "branchAccessAll": "Tüm şubeler (kurum geneli)",
+      "branchAccessSelected": "Seçili şubeler",
+      "selectBranches": "En az bir şube seçin",
+      "submitInvite": "Davet gönder",
+      "invited": "{email} adresine davet gönderildi",
+      "updated": "Erişim güncellendi",
+      "emptyTitle": "Kullanıcı bulunamadı"
+    },
+    "roles": {
+      "title": "Roller ve yetkiler",
+      "description": "Hazır roller ve kuruma özel roller. Hazır roller güvenlik güncellemeleri için salt okunurdur.",
+      "system": "Hazır rol",
+      "custom": "Özel rol",
+      "members": "{count, plural, =0 {Kullanıcı yok} one {# kullanıcı} other {# kullanıcı}}",
+      "permissions": "Yetkiler",
+      "clone": "Kopyalayarak yeni rol oluştur",
+      "create": "Yeni rol",
+      "createTitle": "Özel rol oluştur",
+      "editTitle": "Rolü düzenle",
+      "name": "Rol adı",
+      "roleDescription": "Açıklama",
+      "scope": "Kapsam",
+      "notGranted": "Yetki yok",
+      "save": "Rolü kaydet",
+      "created": "Rol oluşturuldu",
+      "updated": "Rol güncellendi",
+      "archive": "Rolü arşivle",
+      "archived": "Rol arşivlendi",
+      "sensitivity": {
+        "standard": "Standart",
+        "personal": "Kişisel veri",
+        "financial": "Finansal",
+        "restricted": "Hassas"
+      }
+    },
+    "branches": {
+      "title": "Şubeler",
+      "description": "Kampüsler ve şubeler.",
+      "add": "Şube ekle",
+      "columns": {
+        "name": "Şube",
+        "code": "Kod",
+        "location": "Konum",
+        "students": "Aktif öğrenci",
+        "members": "Kullanıcı",
+        "status": "Durum"
+      },
+      "headquarters": "Merkez",
+      "status": {
+        "active": "Aktif",
+        "inactive": "Pasif"
+      },
+      "createTitle": "Yeni şube",
+      "editTitle": "Şubeyi düzenle",
+      "code": "Şube kodu",
+      "codeHint": "Kısa ve benzersiz, örn. KDK",
+      "name": "Şube adı",
+      "city": "İl",
+      "district": "İlçe",
+      "address": "Adres",
+      "phone": "Telefon",
+      "email": "E-posta",
+      "created": "Şube oluşturuldu",
+      "updated": "Şube güncellendi"
+    },
+    "organization": {
+      "title": "Kurum ayarları",
+      "description": "Kurum bilgileri ve etkin modüller.",
+      "profile": "Kurum bilgileri",
+      "name": "Kurum adı",
+      "legalName": "Ticari unvan",
+      "slug": "Kurum kısa adı",
+      "timezone": "Saat dilimi",
+      "currency": "Para birimi",
+      "plan": "Abonelik planı",
+      "modules": "Modüller",
+      "modulesHint": "Modüller abonelik planınıza göre etkinleştirilir.",
+      "enabled": "Etkin",
+      "disabled": "Kapalı",
+      "saved": "Kurum bilgileri güncellendi"
+    },
+    "audit": {
+      "title": "Denetim kayıtları",
+      "description": "Kurumdaki önemli işlemlerin değiştirilemez kaydı.",
+      "columns": {
+        "time": "Zaman",
+        "actor": "Kim",
+        "action": "İşlem",
+        "resource": "Kayıt",
+        "branch": "Şube"
+      },
+      "actor": {
+        "user": "Kullanıcı",
+        "system": "Sistem",
+        "support": "Destek",
+        "webhook": "Ödeme sağlayıcısı"
+      },
+      "filters": {
+        "action": "İşlem türü",
+        "from": "Başlangıç",
+        "to": "Bitiş"
+      },
+      "changes": "Değişiklikler",
+      "before": "Önce",
+      "after": "Sonra",
+      "metadata": "Ek bilgiler",
+      "emptyTitle": "Kayıt bulunamadı",
+      "actions": {
+        "student.created": "Öğrenci oluşturuldu",
+        "student.updated": "Öğrenci güncellendi",
+        "student.archived": "Öğrenci arşivlendi",
+        "student.national_id_revealed": "T.C. kimlik no görüntülendi",
+        "agreement.created": "Sözleşme oluşturuldu",
+        "charge.created": "Ek ücret eklendi",
+        "receivable.cancelled": "Alacak iptal edildi",
+        "payment.created": "Tahsilat kaydedildi",
+        "payment.reversed": "Tahsilat ters kaydedildi",
+        "payment_link.created": "Ödeme bağlantısı oluşturuldu",
+        "member.invited": "Kullanıcı davet edildi",
+        "member.joined": "Kullanıcı katıldı",
+        "member.updated": "Kullanıcı güncellendi",
+        "member.roles_changed": "Kullanıcı rolleri değişti",
+        "member.suspended": "Kullanıcı askıya alındı",
+        "member.reactivated": "Kullanıcı etkinleştirildi",
+        "member.invitation_resent": "Davet yeniden gönderildi",
+        "role.created": "Rol oluşturuldu",
+        "role.updated": "Rol güncellendi",
+        "role.permissions_changed": "Rol yetkileri değişti",
+        "role.archived": "Rol arşivlendi",
+        "branch.created": "Şube oluşturuldu",
+        "branch.updated": "Şube güncellendi",
+        "organization.created": "Kurum oluşturuldu",
+        "organization.updated": "Kurum güncellendi",
+        "auth.login_succeeded": "Giriş yapıldı",
+        "auth.login_failed": "Başarısız giriş",
+        "auth.account_locked": "Hesap geçici olarak kilitlendi",
+        "auth.logout": "Çıkış yapıldı",
+        "auth.logout_all": "Tüm cihazlardan çıkış",
+        "auth.organization_switched": "Kurum değiştirildi",
+        "auth.password_changed": "Şifre değiştirildi",
+        "auth.password_reset": "Şifre sıfırlandı",
+        "auth.password_reset_requested": "Şifre sıfırlama istendi"
+      }
+    }
+  },
+  "platform": {
+    "organizations": {
+      "title": "Kurumlar",
+      "description": "Platformdaki tüm kiracılar. Kurum verilerine erişim için destek oturumu gerekir.",
+      "create": "Kurum oluştur",
+      "columns": {
+        "name": "Kurum",
+        "plan": "Plan",
+        "branches": "Şube",
+        "members": "Kullanıcı",
+        "students": "Öğrenci",
+        "status": "Durum",
+        "createdAt": "Oluşturulma"
+      },
+      "createTitle": "Yeni kurum",
+      "createDescription": "Kurum, ilk şube ve kurum yöneticisi davetiyle birlikte oluşturulur.",
+      "name": "Kurum adı",
+      "slug": "Kısa ad",
+      "slugHint": "Küçük harf, rakam ve tire. İleride alt alan adı olarak kullanılabilir.",
+      "legalName": "Ticari unvan",
+      "plan": "Plan",
+      "firstBranch": "İlk şube",
+      "branchCode": "Şube kodu",
+      "branchName": "Şube adı",
+      "administrator": "Kurum yöneticisi",
+      "adminName": "Ad soyad",
+      "adminEmail": "E-posta",
+      "submit": "Kurumu oluştur",
+      "created": "Kurum oluşturuldu; yöneticiye davet gönderildi",
+      "plans": {
+        "starter": "Başlangıç",
+        "standard": "Standart",
+        "enterprise": "Kurumsal"
+      }
+    }
+  },
+  "scopes": {
+    "own": "Kendisine ait",
+    "assigned": "Atandığı",
+    "branch": "Şubesindeki",
+    "organization": "Kurum geneli"
+  },
+  "modules": {
+    "students": "Öğrenciler",
+    "admissions": "Ön kayıt",
+    "academics": "Akademik yapı",
+    "attendance": "Yoklama",
+    "personnel": "Personel",
+    "finance": "Finans ve tahsilat",
+    "reports": "Raporlar",
+    "administration": "Yönetim"
+  },
+  "permissions": {
+    "students": {
+      "read": "Öğrencileri görüntüleme",
+      "create": "Öğrenci ekleme",
+      "update": "Öğrenci düzenleme",
+      "archive": "Öğrenci arşivleme",
+      "sensitive": {
+        "read": "Hassas kimlik bilgilerini görme"
+      },
+      "export": "Öğrenci listesi dışa aktarma"
+    },
+    "guardians": {
+      "read": "Velileri görüntüleme",
+      "write": "Veli ekleme ve düzenleme"
+    },
+    "admissions": {
+      "read": "Ön kayıtları görüntüleme",
+      "write": "Ön kayıt yönetimi",
+      "convert": "Ön kaydı öğrenciye dönüştürme"
+    },
+    "academics": {
+      "read": "Sınıf ve akademik yapıyı görüntüleme",
+      "manage": "Sınıf ve öğretmen atamalarını yönetme"
+    },
+    "attendance": {
+      "read": "Yoklamayı görüntüleme",
+      "write": "Yoklama alma"
+    },
+    "personnel": {
+      "read": "Personeli görüntüleme",
+      "manage": "Personel yönetimi"
+    },
+    "finance": {
+      "collections": {
+        "read": "Hesapları, taksitleri ve bakiyeleri görüntüleme",
+        "write": "Sözleşme, ödeme planı ve ek ücret oluşturma"
+      },
+      "payments": {
+        "read": "Tahsilatları görüntüleme",
+        "create": "Tahsilat kaydetme",
+        "reverse": "Tahsilat ters kaydı"
+      },
+      "refunds": {
+        "create": "İade yapma"
+      },
+      "reports": {
+        "read": "Tahsilat paneli ve finans raporları"
+      },
+      "kpis": {
+        "read": "Toplu finans göstergeleri"
+      },
+      "settings": {
+        "manage": "Finans ayarları"
+      }
+    },
+    "reports": {
+      "operational": {
+        "read": "Operasyonel raporlar"
+      }
+    },
+    "settings": {
+      "organization": {
+        "manage": "Kurum ayarları"
+      },
+      "branches": {
+        "manage": "Şube yönetimi"
+      },
+      "users": {
+        "read": "Kullanıcıları görüntüleme",
+        "manage": "Kullanıcı yönetimi"
+      },
+      "roles": {
+        "manage": "Rol yönetimi"
+      },
+      "integrations": {
+        "manage": "Entegrasyon ayarları"
+      }
+    },
+    "audit": {
+      "read": "Denetim kayıtlarını görüntüleme"
+    }
+  },
+  "errors": {
+    "VALIDATION_FAILED": "Lütfen işaretli alanları kontrol edin.",
+    "UNAUTHENTICATED": "Oturumunuzun süresi doldu. Lütfen yeniden giriş yapın.",
+    "FORBIDDEN": "Bu işlem için yetkiniz yok.",
+    "NOT_FOUND": "Kayıt bulunamadı ya da erişiminiz dışında.",
+    "CONFLICT": "İşlem mevcut durumla çakışıyor.",
+    "RATE_LIMITED": "Çok fazla deneme yaptınız. Lütfen biraz sonra tekrar deneyin.",
+    "CSRF_TOKEN_INVALID": "Güvenlik doğrulaması başarısız. Sayfayı yenileyip tekrar deneyin.",
+    "MODULE_DISABLED": "Bu modül kurumunuzda etkin değil.",
+    "INTERNAL_ERROR": "Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.",
+    "AUTH_INVALID_CREDENTIALS": "E-posta veya şifre hatalı ya da hesap geçici olarak kilitli.",
+    "AUTH_ACCOUNT_LOCKED": "Hesabınız geçici olarak kilitlendi.",
+    "AUTH_ACCOUNT_DISABLED": "Bu hesap devre dışı bırakılmış.",
+    "AUTH_NO_ACTIVE_MEMBERSHIP": "Etkin bir kurum üyeliğiniz bulunmuyor.",
+    "AUTH_ORGANIZATION_REQUIRED": "Devam etmek için bir kurum seçin.",
+    "AUTH_INVALID_TOKEN": "Bağlantı geçersiz ya da süresi dolmuş.",
+    "AUTH_PASSWORD_INCORRECT": "Mevcut şifreniz hatalı.",
+    "INVITATION_INVALID": "Davet bağlantısı geçersiz ya da süresi dolmuş.",
+    "MEMBER_ALREADY_EXISTS": "Bu kişi zaten kurumunuzda kayıtlı.",
+    "MEMBER_SELF_ACTION": "Kendi erişiminizi değiştiremezsiniz.",
+    "LAST_OWNER": "Kurumda en az bir kurum yöneticisi kalmalıdır.",
+    "ROLE_ESCALATION": "Sahip olmadığınız yetkileri veremezsiniz.",
+    "ROLE_DEPENDENCY_MISSING": "Seçilen yetkiler başka yetkiler gerektiriyor.",
+    "ROLE_SYSTEM_READONLY": "Hazır roller düzenlenemez. Kopyalayarak özel rol oluşturun.",
+    "ROLE_IN_USE": "Bu rol kullanıcılara atanmış.",
+    "ORGANIZATION_SLUG_TAKEN": "Bu kısa ad kullanılıyor.",
+    "BRANCH_CODE_TAKEN": "Bu şube kodu kullanılıyor.",
+    "BRANCH_NOT_ALLOWED": "Bu şube erişiminiz dışında.",
+    "STUDENT_NUMBER_TAKEN": "Bu öğrenci numarası kullanılıyor.",
+    "NATIONAL_ID_TAKEN": "Bu T.C. kimlik numarası başka bir kayıtta kullanılıyor.",
+    "FINANCE_CURRENCY_MISMATCH": "Para birimi hesapla uyuşmuyor.",
+    "FINANCE_DISCOUNT_EXCEEDS_AMOUNT": "İndirim kalan tutarı aşıyor.",
+    "FINANCE_INVALID_PLAN": "Taksit planı geçersiz. Tutar ve taksit sayısını kontrol edin.",
+    "FINANCE_ALLOCATION_EXCEEDS_PAYMENT": "Dağıtılan tutar tahsilat tutarını aşıyor.",
+    "FINANCE_ALLOCATION_EXCEEDS_OUTSTANDING": "Dağıtılan tutar kalan borcu aşıyor.",
+    "FINANCE_RECEIVABLE_NOT_OPEN": "Bu alacak açık değil.",
+    "FINANCE_PAYMENT_ALREADY_REVERSED": "Bu tahsilat zaten ters kaydedilmiş.",
+    "FINANCE_PAYMENT_HAS_REFUNDS": "İadesi olan tahsilat ters kaydedilemez.",
+    "FINANCE_ACCOUNT_NOT_FOUND": "Öğrenci hesabı bulunamadı.",
+    "IDEMPOTENCY_KEY_REQUIRED": "İstek tekrar koruması eksik. Sayfayı yenileyin.",
+    "IDEMPOTENCY_KEY_REUSED": "Bu işlem farklı bilgilerle zaten gönderildi.",
+    "WEBHOOK_SIGNATURE_INVALID": "Ödeme bildirimi doğrulanamadı.",
+    "PAYMENT_PROVIDER_UNAVAILABLE": "Ödeme sağlayıcısı kullanılamıyor.",
+    "NETWORK_ERROR": "Sunucuya ulaşılamadı. İnternet bağlantınızı kontrol edip tekrar deneyin."
+  },
+  "validation": {
+    "required": "Bu alan zorunludur",
+    "invalid": "Geçersiz değer",
+    "invalidEmail": "Geçerli bir e-posta adresi girin",
+    "invalidPhone": "Geçerli bir telefon numarası girin",
+    "invalidNationalId": "Geçerli bir T.C. kimlik numarası girin",
+    "invalidDate": "Geçerli bir tarih girin",
+    "invalidAmount": "Geçerli bir tutar girin (örn. 12.500,00)",
+    "amountPositive": "Tutar sıfırdan büyük olmalıdır",
+    "invalidPercent": "0 ile 100 arasında bir oran girin",
+    "tooShort": "En az {min} karakter olmalıdır",
+    "tooLong": "En fazla {max} karakter olabilir",
+    "passwordTooShort": "Şifre en az {min} karakter olmalıdır"
+  }
+}

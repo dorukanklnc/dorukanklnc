@@ -14,11 +14,24 @@ export function next(options) {
     ...nextCoreWebVitals,
     {
       languageOptions: { globals: { ...globals.browser } },
+    },
+    {
+      files: ['**/*.ts', '**/*.tsx'],
       rules: {
+        // Async event handlers (onClick={async () => …}) are idiomatic in React.
         '@typescript-eslint/no-misused-promises': [
           'error',
           { checksVoidReturn: { attributes: false } },
         ],
+      },
+    },
+    {
+      // Next's parser handles plain JS config files; TS-AST rules do not apply to them.
+      files: ['**/*.js', '**/*.mjs', '**/*.cjs'],
+      rules: {
+        '@typescript-eslint/consistent-type-imports': 'off',
+        '@typescript-eslint/no-unused-vars': 'off',
+        'no-unused-vars': 'error',
       },
     },
   ];

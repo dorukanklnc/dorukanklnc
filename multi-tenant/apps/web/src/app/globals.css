@@ -1,0 +1,5 @@
+@import 'tailwindcss';
+@import '@repo/ui/styles.css';
+
+/* The component library is consumed as source; let Tailwind see its class names. */
+@source '../../../../packages/ui/src';

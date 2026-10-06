@@ -1,0 +1,12 @@
+{
+  "extends": "@repo/tsconfig/nextjs.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "types": ["node", "vitest/globals", "@testing-library/jest-dom"],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["next-env.d.ts", "src", "messages", "e2e", "*.ts", ".next/types/**/*.ts"],
+  "exclude": ["node_modules", ".next"]
+}
