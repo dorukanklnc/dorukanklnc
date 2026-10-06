@@ -562,7 +562,8 @@ export function AgreementWizard({
                   ) : null}
                   <div>
                     <h3 className="mb-2 text-sm font-semibold text-fg">{t('schedule')}</h3>
-                    <div className="max-h-[340px] overflow-y-auto rounded-md border border-line">
+                    {/* No inner scroll area: every installment stays visible; the sheet body scrolls. */}
+                    <div className="overflow-hidden rounded-md border border-line">
                       <Table>
                         <THead>
                           <Tr>

@@ -38,6 +38,11 @@ test('collections vertical slice', async ({ page }) => {
       .getByRole('textbox', { name: /Telefon/ })
       .nth(1)
       .fill('+90 532 000 00 00');
+    // The guardian's relationship has no default and must be chosen.
+    await sheet.getByRole('button', { name: 'Öğrenciyi kaydet' }).click();
+    const relationship = sheet.getByRole('combobox', { name: 'Yakınlık', exact: true });
+    await expect(relationship).toHaveAttribute('aria-invalid', 'true');
+    await relationship.selectOption({ label: 'Baba' });
     await sheet.getByRole('button', { name: 'Öğrenciyi kaydet' }).click();
     await expect(page).toHaveURL(/\/students\/[0-9a-f-]{36}$/);
     await expect(page.getByRole('heading', { name: `Ece ${lastName}` })).toBeVisible();

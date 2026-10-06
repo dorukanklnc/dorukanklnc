@@ -84,10 +84,11 @@ export type StudentGuardian = z.infer<typeof studentGuardianSchema>;
 export const studentDetailSchema = studentListItemSchema.extend({
   gender: genderSchema.nullable(),
   birthDate: z.string().nullable(),
-  /** Masked (`•••••••1234`) unless the caller holds `students.sensitive.read`. */
+  /**
+   * Always masked (`•••••••1234`). The full value is only returned by the audited
+   * `POST /students/:id/national-id/reveal` endpoint (`students.sensitive.read`).
+   */
   nationalIdMasked: z.string().nullable(),
-  /** Full value only with `students.sensitive.read`. */
-  nationalId: z.string().nullable().optional(),
   email: z.string().nullable(),
   phone: z.string().nullable(),
   address: z.string().nullable(),

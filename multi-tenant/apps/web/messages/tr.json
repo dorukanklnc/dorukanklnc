@@ -235,7 +235,7 @@
       "subject": "Ders: {subject}",
       "students": "{count, plural, one {# öğrenci} other {# öğrenci}}",
       "empty": "Bu akademik yıl için sınıf ataması bulunmuyor.",
-      "attendancePlanned": "Yoklama modülü planlandı (faz 4)."
+      "attendancePlanned": "Yoklama alma özelliği yakında eklenecek."
     },
     "administration": {
       "title": "Kurum",
@@ -325,7 +325,8 @@
       "created": "{name} kaydedildi",
       "updated": "Öğrenci bilgileri güncellendi",
       "nationalIdReplaceHint": "Kayıtlı: {masked}. Değiştirmek için yeni numarayı girin; boş bırakırsanız değişmez.",
-      "selectBranch": "Şube seçin"
+      "selectBranch": "Şube seçin",
+      "selectRelationship": "Yakınlık seçin"
     },
     "profile": {
       "tabs": {

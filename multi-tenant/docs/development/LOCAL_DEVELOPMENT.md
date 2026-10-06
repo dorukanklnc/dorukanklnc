@@ -76,7 +76,7 @@ Things to try:
 - Sign in as `ogretmen@atlas.test`: only assigned students, no finance anywhere (open `/finance`
   directly to see the "no access" state).
 - Sign in as `muhasebe@atlas.test`: the collections dashboard, Kadıköy data only.
-- Press <kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>K</kbd> and type `isiklar`: Turkish-insensitive search.
+- Press <kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>K</kbd> and type `gunes`: Turkish-insensitive search finds “Güneş”.
 - On a student's **Finans** tab: create a payment plan, record a payment, create a payment link and
   complete the mock checkout, then reverse the payment from its receipt.
 

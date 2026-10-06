@@ -235,7 +235,7 @@
       "subject": "Subject: {subject}",
       "students": "{count, plural, one {# student} other {# students}}",
       "empty": "No class assignments for this academic year.",
-      "attendancePlanned": "Attendance module is planned (phase 4)."
+      "attendancePlanned": "Taking attendance is coming soon."
     },
     "administration": {
       "title": "Organization",
@@ -325,7 +325,8 @@
       "created": "{name} was saved",
       "updated": "Student updated",
       "nationalIdReplaceHint": "On file: {masked}. Enter a new number to replace it; leave empty to keep it.",
-      "selectBranch": "Select a branch"
+      "selectBranch": "Select a branch",
+      "selectRelationship": "Select relationship"
     },
     "profile": {
       "tabs": {

@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
+  type GuardianRelationship,
   type StudentDetail,
   type createStudentRequestSchema,
   isValidTurkishNationalId,
@@ -86,7 +87,12 @@ function useStudentFormSchema() {
           z.object({
             firstName: name,
             lastName: name,
-            relationship: z.enum(GUARDIAN_RELATIONSHIPS),
+            // No default: a pre-selected relationship is easily left wrong by mistake. (A length
+            // check rather than `!== ''`, which TypeScript would infer as a narrowing predicate and
+            // split the form's input and output types.)
+            relationship: z
+              .enum([...GUARDIAN_RELATIONSHIPS, ''])
+              .refine((value) => value.length > 0, tv('required')),
             phone,
             email,
             isPrimaryContact: z.boolean(),
@@ -104,7 +110,7 @@ type GuardianValues = FormValues['guardians'][number];
 const emptyGuardian = (primary: boolean): GuardianValues => ({
   firstName: '',
   lastName: '',
-  relationship: primary ? 'mother' : 'father',
+  relationship: '',
   phone: '',
   email: '',
   isPrimaryContact: primary,
@@ -112,6 +118,12 @@ const emptyGuardian = (primary: boolean): GuardianValues => ({
 });
 
 const blank = (value: string) => (value.trim() === '' ? undefined : value.trim());
+
+/** The schema rejects an empty relationship; this only narrows the type for the request. */
+function chosenRelationship(value: GuardianRelationship | ''): GuardianRelationship {
+  if (value === '') throw new Error('Guardian relationship must be validated before submit');
+  return value;
+}
 
 export function CreateStudentSheet({
   open,
@@ -172,7 +184,7 @@ export function CreateStudentSheet({
         guardians: values.guardians.map((guardian) => ({
           firstName: guardian.firstName.trim(),
           lastName: guardian.lastName.trim(),
-          relationship: guardian.relationship,
+          relationship: chosenRelationship(guardian.relationship),
           phone: blank(guardian.phone),
           email: blank(guardian.email),
           isPrimaryContact: guardian.isPrimaryContact,
@@ -433,6 +445,9 @@ export function CreateStudentSheet({
                                 {...field}
                                 {...form.register(`guardians.${index}.relationship`)}
                               >
+                                <option value="" disabled>
+                                  {t('form.selectRelationship')}
+                                </option>
                                 {GUARDIAN_RELATIONSHIPS.map((relationship) => (
                                   <option key={relationship} value={relationship}>
                                     {t(`relationship.${relationship}`)}
