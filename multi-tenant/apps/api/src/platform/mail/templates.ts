@@ -1,3 +1,5 @@
+import { PRODUCT_NAME } from '../brand.js';
+
 /**
  * Transactional e-mail templates. Turkish is the default; English exists so the structure is
  * proven multilingual. Keep wording short, plain and free of personal data beyond the name.
@@ -23,7 +25,7 @@ export function invitationEmail(input: {
       text: [
         `Hello ${input.inviteeName},`,
         '',
-        `${input.inviterName ?? 'An administrator'} invited you to join ${input.organizationName} on CampusOS.`,
+        `${input.inviterName ?? 'An administrator'} invited you to join ${input.organizationName} on ${PRODUCT_NAME}.`,
         `Accept the invitation: ${input.link}`,
         '',
         `This link expires in ${input.expiresInDays} days. If you were not expecting it, ignore this e-mail.`,
@@ -31,11 +33,11 @@ export function invitationEmail(input: {
     };
   }
   return {
-    subject: `${input.organizationName} sizi CampusOS'a davet etti`,
+    subject: `${input.organizationName} sizi davet etti`,
     text: [
       `Merhaba ${input.inviteeName},`,
       '',
-      `${input.inviterName ?? 'Bir yönetici'}, sizi CampusOS üzerinde ${input.organizationName} kurumuna davet etti.`,
+      `${input.inviterName ?? 'Bir yönetici'}, sizi ${PRODUCT_NAME} üzerindeki ${input.organizationName} kurumuna davet etti.`,
       `Daveti kabul etmek için: ${input.link}`,
       '',
       `Bu bağlantı ${input.expiresInDays} gün geçerlidir. Bu daveti beklemiyorsanız e-postayı yok sayabilirsiniz.`,
@@ -52,7 +54,7 @@ export function passwordResetEmail(input: {
   const locale = localeOf(input.locale);
   if (locale === 'en') {
     return {
-      subject: 'Reset your CampusOS password',
+      subject: `Reset your ${PRODUCT_NAME} password`,
       text: [
         `Hello ${input.name},`,
         '',
@@ -63,7 +65,7 @@ export function passwordResetEmail(input: {
     };
   }
   return {
-    subject: 'CampusOS şifre sıfırlama',
+    subject: `${PRODUCT_NAME} şifre sıfırlama`,
     text: [
       `Merhaba ${input.name},`,
       '',

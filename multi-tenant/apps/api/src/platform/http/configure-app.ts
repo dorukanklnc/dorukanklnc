@@ -7,6 +7,7 @@ import type { Logger } from 'pino';
 import type { AppConfig } from '../config/env.js';
 import { ProblemDetailsFilter } from './problem-details.filter.js';
 import { requestContextMiddleware } from './request-context.middleware.js';
+import { PRODUCT_NAME } from '../brand.js';
 
 /**
  * HTTP pipeline shared by the server entry point and integration tests.
@@ -34,7 +35,7 @@ export function configureApp(app: NestExpressApplication, config: AppConfig, log
     const document = SwaggerModule.createDocument(
       app,
       new DocumentBuilder()
-        .setTitle('CampusOS API')
+        .setTitle(`${PRODUCT_NAME} API`)
         .setDescription(
           'Multi-tenant education operations API. Authentication uses an HttpOnly session cookie; ' +
             'unsafe methods require the x-csrf-token header. Errors are RFC 9457 problem details.',

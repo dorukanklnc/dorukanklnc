@@ -2,6 +2,7 @@ import { existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { z } from 'zod';
+import { PRODUCT_NAME } from '../brand.js';
 
 const booleanString = z
   .enum(['true', 'false', '1', '0'])
@@ -52,7 +53,7 @@ const envSchema = z
     FIELD_HASH_KEY: z.string().min(32).default(DEV_FIELD_HASH_KEY),
 
     MAIL_DRIVER: z.enum(['smtp', 'console', 'memory']).default('console'),
-    MAIL_FROM: z.string().default('CampusOS <no-reply@campusos.local>'),
+    MAIL_FROM: z.string().default(`${PRODUCT_NAME} <no-reply@campusos.local>`),
     SMTP_HOST: z.string().default('localhost'),
     SMTP_PORT: z.coerce.number().int().default(1025),
     SMTP_USER: z.string().optional(),
@@ -61,6 +62,10 @@ const envSchema = z
     PAYMENT_MOCK_WEBHOOK_SECRET: z.string().min(16).default(DEV_WEBHOOK_SECRET),
 
     WORKER_OUTBOX_POLL_MS: z.coerce.number().int().min(100).default(1000),
+    WORKER_OUTBOX_BATCH_SIZE: z.coerce.number().int().min(1).max(500).default(50),
+    WORKER_OUTBOX_MAX_ATTEMPTS: z.coerce.number().int().min(1).max(50).default(10),
+    /** Where relayed domain events go: a structured log line, or a BullMQ queue in Redis. */
+    OUTBOX_PUBLISHER: z.enum(['log', 'bullmq']).default('log'),
   })
   .superRefine((env, ctx) => {
     const key = Buffer.from(env.FIELD_ENCRYPTION_KEY, 'base64');

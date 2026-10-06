@@ -1,8 +1,8 @@
 # CampusOS (working codename)
 
 Multi-tenant education operations platform for private schools, colleges, academies, course
-centers and education groups. The codename is temporary; the product name is configured in one
-place (`apps/web/src/config/brand.ts`) and in the message catalogs.
+centers and education groups. The codename is temporary: the product name lives in the web message
+catalogs (`app.name` in `apps/web/messages/*.json`) and in `apps/api/src/platform/brand.ts`.
 
 > This folder is a self-contained pnpm monorepo. The repository root holds the owner's GitHub
 > profile README, which is unrelated to the product.

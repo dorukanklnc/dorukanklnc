@@ -1,5 +1,7 @@
 'use client';
 
+import catalog from '../../messages/tr.json';
+
 /**
  * Last-resort boundary for failures in the root layout itself. It renders its own document, so
  * it cannot rely on the message catalogs; it stays bilingual and minimal on purpose.
@@ -24,7 +26,7 @@ export default function GlobalError({
           fontFamily: 'system-ui, -apple-system, "Segoe UI", sans-serif',
         }}
       >
-        <title>CampusOS</title>
+        <title>{catalog.app.name}</title>
         <main style={{ maxWidth: 420, padding: 24, textAlign: 'center' }}>
           <h1 style={{ fontSize: 18, margin: '0 0 8px' }}>Beklenmeyen bir hata oluştu</h1>
           <p style={{ fontSize: 14, color: '#5a6172', margin: '0 0 4px' }}>
