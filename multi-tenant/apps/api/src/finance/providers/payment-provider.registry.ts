@@ -12,7 +12,8 @@ export class PaymentProviderRegistry {
 
   get(key: string): PaymentProvider {
     const provider = this.providers.get(key);
-    if (!provider) throw new AppError('PAYMENT_PROVIDER_UNAVAILABLE', 404, `Unknown payment provider ${key}`);
+    if (!provider)
+      throw new AppError('PAYMENT_PROVIDER_UNAVAILABLE', 404, `Unknown payment provider ${key}`);
     return provider;
   }
 

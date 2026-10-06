@@ -4,7 +4,10 @@ import { and, asc, count, eq, inArray, isNull, sql } from 'drizzle-orm';
 import { guardians, studentGuardians, students } from '../../platform/database/schema/index.js';
 import { TenantDatabase } from '../../platform/database/tenant-database.service.js';
 import type { Actor } from '../../core/authorization/actor.js';
-import { guardianScopePredicate, studentScopePredicate } from '../../core/authorization/scope-filters.js';
+import {
+  guardianScopePredicate,
+  studentScopePredicate,
+} from '../../core/authorization/scope-filters.js';
 
 const TR = sql.raw('COLLATE "tr-x-icu"');
 
@@ -18,7 +21,9 @@ export class GuardiansService {
         eq(guardians.organizationId, actor.organizationId),
         isNull(guardians.archivedAt),
         guardianScopePredicate(actor, guardians.id),
-        query.q ? sql`${guardians.searchText} LIKE '%' || app.search_normalize(${query.q}) || '%'` : undefined,
+        query.q
+          ? sql`${guardians.searchText} LIKE '%' || app.search_normalize(${query.q}) || '%'`
+          : undefined,
       );
       const [total] = await tx.select({ value: count() }).from(guardians).where(where);
       const rows = await tx
@@ -36,31 +41,32 @@ export class GuardiansService {
         .offset((query.page - 1) * query.pageSize);
 
       // Linked students, limited to those the caller may see.
-      const linked = rows.length && actor.can('students.read')
-        ? await tx
-            .select({
-              guardianId: studentGuardians.guardianId,
-              id: students.id,
-              firstName: students.firstName,
-              lastName: students.lastName,
-            })
-            .from(studentGuardians)
-            .innerJoin(students, eq(students.id, studentGuardians.studentId))
-            .where(
-              and(
-                eq(studentGuardians.organizationId, actor.organizationId),
-                inArray(
-                  studentGuardians.guardianId,
-                  rows.map((row) => row.id),
+      const linked =
+        rows.length && actor.can('students.read')
+          ? await tx
+              .select({
+                guardianId: studentGuardians.guardianId,
+                id: students.id,
+                firstName: students.firstName,
+                lastName: students.lastName,
+              })
+              .from(studentGuardians)
+              .innerJoin(students, eq(students.id, studentGuardians.studentId))
+              .where(
+                and(
+                  eq(studentGuardians.organizationId, actor.organizationId),
+                  inArray(
+                    studentGuardians.guardianId,
+                    rows.map((row) => row.id),
+                  ),
+                  isNull(students.archivedAt),
+                  studentScopePredicate(actor, 'students.read', {
+                    studentId: students.id,
+                    branchId: students.branchId,
+                  }),
                 ),
-                isNull(students.archivedAt),
-                studentScopePredicate(actor, 'students.read', {
-                  studentId: students.id,
-                  branchId: students.branchId,
-                }),
-              ),
-            )
-        : [];
+              )
+          : [];
       return {
         items: rows.map((row) => ({
           id: row.id,
@@ -69,7 +75,10 @@ export class GuardiansService {
           email: row.email,
           students: linked
             .filter((student) => student.guardianId === row.id)
-            .map((student) => ({ id: student.id, name: `${student.firstName} ${student.lastName}` })),
+            .map((student) => ({
+              id: student.id,
+              name: `${student.firstName} ${student.lastName}`,
+            })),
         })),
         page: query.page,
         pageSize: query.pageSize,

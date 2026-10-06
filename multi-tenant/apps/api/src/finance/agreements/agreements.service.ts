@@ -63,7 +63,12 @@ export class AgreementsService {
   async create(actor: Actor, input: CreateAgreementRequest): Promise<Agreement> {
     const preview = this.preview(actor, input);
     return this.db.transaction(actor.tenantScope(), async (tx) => {
-      const student = await loadStudentForFinance(tx, actor, input.studentId, 'finance.collections.write');
+      const student = await loadStudentForFinance(
+        tx,
+        actor,
+        input.studentId,
+        'finance.collections.write',
+      );
       const organizationId = actor.organizationId;
       const branchId = student.branchId;
 
@@ -77,12 +82,16 @@ export class AgreementsService {
         .where(
           and(
             eq(academicYears.organizationId, organizationId),
-            input.academicYearId ? eq(academicYears.id, input.academicYearId) : eq(academicYears.isCurrent, true),
+            input.academicYearId
+              ? eq(academicYears.id, input.academicYearId)
+              : eq(academicYears.isCurrent, true),
           ),
         )
         .limit(1);
       if (input.academicYearId && !year) {
-        throw Errors.validation([{ path: 'academicYearId', code: 'invalid', message: 'Unknown academic year' }]);
+        throw Errors.validation([
+          { path: 'academicYearId', code: 'invalid', message: 'Unknown academic year' },
+        ]);
       }
       const [enrollment] = year
         ? await tx
@@ -146,7 +155,12 @@ export class AgreementsService {
         );
       }
 
-      const installmentIds: { id: string; sequenceNo: number; dueDate: string; amountMinor: number }[] = [];
+      const installmentIds: {
+        id: string;
+        sequenceNo: number;
+        dueDate: string;
+        amountMinor: number;
+      }[] = [];
       let planId: string | null = null;
       if (preview.schedule.length > 0) {
         const [plan] = await tx
@@ -234,7 +248,11 @@ export class AgreementsService {
                 aggregateType: 'payment_plan',
                 aggregateId: planId,
                 eventType: DomainEvents.paymentPlanCreated,
-                payload: { paymentPlanId: planId, agreementId, installmentCount: installmentIds.length },
+                payload: {
+                  paymentPlanId: planId,
+                  agreementId,
+                  installmentCount: installmentIds.length,
+                },
                 actorUserId: actor.userId,
               },
             ]
@@ -294,7 +312,10 @@ export class AgreementsService {
           creditMinor: sql<number>`(SELECT coalesce(sum(p.amount_minor - p.allocated_minor - p.refunded_minor), 0) FROM payments p
             WHERE p.organization_id = ${ref(financialAccounts.organizationId)} AND p.account_id = ${ref(financialAccounts.id)}
               AND p.status = 'completed')::bigint`,
-          nextDue: sql<{ dueDate: string; amountMinor: number } | null>`(SELECT json_build_object('dueDate', r.due_date, 'amountMinor', r.amount_minor - r.allocated_minor)
+          nextDue: sql<{
+            dueDate: string;
+            amountMinor: number;
+          } | null>`(SELECT json_build_object('dueDate', r.due_date, 'amountMinor', r.amount_minor - r.allocated_minor)
             FROM receivables r
             WHERE r.organization_id = ${ref(financialAccounts.organizationId)} AND r.account_id = ${ref(financialAccounts.id)}
               AND r.status = 'open' AND r.due_date >= ${today}::date
@@ -320,7 +341,9 @@ export class AgreementsService {
         outstandingMinor: Number(row.totalDueMinor) - Number(row.paidMinor),
         overdueMinor: Number(row.overdueMinor),
         creditMinor: Number(row.creditMinor),
-        nextDue: row.nextDue ? { dueDate: row.nextDue.dueDate, amountMinor: Number(row.nextDue.amountMinor) } : null,
+        nextDue: row.nextDue
+          ? { dueDate: row.nextDue.dueDate, amountMinor: Number(row.nextDue.amountMinor) }
+          : null,
       }));
 
       return {
@@ -384,23 +407,26 @@ export class AgreementsService {
     if (rows.length === 0) return [];
 
     const ids = rows.map((row) => row.id);
-    const [discountRows, planRows] = await Promise.all([
-      tx
-        .select()
-        .from(agreementDiscounts)
-        .where(and(eq(agreementDiscounts.organizationId, actor.organizationId), inArray(agreementDiscounts.agreementId, ids)))
-        .orderBy(asc(agreementDiscounts.sortOrder)),
-      tx
-        .select()
-        .from(paymentPlans)
-        .where(
-          and(
-            eq(paymentPlans.organizationId, actor.organizationId),
-            inArray(paymentPlans.agreementId, ids),
-            eq(paymentPlans.status, 'active'),
-          ),
+    const discountRows = await tx
+      .select()
+      .from(agreementDiscounts)
+      .where(
+        and(
+          eq(agreementDiscounts.organizationId, actor.organizationId),
+          inArray(agreementDiscounts.agreementId, ids),
         ),
-    ]);
+      )
+      .orderBy(asc(agreementDiscounts.sortOrder));
+    const planRows = await tx
+      .select()
+      .from(paymentPlans)
+      .where(
+        and(
+          eq(paymentPlans.organizationId, actor.organizationId),
+          inArray(paymentPlans.agreementId, ids),
+          eq(paymentPlans.status, 'active'),
+        ),
+      );
 
     return rows.map((row) => {
       const plan = planRows.find((candidate) => candidate.agreementId === row.id);
@@ -418,9 +444,15 @@ export class AgreementsService {
         outstandingMinor: Number(row.scheduledMinor) - Number(row.paidMinor),
         status: row.status,
         signedOn: row.signedOn,
-        academicYear: row.academicYearId && row.academicYearName ? { id: row.academicYearId, name: row.academicYearName } : null,
+        academicYear:
+          row.academicYearId && row.academicYearName
+            ? { id: row.academicYearId, name: row.academicYearName }
+            : null,
         responsibleGuardian: row.guardianId
-          ? { id: row.guardianId, name: `${row.guardianFirstName ?? ''} ${row.guardianLastName ?? ''}`.trim() }
+          ? {
+              id: row.guardianId,
+              name: `${row.guardianFirstName ?? ''} ${row.guardianLastName ?? ''}`.trim(),
+            }
           : null,
         discounts: discountRows
           .filter((discount) => discount.agreementId === row.id)

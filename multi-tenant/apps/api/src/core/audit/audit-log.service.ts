@@ -57,7 +57,8 @@ export class AuditLogService {
           resourceType: row.resourceType,
           resourceId: row.resourceId,
           actor: { type: row.actorType, userId: row.actorUserId, name: row.actorName },
-          branch: row.branchId && row.branchName ? { id: row.branchId, name: row.branchName } : null,
+          branch:
+            row.branchId && row.branchName ? { id: row.branchId, name: row.branchName } : null,
           changes: row.changes,
           metadata: row.metadata,
           requestId: row.requestId,

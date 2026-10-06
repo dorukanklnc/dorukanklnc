@@ -134,7 +134,10 @@ export const memberships = pgTable(
     userId: uuid()
       .notNull()
       .references(() => users.id),
-    status: text().$type<(typeof membershipStatusSchema.options)[number]>().notNull().default('invited'),
+    status: text()
+      .$type<(typeof membershipStatusSchema.options)[number]>()
+      .notNull()
+      .default('invited'),
     allBranches: boolean().notNull().default(false),
     title: text(),
     /** Incremented on every change that affects effective permissions (cache invalidation). */
@@ -209,7 +212,9 @@ export const sessions = pgTable(
   },
   (t) => [
     uniqueIndex('sessions_token_hash_uq').on(t.tokenHash),
-    index('sessions_user_active_idx').on(t.userId).where(sql`revoked_at IS NULL`),
+    index('sessions_user_active_idx')
+      .on(t.userId)
+      .where(sql`revoked_at IS NULL`),
   ],
 );
 
@@ -361,7 +366,9 @@ export const organizationModules = pgTable(
     enabled: boolean().notNull(),
     updatedAt: updatedAt(),
   },
-  (t) => [primaryKey({ name: 'organization_modules_pk', columns: [t.organizationId, t.moduleKey] })],
+  (t) => [
+    primaryKey({ name: 'organization_modules_pk', columns: [t.organizationId, t.moduleKey] }),
+  ],
 );
 
 // ── Audit & events ──────────────────────────────────────────────────────────────────────

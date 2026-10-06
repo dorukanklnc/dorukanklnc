@@ -330,7 +330,10 @@ export const receivables = pgTable(
       .where(sql`status = 'open'`),
     index('receivables_student_idx').on(t.organizationId, t.studentId),
     check('receivables_amount_ck', sql`amount_minor > 0`),
-    check('receivables_allocated_ck', sql`allocated_minor >= 0 AND allocated_minor <= amount_minor`),
+    check(
+      'receivables_allocated_ck',
+      sql`allocated_minor >= 0 AND allocated_minor <= amount_minor`,
+    ),
     check(
       'receivables_installment_ck',
       sql`kind <> 'installment' OR (payment_plan_id IS NOT NULL AND sequence_no IS NOT NULL)`,

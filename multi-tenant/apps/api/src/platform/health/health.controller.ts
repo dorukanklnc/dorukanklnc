@@ -34,10 +34,16 @@ export class HealthController {
   @HttpCode(200)
   async ready() {
     try {
-      await Promise.all([this.runtimeDb.execute(sql`SELECT 1`), this.systemDb.execute(sql`SELECT 1`)]);
+      await Promise.all([
+        this.runtimeDb.execute(sql`SELECT 1`),
+        this.systemDb.execute(sql`SELECT 1`),
+      ]);
       return { status: 'ok', checks: { database: 'ok' } };
     } catch {
-      throw new ServiceUnavailableException({ status: 'unavailable', checks: { database: 'error' } });
+      throw new ServiceUnavailableException({
+        status: 'unavailable',
+        checks: { database: 'error' },
+      });
     }
   }
 }

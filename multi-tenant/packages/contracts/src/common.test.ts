@@ -52,9 +52,7 @@ describe('recordPaymentRequestSchema', () => {
   });
 
   it('does not allow recording online payments manually', () => {
-    expect(recordPaymentRequestSchema.safeParse({ ...base, method: 'online' }).success).toBe(
-      false,
-    );
+    expect(recordPaymentRequestSchema.safeParse({ ...base, method: 'online' }).success).toBe(false);
   });
 });
 

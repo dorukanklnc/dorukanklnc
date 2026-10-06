@@ -12,7 +12,13 @@ import {
   updateStudentRequestSchema,
 } from '@repo/contracts';
 import { UuidParam } from '../../platform/http/params.js';
-import { ApiZodBody, ApiZodQuery, ApiZodResponse, ValidBody, ValidQuery } from '../../platform/http/zod.js';
+import {
+  ApiZodBody,
+  ApiZodQuery,
+  ApiZodResponse,
+  ValidBody,
+  ValidQuery,
+} from '../../platform/http/zod.js';
 import type { Actor } from '../../core/authorization/actor.js';
 import { CurrentActor, RequirePermission } from '../../core/authorization/decorators.js';
 import { StudentsService } from './students.service.js';
@@ -41,7 +47,10 @@ export class StudentsController {
   @Post()
   @ApiZodBody(createStudentRequestSchema)
   @ApiZodResponse(201, studentDetailSchema)
-  create(@CurrentActor() actor: Actor, @ValidBody(createStudentRequestSchema) body: CreateStudentRequest) {
+  create(
+    @CurrentActor() actor: Actor,
+    @ValidBody(createStudentRequestSchema) body: CreateStudentRequest,
+  ) {
     return this.students.create(actor, body);
   }
 

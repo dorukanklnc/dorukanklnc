@@ -21,7 +21,10 @@ import {
   studentScopePredicate,
 } from '../authorization/scope-filters.js';
 
-const amountFormatter = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const amountFormatter = new Intl.NumberFormat('tr-TR', {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
 
 /**
  * Permission-aware global search (⌘K). Each resource type is searched only when the caller
@@ -47,7 +50,11 @@ export class SearchService {
     });
   }
 
-  private async students(tx: Transaction, actor: Actor, query: SearchQuery): Promise<SearchResult[]> {
+  private async students(
+    tx: Transaction,
+    actor: Actor,
+    query: SearchQuery,
+  ): Promise<SearchResult[]> {
     const normalized = sql`app.search_normalize(${query.q})`;
     const rows = await tx
       .select({
@@ -68,7 +75,10 @@ export class SearchService {
         and(
           eq(students.organizationId, actor.organizationId),
           isNull(students.archivedAt),
-          studentScopePredicate(actor, 'students.read', { studentId: students.id, branchId: students.branchId }),
+          studentScopePredicate(actor, 'students.read', {
+            studentId: students.id,
+            branchId: students.branchId,
+          }),
           sql`(${students.searchText} LIKE '%' || ${normalized} || '%' OR ${students.searchText} % ${normalized})`,
         ),
       )
@@ -81,12 +91,18 @@ export class SearchService {
       type: 'student' as const,
       id: row.id,
       title: `${row.firstName} ${row.lastName}`,
-      subtitle: [`#${row.studentNumber}`, row.className, row.branchName].filter(Boolean).join(' · '),
+      subtitle: [`#${row.studentNumber}`, row.className, row.branchName]
+        .filter(Boolean)
+        .join(' · '),
       href: `/students/${row.id}`,
     }));
   }
 
-  private async guardians(tx: Transaction, actor: Actor, query: SearchQuery): Promise<SearchResult[]> {
+  private async guardians(
+    tx: Transaction,
+    actor: Actor,
+    query: SearchQuery,
+  ): Promise<SearchResult[]> {
     const normalized = sql`app.search_normalize(${query.q})`;
     const rows = await tx
       .select({
@@ -128,7 +144,10 @@ export class SearchService {
                 rows.map((row) => row.id),
               ),
               isNull(students.archivedAt),
-              studentScopePredicate(actor, 'students.read', { studentId: students.id, branchId: students.branchId }),
+              studentScopePredicate(actor, 'students.read', {
+                studentId: students.id,
+                branchId: students.branchId,
+              }),
             ),
           )
       : [];
@@ -139,14 +158,21 @@ export class SearchService {
         id: row.id,
         title: `${row.firstName} ${row.lastName}`,
         subtitle:
-          [student ? `Veli: ${student.firstName} ${student.lastName}` : null, row.phone].filter(Boolean).join(' · ') ||
-          null,
-        href: student ? `/students/${student.id}?tab=guardians` : `/guardians?q=${encodeURIComponent(query.q)}`,
+          [student ? `Veli: ${student.firstName} ${student.lastName}` : null, row.phone]
+            .filter(Boolean)
+            .join(' · ') || null,
+        href: student
+          ? `/students/${student.id}?tab=guardians`
+          : `/guardians?q=${encodeURIComponent(query.q)}`,
       };
     });
   }
 
-  private async classes(tx: Transaction, actor: Actor, query: SearchQuery): Promise<SearchResult[]> {
+  private async classes(
+    tx: Transaction,
+    actor: Actor,
+    query: SearchQuery,
+  ): Promise<SearchResult[]> {
     const scope = actor.scopeFor('academics.read');
     const rows = await tx
       .select({ id: classes.id, name: classes.name, branchName: branches.name })
@@ -158,7 +184,9 @@ export class SearchService {
           eq(classes.organizationId, actor.organizationId),
           eq(academicYears.isCurrent, true),
           eq(classes.status, 'active'),
-          scope === 'assigned' ? assignedClassesPredicate(actor, classes.id) : branchPredicate(actor, 'academics.read', classes.branchId),
+          scope === 'assigned'
+            ? assignedClassesPredicate(actor, classes.id)
+            : branchPredicate(actor, 'academics.read', classes.branchId),
           sql`app.search_normalize(${classes.name}) LIKE '%' || app.search_normalize(${query.q.replaceAll(' ', '')}) || '%'`,
         ),
       )
@@ -172,7 +200,11 @@ export class SearchService {
     }));
   }
 
-  private async payments(tx: Transaction, actor: Actor, query: SearchQuery): Promise<SearchResult[]> {
+  private async payments(
+    tx: Transaction,
+    actor: Actor,
+    query: SearchQuery,
+  ): Promise<SearchResult[]> {
     const normalized = sql`app.search_normalize(${query.q})`;
     const rows = await tx
       .select({

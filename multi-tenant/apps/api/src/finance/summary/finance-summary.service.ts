@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import type { PermissionKey } from '@repo/authorization';
-import type { AgingBucket, FinanceKpis, FinanceSummary, FinanceSummaryQuery } from '@repo/contracts';
+import type {
+  AgingBucket,
+  FinanceKpis,
+  FinanceSummary,
+  FinanceSummaryQuery,
+} from '@repo/contracts';
 import { type SQL, and, asc, between, eq, sql } from 'drizzle-orm';
 import { branches, receivables, students } from '../../platform/database/schema/index.js';
 import { TenantDatabase } from '../../platform/database/tenant-database.service.js';
@@ -40,13 +45,12 @@ export class FinanceSummaryService {
   async summary(actor: Actor, query: FinanceSummaryQuery): Promise<FinanceSummary> {
     const context = this.context(actor, query, 'finance.reports.read');
     return this.db.transaction(actor.tenantScope(), async (tx) => {
-      const [totals, aging, monthly, upcoming, topOverdue] = await Promise.all([
-        this.totals(tx, context),
-        this.aging(tx, context),
-        this.monthly(tx, context),
-        this.upcoming(tx, actor, context, query.branchId),
-        this.topOverdue(tx, context),
-      ]);
+      // Sequential on purpose: queries inside one transaction share a single connection.
+      const totals = await this.totals(tx, context);
+      const aging = await this.aging(tx, context);
+      const monthly = await this.monthly(tx, context);
+      const upcoming = await this.upcoming(tx, actor, context, query.branchId);
+      const topOverdue = await this.topOverdue(tx, context);
       return {
         ...this.toKpis(context, totals),
         dueTodayMinor: totals.dueToday,
@@ -151,7 +155,10 @@ export class FinanceSummaryService {
     };
   }
 
-  private toKpis(c: Context, totals: Awaited<ReturnType<FinanceSummaryService['totals']>>): FinanceKpis {
+  private toKpis(
+    c: Context,
+    totals: Awaited<ReturnType<FinanceSummaryService['totals']>>,
+  ): FinanceKpis {
     return {
       currency: c.currency,
       asOf: c.today,
@@ -272,7 +279,11 @@ export class FinanceSummaryService {
       LIMIT 8
     `);
     return result.rows.map((row) => ({
-      student: { id: row.id, fullName: `${row.first_name} ${row.last_name}`, studentNumber: row.student_number },
+      student: {
+        id: row.id,
+        fullName: `${row.first_name} ${row.last_name}`,
+        studentNumber: row.student_number,
+      },
       overdueMinor: Number(row.overdue),
       oldestDueDate: row.oldest,
       overdueCount: Number(row.count),

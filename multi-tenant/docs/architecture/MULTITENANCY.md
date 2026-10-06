@@ -30,20 +30,20 @@ Platform
 
 Isolation is enforced in four independent layers. Any one of them prevents cross-tenant reads.
 
-| Layer | Mechanism | Protects against |
-| ----- | --------- | ---------------- |
-| 1. Context resolution | Tenant derived from the session's active membership | Client tampering with `organization_id` |
-| 2. Application authorization | Permission + scope checks, scope predicates in every query | Unauthorized access *within* a tenant (branch, assignment) |
-| 3. Row-level security | `FORCE ROW LEVEL SECURITY` + policies on every tenant table | Forgotten filters, IDOR, raw SQL mistakes |
-| 4. Relational integrity | Composite FKs `(organization_id, x_id) → x(organization_id, id)` | A row in tenant A referencing a row of tenant B |
+| Layer                        | Mechanism                                                        | Protects against                                           |
+| ---------------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------- |
+| 1. Context resolution        | Tenant derived from the session's active membership              | Client tampering with `organization_id`                    |
+| 2. Application authorization | Permission + scope checks, scope predicates in every query       | Unauthorized access _within_ a tenant (branch, assignment) |
+| 3. Row-level security        | `FORCE ROW LEVEL SECURITY` + policies on every tenant table      | Forgotten filters, IDOR, raw SQL mistakes                  |
+| 4. Relational integrity      | Composite FKs `(organization_id, x_id) → x(organization_id, id)` | A row in tenant A referencing a row of tenant B            |
 
 ## 3. Database roles
 
-| Role          | Used by | RLS behaviour |
-| ------------- | ------- | ------------- |
-| `app_owner`   | Migrations only. Owns all objects. | Tables use `FORCE ROW LEVEL SECURITY`; `app_owner` has no policies, so even accidental use at runtime sees **no rows** (fail closed). |
-| `app_runtime` | API request handling. | Tenant policies: `organization_id = app.current_org_id()` and, for branch-owned tables, the branch boundary. |
-| `app_system`  | Worker, platform administration, pre-authentication flows (login, invitation acceptance, password reset), session validation. | Explicit permissive policies (`TO app_system USING (true)`). |
+| Role          | Used by                                                                                                                       | RLS behaviour                                                                                                                         |
+| ------------- | ----------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `app_owner`   | Migrations only. Owns all objects.                                                                                            | Tables use `FORCE ROW LEVEL SECURITY`; `app_owner` has no policies, so even accidental use at runtime sees **no rows** (fail closed). |
+| `app_runtime` | API request handling.                                                                                                         | Tenant policies: `organization_id = app.current_org_id()` and, for branch-owned tables, the branch boundary.                          |
+| `app_system`  | Worker, platform administration, pre-authentication flows (login, invitation acceptance, password reset), session validation. | Explicit permissive policies (`TO app_system USING (true)`).                                                                          |
 
 - Neither runtime role is a superuser or has `BYPASSRLS`; the API verifies this at startup and
   refuses to boot otherwise. The check also rejects a runtime role that owns tables.
@@ -98,7 +98,7 @@ Special cases:
 
 - `organizations`: visible when `id = app.current_org_id()` or the user has a membership in it
   (needed for the organization switcher); updatable only for the active organization.
-- `memberships`: visible for the active organization *or* for the current user's own memberships.
+- `memberships`: visible for the active organization _or_ for the current user's own memberships.
 - `users` (global): visible when it is the current user or a member of the active organization;
   `password_hash` is never readable by `app_runtime` (column privileges).
 - `sessions`, `password_reset_tokens`: no `app_runtime` access at all.

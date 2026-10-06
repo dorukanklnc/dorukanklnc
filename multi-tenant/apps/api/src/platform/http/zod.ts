@@ -24,7 +24,10 @@ export class ZodValidationPipe<T extends z.ZodType> implements PipeTransform<unk
 }
 
 /** JSON Schema (OpenAPI 3.0 flavour) for documentation purposes. */
-export function toOpenApiSchema(schema: z.ZodType, io: 'input' | 'output'): Record<string, unknown> {
+export function toOpenApiSchema(
+  schema: z.ZodType,
+  io: 'input' | 'output',
+): Record<string, unknown> {
   return z.toJSONSchema(schema, { target: 'openapi-3.0', io, unrepresentable: 'any' });
 }
 
@@ -54,6 +57,10 @@ export function ApiZodQuery(schema: z.ZodObject) {
 /** Documents a Zod response body in OpenAPI. */
 export function ApiZodResponse(status: number, schema: z.ZodType, description?: string) {
   return applyDecorators(
-    ApiResponse({ status, description: description ?? 'OK', schema: toOpenApiSchema(schema, 'output') }),
+    ApiResponse({
+      status,
+      description: description ?? 'OK',
+      schema: toOpenApiSchema(schema, 'output'),
+    }),
   );
 }

@@ -55,9 +55,14 @@ export class SessionService {
     const token = generateToken();
     const csrfToken = generateToken();
     const now = Date.now();
-    const absoluteExpiresAt = new Date(now + this.config.SESSION_ABSOLUTE_TIMEOUT_HOURS * 3_600_000);
+    const absoluteExpiresAt = new Date(
+      now + this.config.SESSION_ABSOLUTE_TIMEOUT_HOURS * 3_600_000,
+    );
     const idleExpiresAt = new Date(
-      Math.min(now + this.config.SESSION_IDLE_TIMEOUT_MINUTES * 60_000, absoluteExpiresAt.getTime()),
+      Math.min(
+        now + this.config.SESSION_IDLE_TIMEOUT_MINUTES * 60_000,
+        absoluteExpiresAt.getTime(),
+      ),
     );
     const [row] = await db
       .insert(sessions)

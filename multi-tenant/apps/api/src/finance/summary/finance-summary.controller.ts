@@ -20,7 +20,10 @@ export class FinanceSummaryController {
   @Get('summary')
   @ApiZodQuery(financeSummaryQuerySchema)
   @ApiZodResponse(200, financeSummarySchema)
-  get(@CurrentActor() actor: Actor, @ValidQuery(financeSummaryQuerySchema) query: FinanceSummaryQuery) {
+  get(
+    @CurrentActor() actor: Actor,
+    @ValidQuery(financeSummaryQuerySchema) query: FinanceSummaryQuery,
+  ) {
     return this.summary.summary(actor, query);
   }
 
@@ -29,7 +32,10 @@ export class FinanceSummaryController {
   @Get('kpis')
   @ApiZodQuery(financeSummaryQuerySchema)
   @ApiZodResponse(200, financeKpisSchema)
-  kpis(@CurrentActor() actor: Actor, @ValidQuery(financeSummaryQuerySchema) query: FinanceSummaryQuery) {
+  kpis(
+    @CurrentActor() actor: Actor,
+    @ValidQuery(financeSummaryQuerySchema) query: FinanceSummaryQuery,
+  ) {
     return this.summary.kpis(actor, query);
   }
 }

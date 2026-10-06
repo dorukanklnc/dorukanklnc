@@ -55,7 +55,9 @@ export class PaymentWebhookService {
           payload: event.payload,
           signatureValid: true,
         })
-        .onConflictDoNothing({ target: [paymentProviderEvents.provider, paymentProviderEvents.providerEventId] })
+        .onConflictDoNothing({
+          target: [paymentProviderEvents.provider, paymentProviderEvents.providerEventId],
+        })
         .returning({ id: paymentProviderEvents.id });
 
       let eventRowId = inserted?.id;
@@ -76,7 +78,11 @@ export class PaymentWebhookService {
         eventRowId = existing.id;
       }
 
-      const finish = async (status: 'processed' | 'ignored' | 'failed', organizationId: string | null, error?: string) => {
+      const finish = async (
+        status: 'processed' | 'ignored' | 'failed',
+        organizationId: string | null,
+        error?: string,
+      ) => {
         await tx
           .update(paymentProviderEvents)
           .set({ status, organizationId, error: error ?? null, processedAt: sql`now()` })
@@ -86,7 +92,12 @@ export class PaymentWebhookService {
       const [intent] = await tx
         .select()
         .from(paymentIntents)
-        .where(and(eq(paymentIntents.provider, provider.key), eq(paymentIntents.providerReference, event.providerReference)))
+        .where(
+          and(
+            eq(paymentIntents.provider, provider.key),
+            eq(paymentIntents.providerReference, event.providerReference),
+          ),
+        )
         .for('update');
       if (!intent) {
         await finish('ignored', null, 'unknown provider reference');
@@ -95,7 +106,10 @@ export class PaymentWebhookService {
 
       if (event.type === 'payment.failed') {
         if (intent.status === 'created') {
-          await tx.update(paymentIntents).set({ status: 'failed' }).where(eq(paymentIntents.id, intent.id));
+          await tx
+            .update(paymentIntents)
+            .set({ status: 'failed' })
+            .where(eq(paymentIntents.id, intent.id));
         }
         await finish('processed', intent.organizationId);
         return { status: 'ignored' as const, reason: 'payment_failed' };
@@ -112,7 +126,10 @@ export class PaymentWebhookService {
       if (event.amountMinor !== intent.amountMinor || event.currency !== intent.currency) {
         // Never settle a different amount automatically: leave it for reconciliation.
         await finish('failed', intent.organizationId, 'amount or currency mismatch');
-        this.logger.warn({ intentId: intent.id, provider: provider.key }, 'webhook amount mismatch');
+        this.logger.warn(
+          { intentId: intent.id, provider: provider.key },
+          'webhook amount mismatch',
+        );
         return { status: 'rejected' as const, reason: 'amount_mismatch' };
       }
 

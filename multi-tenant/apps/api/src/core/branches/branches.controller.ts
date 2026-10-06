@@ -29,7 +29,10 @@ export class BranchesController {
   @Post()
   @ApiZodBody(createBranchRequestSchema)
   @ApiZodResponse(201, branchSchema)
-  create(@CurrentActor() actor: Actor, @ValidBody(createBranchRequestSchema) body: CreateBranchRequest) {
+  create(
+    @CurrentActor() actor: Actor,
+    @ValidBody(createBranchRequestSchema) body: CreateBranchRequest,
+  ) {
     return this.branches.create(actor, body);
   }
 

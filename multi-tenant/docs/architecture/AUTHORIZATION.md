@@ -31,12 +31,12 @@ of the record (its branch, its owner, whether it is reachable through an assignm
 
 ### Scopes
 
-| Scope | Meaning | Typical use |
-| ----- | ------- | ----------- |
-| `own` | Records the member owns (e.g. leads assigned to them) | Admissions officers |
-| `assigned` | Records reachable through an assignment: teacher → class → students (and their guardians) | Teachers |
-| `branch` | Records of the member's branches (`membership_branches`, or all branches when `all_branches = true`) | Accountants, branch managers, student affairs |
-| `organization` | Every record of the organization | Owners, principals, headquarters |
+| Scope          | Meaning                                                                                              | Typical use                                   |
+| -------------- | ---------------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| `own`          | Records the member owns (e.g. leads assigned to them)                                                | Admissions officers                           |
+| `assigned`     | Records reachable through an assignment: teacher → class → students (and their guardians)            | Teachers                                      |
+| `branch`       | Records of the member's branches (`membership_branches`, or all branches when `all_branches = true`) | Accountants, branch managers, student affairs |
+| `organization` | Every record of the organization                                                                     | Owners, principals, headquarters              |
 
 "Selected branches" is the `branch` scope combined with a membership that has several branches.
 `platform` is not a tenant scope — platform permissions are separate (§8).
@@ -54,42 +54,42 @@ invalidates the cache immediately.
 
 ## 3. Permission catalog
 
-| Permission | Module | Allowed scopes | Sensitivity |
-| --- | --- | --- | --- |
-| `students.read` | students | assigned, branch, organization | personal |
-| `students.create` | students | branch, organization | personal |
-| `students.update` | students | branch, organization | personal |
-| `students.archive` | students | branch, organization | personal |
-| `students.sensitive.read` | students | branch, organization | restricted |
-| `students.export` | students | branch, organization | personal |
-| `guardians.read` | students | assigned, branch, organization | personal |
-| `guardians.write` | students | branch, organization | personal |
-| `admissions.read` | admissions | own, branch, organization | personal |
-| `admissions.write` | admissions | own, branch, organization | personal |
-| `admissions.convert` | admissions | branch, organization | personal |
-| `academics.read` | academics | assigned, branch, organization | standard |
-| `academics.manage` | academics | branch, organization | standard |
-| `attendance.read` | attendance | assigned, branch, organization | personal |
-| `attendance.write` | attendance | assigned, branch, organization | personal |
-| `personnel.read` | personnel | branch, organization | personal |
-| `personnel.manage` | personnel | branch, organization | personal |
-| `finance.collections.read` | finance | branch, organization | financial |
-| `finance.collections.write` | finance | branch, organization | financial |
-| `finance.payments.read` | finance | branch, organization | financial |
-| `finance.payments.create` | finance | branch, organization | financial |
-| `finance.payments.reverse` | finance | branch, organization | financial |
-| `finance.refunds.create` | finance | branch, organization | financial |
-| `finance.reports.read` | finance | branch, organization | financial |
-| `finance.kpis.read` | finance | branch, organization | financial |
-| `finance.settings.manage` | finance | organization | financial |
-| `reports.operational.read` | reports | branch, organization | standard |
-| `settings.organization.manage` | administration | organization | standard |
-| `settings.branches.manage` | administration | organization | standard |
-| `settings.users.read` | administration | branch, organization | personal |
-| `settings.users.manage` | administration | branch, organization | personal |
-| `settings.roles.manage` | administration | organization | standard |
-| `settings.integrations.manage` | administration | organization | restricted |
-| `audit.read` | administration | branch, organization | personal |
+| Permission                     | Module         | Allowed scopes                 | Sensitivity |
+| ------------------------------ | -------------- | ------------------------------ | ----------- |
+| `students.read`                | students       | assigned, branch, organization | personal    |
+| `students.create`              | students       | branch, organization           | personal    |
+| `students.update`              | students       | branch, organization           | personal    |
+| `students.archive`             | students       | branch, organization           | personal    |
+| `students.sensitive.read`      | students       | branch, organization           | restricted  |
+| `students.export`              | students       | branch, organization           | personal    |
+| `guardians.read`               | students       | assigned, branch, organization | personal    |
+| `guardians.write`              | students       | branch, organization           | personal    |
+| `admissions.read`              | admissions     | own, branch, organization      | personal    |
+| `admissions.write`             | admissions     | own, branch, organization      | personal    |
+| `admissions.convert`           | admissions     | branch, organization           | personal    |
+| `academics.read`               | academics      | assigned, branch, organization | standard    |
+| `academics.manage`             | academics      | branch, organization           | standard    |
+| `attendance.read`              | attendance     | assigned, branch, organization | personal    |
+| `attendance.write`             | attendance     | assigned, branch, organization | personal    |
+| `personnel.read`               | personnel      | branch, organization           | personal    |
+| `personnel.manage`             | personnel      | branch, organization           | personal    |
+| `finance.collections.read`     | finance        | branch, organization           | financial   |
+| `finance.collections.write`    | finance        | branch, organization           | financial   |
+| `finance.payments.read`        | finance        | branch, organization           | financial   |
+| `finance.payments.create`      | finance        | branch, organization           | financial   |
+| `finance.payments.reverse`     | finance        | branch, organization           | financial   |
+| `finance.refunds.create`       | finance        | branch, organization           | financial   |
+| `finance.reports.read`         | finance        | branch, organization           | financial   |
+| `finance.kpis.read`            | finance        | branch, organization           | financial   |
+| `finance.settings.manage`      | finance        | organization                   | financial   |
+| `reports.operational.read`     | reports        | branch, organization           | standard    |
+| `settings.organization.manage` | administration | organization                   | standard    |
+| `settings.branches.manage`     | administration | organization                   | standard    |
+| `settings.users.read`          | administration | branch, organization           | personal    |
+| `settings.users.manage`        | administration | branch, organization           | personal    |
+| `settings.roles.manage`        | administration | organization                   | standard    |
+| `settings.integrations.manage` | administration | organization                   | restricted  |
+| `audit.read`                   | administration | branch, organization           | personal    |
 
 Sensitivity levels: `standard`, `personal` (personal data), `financial`, `restricted` (sensitive
 identifiers, integration secrets). Restricted data is masked unless the specific permission is held
@@ -100,42 +100,42 @@ identifiers, integration secrets). Restricted data is masked unless the specific
 Each organization receives read-only copies of these templates. Customization happens by cloning a
 built-in role into a custom role (so platform upgrades can evolve built-in roles safely).
 
-| Permission | owner | principal | branch_manager | accountant | teacher | student_affairs | admissions_officer |
-| --- | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| `students.read` | org | org | br | br | asg | br | — |
-| `students.create` | org | org | br | — | — | br | — |
-| `students.update` | org | org | br | — | — | br | — |
-| `students.archive` | org | — | — | — | — | br | — |
-| `students.sensitive.read` | org | org | br | — | — | br | — |
-| `students.export` | org | org | br | — | — | br | — |
-| `guardians.read` | org | org | br | br | asg | br | — |
-| `guardians.write` | org | org | br | — | — | br | — |
-| `admissions.read` | org | org | br | — | — | br | own |
-| `admissions.write` | org | — | — | — | — | br | own |
-| `admissions.convert` | org | — | — | — | — | br | — |
-| `academics.read` | org | org | br | — | asg | br | — |
-| `academics.manage` | org | org | br | — | — | br | — |
-| `attendance.read` | org | org | br | — | asg | br | — |
-| `attendance.write` | org | — | br | — | asg | — | — |
-| `personnel.read` | org | org | br | — | — | — | — |
-| `personnel.manage` | org | — | — | — | — | — | — |
-| `finance.collections.read` | org | — | — | br | — | — | — |
-| `finance.collections.write` | org | — | — | br | — | — | — |
-| `finance.payments.read` | org | — | — | br | — | — | — |
-| `finance.payments.create` | org | — | — | br | — | — | — |
-| `finance.payments.reverse` | org | — | — | br | — | — | — |
-| `finance.refunds.create` | org | — | — | br | — | — | — |
-| `finance.reports.read` | org | — | — | br | — | — | — |
-| `finance.kpis.read` | org | org | br | br | — | — | — |
-| `finance.settings.manage` | org | — | — | — | — | — | — |
-| `reports.operational.read` | org | org | br | — | — | br | — |
-| `settings.organization.manage` | org | — | — | — | — | — | — |
-| `settings.branches.manage` | org | — | — | — | — | — | — |
-| `settings.users.read` | org | org | br | — | — | — | — |
-| `settings.users.manage` | org | — | br | — | — | — | — |
-| `settings.roles.manage` | org | — | — | — | — | — | — |
-| `settings.integrations.manage` | org | — | — | — | — | — | — |
-| `audit.read` | org | org | br | — | — | — | — |
+| Permission                     | owner | principal | branch_manager | accountant | teacher | student_affairs | admissions_officer |
+| ------------------------------ | :---: | :-------: | :------------: | :--------: | :-----: | :-------------: | :----------------: |
+| `students.read`                |  org  |    org    |       br       |     br     |   asg   |       br        |         —          |
+| `students.create`              |  org  |    org    |       br       |     —      |    —    |       br        |         —          |
+| `students.update`              |  org  |    org    |       br       |     —      |    —    |       br        |         —          |
+| `students.archive`             |  org  |     —     |       —        |     —      |    —    |       br        |         —          |
+| `students.sensitive.read`      |  org  |    org    |       br       |     —      |    —    |       br        |         —          |
+| `students.export`              |  org  |    org    |       br       |     —      |    —    |       br        |         —          |
+| `guardians.read`               |  org  |    org    |       br       |     br     |   asg   |       br        |         —          |
+| `guardians.write`              |  org  |    org    |       br       |     —      |    —    |       br        |         —          |
+| `admissions.read`              |  org  |    org    |       br       |     —      |    —    |       br        |        own         |
+| `admissions.write`             |  org  |     —     |       —        |     —      |    —    |       br        |        own         |
+| `admissions.convert`           |  org  |     —     |       —        |     —      |    —    |       br        |         —          |
+| `academics.read`               |  org  |    org    |       br       |     —      |   asg   |       br        |         —          |
+| `academics.manage`             |  org  |    org    |       br       |     —      |    —    |       br        |         —          |
+| `attendance.read`              |  org  |    org    |       br       |     —      |   asg   |       br        |         —          |
+| `attendance.write`             |  org  |     —     |       br       |     —      |   asg   |        —        |         —          |
+| `personnel.read`               |  org  |    org    |       br       |     —      |    —    |        —        |         —          |
+| `personnel.manage`             |  org  |     —     |       —        |     —      |    —    |        —        |         —          |
+| `finance.collections.read`     |  org  |     —     |       —        |     br     |    —    |        —        |         —          |
+| `finance.collections.write`    |  org  |     —     |       —        |     br     |    —    |        —        |         —          |
+| `finance.payments.read`        |  org  |     —     |       —        |     br     |    —    |        —        |         —          |
+| `finance.payments.create`      |  org  |     —     |       —        |     br     |    —    |        —        |         —          |
+| `finance.payments.reverse`     |  org  |     —     |       —        |     br     |    —    |        —        |         —          |
+| `finance.refunds.create`       |  org  |     —     |       —        |     br     |    —    |        —        |         —          |
+| `finance.reports.read`         |  org  |     —     |       —        |     br     |    —    |        —        |         —          |
+| `finance.kpis.read`            |  org  |    org    |       br       |     br     |    —    |        —        |         —          |
+| `finance.settings.manage`      |  org  |     —     |       —        |     —      |    —    |        —        |         —          |
+| `reports.operational.read`     |  org  |    org    |       br       |     —      |    —    |       br        |         —          |
+| `settings.organization.manage` |  org  |     —     |       —        |     —      |    —    |        —        |         —          |
+| `settings.branches.manage`     |  org  |     —     |       —        |     —      |    —    |        —        |         —          |
+| `settings.users.read`          |  org  |    org    |       br       |     —      |    —    |        —        |         —          |
+| `settings.users.manage`        |  org  |     —     |       br       |     —      |    —    |        —        |         —          |
+| `settings.roles.manage`        |  org  |     —     |       —        |     —      |    —    |        —        |         —          |
+| `settings.integrations.manage` |  org  |     —     |       —        |     —      |    —    |        —        |         —          |
+| `audit.read`                   |  org  |    org    |       br       |     —      |    —    |        —        |         —          |
 
 `org` = organization, `br` = branch, `asg` = assigned. Notable decisions:
 
@@ -153,14 +153,14 @@ built-in role into a custom role (so platform upgrades can evolve built-in roles
 
 ## 5. Enforcement layers
 
-| Layer | Where | What |
-| ----- | ----- | ---- |
-| Route guard | `@RequirePermission('finance.payments.create')` | 403 when the permission is missing entirely |
-| Scope predicates | `ScopeFilters` in each module's queries | `assigned`/`own`/`branch` translated into SQL `WHERE`/`EXISTS` clauses |
-| Record checks | `isWithinScope()` after loading a single record | 404 when the record exists but is outside the scope |
-| Field rules | Serializers | e.g. masked national ID without `students.sensitive.read` |
-| Row-level security | PostgreSQL | Tenant isolation and coarse branch boundary ([MULTITENANCY](MULTITENANCY.md)) |
-| UI composition | `@repo/authorization` in the web app | Navigation items, actions and profile tabs are **not rendered** without permission |
+| Layer              | Where                                           | What                                                                               |
+| ------------------ | ----------------------------------------------- | ---------------------------------------------------------------------------------- |
+| Route guard        | `@RequirePermission('finance.payments.create')` | 403 when the permission is missing entirely                                        |
+| Scope predicates   | `ScopeFilters` in each module's queries         | `assigned`/`own`/`branch` translated into SQL `WHERE`/`EXISTS` clauses             |
+| Record checks      | `isWithinScope()` after loading a single record | 404 when the record exists but is outside the scope                                |
+| Field rules        | Serializers                                     | e.g. masked national ID without `students.sensitive.read`                          |
+| Row-level security | PostgreSQL                                      | Tenant isolation and coarse branch boundary ([MULTITENANCY](MULTITENANCY.md))      |
+| UI composition     | `@repo/authorization` in the web app            | Navigation items, actions and profile tabs are **not rendered** without permission |
 
 **404 vs 403.** A missing permission for a whole feature returns `403 FORBIDDEN`. A record that is
 outside the member's scope, or that belongs to another tenant, returns `404 NOT_FOUND` — the API
@@ -195,12 +195,12 @@ payments.branch_id = ANY(:actorBranchIds)          -- skipped when all_branches 
 
 ## 7. Sensitive data categories
 
-| Category | Examples | Rule |
-| -------- | -------- | ---- |
-| Financial | balances, payments, agreements | `finance.*` permissions only; never returned by non-finance endpoints (student profile omits the finance tab entirely) |
-| Restricted identifiers | national ID | Encrypted at rest (AES-256-GCM), searchable through a keyed hash, masked without `students.sensitive.read` |
-| Guidance / health (future) | counselling notes, health records | Separate permissions and note categories; never included in exports by default |
-| Personal data | names, contact details | Standard permission checks, PII redaction in logs, audited exports |
+| Category                   | Examples                          | Rule                                                                                                                   |
+| -------------------------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Financial                  | balances, payments, agreements    | `finance.*` permissions only; never returned by non-finance endpoints (student profile omits the finance tab entirely) |
+| Restricted identifiers     | national ID                       | Encrypted at rest (AES-256-GCM), searchable through a keyed hash, masked without `students.sensitive.read`             |
+| Guidance / health (future) | counselling notes, health records | Separate permissions and note categories; never included in exports by default                                         |
+| Personal data              | names, contact details            | Standard permission checks, PII redaction in logs, audited exports                                                     |
 
 ## 8. Platform staff and support access
 

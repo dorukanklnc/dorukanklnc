@@ -10,7 +10,13 @@ import {
 } from '@repo/contracts';
 import { z } from 'zod';
 import { UuidParam } from '../../platform/http/params.js';
-import { ApiZodBody, ApiZodQuery, ApiZodResponse, ValidBody, ValidQuery } from '../../platform/http/zod.js';
+import {
+  ApiZodBody,
+  ApiZodQuery,
+  ApiZodResponse,
+  ValidBody,
+  ValidQuery,
+} from '../../platform/http/zod.js';
 import type { Actor } from '../../core/authorization/actor.js';
 import { CurrentActor, RequirePermission } from '../../core/authorization/decorators.js';
 import { ReceivablesService } from './receivables.service.js';
@@ -26,7 +32,10 @@ export class ReceivablesController {
   @Get()
   @ApiZodQuery(receivableListQuerySchema)
   @ApiZodResponse(200, paginatedSchema(receivableSchema))
-  list(@CurrentActor() actor: Actor, @ValidQuery(receivableListQuerySchema) query: ReceivableListQuery) {
+  list(
+    @CurrentActor() actor: Actor,
+    @ValidQuery(receivableListQuerySchema) query: ReceivableListQuery,
+  ) {
     return this.receivables.list(actor, query);
   }
 
@@ -34,7 +43,10 @@ export class ReceivablesController {
   @Post('charges')
   @ApiZodBody(createChargeRequestSchema)
   @ApiZodResponse(201, receivableSchema)
-  createCharge(@CurrentActor() actor: Actor, @ValidBody(createChargeRequestSchema) body: CreateChargeRequest) {
+  createCharge(
+    @CurrentActor() actor: Actor,
+    @ValidBody(createChargeRequestSchema) body: CreateChargeRequest,
+  ) {
     return this.receivables.createCharge(actor, body);
   }
 

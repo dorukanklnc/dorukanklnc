@@ -11,7 +11,7 @@ CampusOS is a multi-tenant B2B SaaS for education operations (schools, colleges,
 course centers, education groups). The architecture optimizes, in this order, for:
 
 1. **Tenant isolation by construction.** A forgotten `WHERE` clause must not leak another
-   tenant's data. Isolation is enforced by the application *and* by PostgreSQL row-level security
+   tenant's data. Isolation is enforced by the application _and_ by PostgreSQL row-level security
    (RLS) and tenant-scoped composite foreign keys.
 2. **Fine-grained, server-side authorization.** Permissions are `resource.action` plus a scope
    (`own`, `assigned`, `branch`, `organization`). The client never decides what a user may see.
@@ -51,15 +51,15 @@ Future guardian/student portals and mobile apps are additional clients of the sa
 
 ## 3. Containers
 
-| Container      | Technology                                  | Responsibility                                                                                 |
-| -------------- | ------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| `web`          | Next.js 16 (App Router), React 19, Tailwind 4 | UI, server-side session gate, same-origin proxy of `/api/*` to the API                       |
-| `api`          | NestJS 12 on Node.js 22 (ESM)               | REST API (`/api/v1`), OpenAPI, authentication, authorization, domain logic                     |
-| `worker`       | Same codebase as `api`, separate entrypoint | Outbox relay, BullMQ jobs (reminders, notifications, exports), scheduled tasks                 |
-| PostgreSQL 16+ | Shared database, shared schema              | System of record, row-level security, transactional outbox                                     |
-| Redis 7        | BullMQ, rate limiting                       | Job queues, distributed rate-limit counters                                                    |
-| Object storage | S3-compatible (MinIO locally) or filesystem | Tenant files behind signed URLs                                                                |
-| SMTP / SMS     | Adapters (Mailpit, console, mock)           | Outbound messages; no paid credentials required locally                                        |
+| Container      | Technology                                    | Responsibility                                                                 |
+| -------------- | --------------------------------------------- | ------------------------------------------------------------------------------ |
+| `web`          | Next.js 16 (App Router), React 19, Tailwind 4 | UI, server-side session gate, same-origin proxy of `/api/*` to the API         |
+| `api`          | NestJS 12 on Node.js 22 (ESM)                 | REST API (`/api/v1`), OpenAPI, authentication, authorization, domain logic     |
+| `worker`       | Same codebase as `api`, separate entrypoint   | Outbox relay, BullMQ jobs (reminders, notifications, exports), scheduled tasks |
+| PostgreSQL 16+ | Shared database, shared schema                | System of record, row-level security, transactional outbox                     |
+| Redis 7        | BullMQ, rate limiting                         | Job queues, distributed rate-limit counters                                    |
+| Object storage | S3-compatible (MinIO locally) or filesystem   | Tenant files behind signed URLs                                                |
+| SMTP / SMS     | Adapters (Mailpit, console, mock)             | Outbound messages; no paid credentials required locally                        |
 
 The browser only ever talks to the `web` origin. In production a load balancer routes `/api/*`
 to `api` and everything else to `web`, so cookies stay first-party and no CORS is needed
@@ -166,12 +166,12 @@ Key properties:
 
 ## 8. Integrations through adapters
 
-| Port                  | Adapters now                       | Planned                         |
-| --------------------- | ---------------------------------- | ------------------------------- |
-| `PaymentProvider`     | `MockPaymentProvider`              | iyzico, PayTR, Stripe           |
+| Port                  | Adapters now                                             | Planned                                     |
+| --------------------- | -------------------------------------------------------- | ------------------------------------------- |
+| `PaymentProvider`     | `MockPaymentProvider`                                    | iyzico, PayTR, Stripe                       |
 | `NotificationChannel` | SMTP (Mailpit), console, mock SMS, mock WhatsApp, in-app | Netgsm/İleti Merkezi SMS, WhatsApp Business |
-| `StorageProvider`     | local filesystem, S3-compatible    | —                               |
-| `AiGateway`           | none (documented interface only)   | provider chosen by privacy ADR  |
+| `StorageProvider`     | local filesystem, S3-compatible                          | —                                           |
+| `AiGateway`           | none (documented interface only)                         | provider chosen by privacy ADR              |
 
 Provider-specific code never leaks outside its adapter. Webhooks are verified, stored in an inbox
 table with a unique `(provider, event_id)` and processed idempotently.
@@ -209,16 +209,16 @@ serve reports when needed. IaC is planned in `infra/terraform`.
 
 ## 12. Technology choices
 
-| Concern            | Choice                                   | Notes / ADR                                                     |
-| ------------------ | ---------------------------------------- | --------------------------------------------------------------- |
-| Language           | TypeScript 6.0                           | TS 7 (native) pending ecosystem support — [ADR-0002](../decisions/0002-monorepo-and-toolchain.md) |
-| Monorepo           | pnpm workspaces                          | [ADR-0002](../decisions/0002-monorepo-and-toolchain.md)         |
-| Backend            | NestJS 12 (ESM), Express 5               | [ADR-0001](../decisions/0001-modular-monolith.md)               |
-| Database           | PostgreSQL 16+                           | RLS, `pg_trgm`, `unaccent`, `citext`                            |
-| Data access        | Drizzle ORM + node-postgres              | [ADR-0005](../decisions/0005-drizzle-and-sql-migrations.md)     |
-| Validation/contracts | Zod 4 in `@repo/contracts`             | [ADR-0012](../decisions/0012-zod-contracts.md)                  |
-| Jobs               | BullMQ 6 + Redis                         | [ADR-0010](../decisions/0010-transactional-outbox.md)           |
-| Frontend           | Next.js 16, React 19, Tailwind CSS 4, Radix primitives, TanStack Query/Table, React Hook Form | own design system in `@repo/ui` |
-| Auth               | Server-side sessions, argon2id           | [ADR-0006](../decisions/0006-server-side-sessions.md)           |
-| Authorization      | RBAC + scopes, shared catalog            | [ADR-0007](../decisions/0007-rbac-with-scopes.md)               |
-| Testing            | Vitest, Testing Library, Playwright      | [TESTING](../development/TESTING.md)                            |
+| Concern              | Choice                                                                                        | Notes / ADR                                                                                       |
+| -------------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| Language             | TypeScript 6.0                                                                                | TS 7 (native) pending ecosystem support — [ADR-0002](../decisions/0002-monorepo-and-toolchain.md) |
+| Monorepo             | pnpm workspaces                                                                               | [ADR-0002](../decisions/0002-monorepo-and-toolchain.md)                                           |
+| Backend              | NestJS 12 (ESM), Express 5                                                                    | [ADR-0001](../decisions/0001-modular-monolith.md)                                                 |
+| Database             | PostgreSQL 16+                                                                                | RLS, `pg_trgm`, `unaccent`, `citext`                                                              |
+| Data access          | Drizzle ORM + node-postgres                                                                   | [ADR-0005](../decisions/0005-drizzle-and-sql-migrations.md)                                       |
+| Validation/contracts | Zod 4 in `@repo/contracts`                                                                    | [ADR-0012](../decisions/0012-zod-contracts.md)                                                    |
+| Jobs                 | BullMQ 6 + Redis                                                                              | [ADR-0010](../decisions/0010-transactional-outbox.md)                                             |
+| Frontend             | Next.js 16, React 19, Tailwind CSS 4, Radix primitives, TanStack Query/Table, React Hook Form | own design system in `@repo/ui`                                                                   |
+| Auth                 | Server-side sessions, argon2id                                                                | [ADR-0006](../decisions/0006-server-side-sessions.md)                                             |
+| Authorization        | RBAC + scopes, shared catalog                                                                 | [ADR-0007](../decisions/0007-rbac-with-scopes.md)                                                 |
+| Testing              | Vitest, Testing Library, Playwright                                                           | [TESTING](../development/TESTING.md)                                                              |

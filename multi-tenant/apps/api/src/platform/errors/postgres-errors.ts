@@ -12,7 +12,7 @@ function isPostgresError(error: unknown): error is PostgresError {
     typeof error === 'object' &&
     error !== null &&
     'code' in error &&
-    typeof (error).code === 'string' &&
+    typeof error.code === 'string' &&
     /^[0-9A-Z]{5}$/.test((error as { code: string }).code)
   );
 }
@@ -49,7 +49,8 @@ export function mapPostgresError(error: unknown): AppError | undefined {
   const pg = unwrapPostgresError(error);
   if (!pg) return undefined;
   const mapping = pg.constraint ? CONSTRAINT_ERRORS[pg.constraint] : undefined;
-  if (mapping) return new AppError(mapping.code, mapping.status, `Constraint ${pg.constraint} violated`);
+  if (mapping)
+    return new AppError(mapping.code, mapping.status, `Constraint ${pg.constraint} violated`);
   // 42501 insufficient_privilege: RLS WITH CHECK or missing grant — treat as forbidden.
   if (pg.code === '42501') return new AppError('FORBIDDEN', 403, 'Operation not permitted');
   // 22P02 invalid_text_representation (e.g. malformed uuid that slipped past validation)

@@ -17,7 +17,9 @@ const envSchema = z
     PORT: z.coerce.number().int().min(1).max(65_535).default(4000),
     /** Public origin of the web app; used in e-mail links. */
     APP_URL: z.url().default('http://localhost:3000'),
-    LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']).default('info'),
+    LOG_LEVEL: z
+      .enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent'])
+      .default('info'),
     LOG_PRETTY: booleanString.default(false),
     TRUST_PROXY: booleanString.default(false),
     SWAGGER_ENABLED: booleanString.optional(),
@@ -33,8 +35,16 @@ const envSchema = z
     RATE_LIMIT_ENABLED: booleanString.default(true),
     RATE_LIMIT_STORE: z.enum(['memory', 'redis']).default('memory'),
 
-    SESSION_IDLE_TIMEOUT_MINUTES: z.coerce.number().int().min(5).default(12 * 60),
-    SESSION_ABSOLUTE_TIMEOUT_HOURS: z.coerce.number().int().min(1).default(7 * 24),
+    SESSION_IDLE_TIMEOUT_MINUTES: z.coerce
+      .number()
+      .int()
+      .min(5)
+      .default(12 * 60),
+    SESSION_ABSOLUTE_TIMEOUT_HOURS: z.coerce
+      .number()
+      .int()
+      .min(1)
+      .default(7 * 24),
     COOKIE_SECURE: booleanString.optional(),
 
     /** Base64-encoded 32-byte key for AES-256-GCM field encryption. */
@@ -69,11 +79,19 @@ const envSchema = z
       ];
       for (const [name, value] of devDefaults) {
         if (env[name] === value) {
-          ctx.addIssue({ code: 'custom', path: [name], message: 'development default in production' });
+          ctx.addIssue({
+            code: 'custom',
+            path: [name],
+            message: 'development default in production',
+          });
         }
       }
       if (env.MAIL_DRIVER !== 'smtp') {
-        ctx.addIssue({ code: 'custom', path: ['MAIL_DRIVER'], message: 'smtp required in production' });
+        ctx.addIssue({
+          code: 'custom',
+          path: ['MAIL_DRIVER'],
+          message: 'smtp required in production',
+        });
       }
     }
   });

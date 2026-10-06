@@ -41,10 +41,19 @@ export class PaymentLinksService {
     @Inject(APP_CONFIG) private readonly config: AppConfig,
   ) {}
 
-  async create(actor: Actor, input: CreatePaymentLinkRequest, providerKey = 'mock'): Promise<PaymentLink> {
+  async create(
+    actor: Actor,
+    input: CreatePaymentLinkRequest,
+    providerKey = 'mock',
+  ): Promise<PaymentLink> {
     const provider = this.registry.get(providerKey);
     return this.db.transaction(actor.tenantScope(), async (tx) => {
-      const student = await loadStudentForFinance(tx, actor, input.studentId, 'finance.payments.create');
+      const student = await loadStudentForFinance(
+        tx,
+        actor,
+        input.studentId,
+        'finance.payments.create',
+      );
       const accountId = await findOrCreateAccount(tx, {
         organizationId: actor.organizationId,
         branchId: student.branchId,
@@ -84,7 +93,11 @@ export class PaymentLinksService {
         action: 'payment_link.created',
         resourceType: 'payment_intent',
         resourceId: intentId,
-        metadata: { provider: provider.key, amountMinor: input.amountMinor, currency: input.currency },
+        metadata: {
+          provider: provider.key,
+          amountMinor: input.amountMinor,
+          currency: input.currency,
+        },
       });
       return toLink(intent!);
     });
@@ -116,7 +129,10 @@ export class PaymentLinksService {
     const link = await this.get(actor, intentId);
     if (link.provider !== this.mock.key) throw Errors.notFound('Payment link');
     const [intent] = await this.db.transaction(actor.tenantScope(), (tx) =>
-      tx.select({ reference: paymentIntents.providerReference }).from(paymentIntents).where(eq(paymentIntents.id, intentId)),
+      tx
+        .select({ reference: paymentIntents.providerReference })
+        .from(paymentIntents)
+        .where(eq(paymentIntents.id, intentId)),
     );
     const signed = this.mock.buildSignedEvent({
       type: 'payment.succeeded',

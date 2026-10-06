@@ -1,10 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import {
-  CORE_MODULES,
-  type ModuleKey,
-  PermissionSet,
-  isModuleKey,
-} from '@repo/authorization';
+import { CORE_MODULES, type ModuleKey, PermissionSet, isModuleKey } from '@repo/authorization';
 import { and, eq, isNull } from 'drizzle-orm';
 import type { Logger } from 'pino';
 import { LOGGER } from '../../platform/logging/logging.module.js';
@@ -112,7 +107,9 @@ export class AuthorizationContextService {
         .select({ branchId: membershipBranches.branchId })
         .from(membershipBranches)
         .innerJoin(branches, eq(branches.id, membershipBranches.branchId))
-        .where(and(eq(membershipBranches.membershipId, membershipId), eq(branches.status, 'active'))),
+        .where(
+          and(eq(membershipBranches.membershipId, membershipId), eq(branches.status, 'active')),
+        ),
       db
         .select({ id: personnel.id })
         .from(personnel)
@@ -133,7 +130,11 @@ export class AuthorizationContextService {
     const roleMap = new Map<string, { id: string; key: string; name: string }>();
     const grants: { permission: string; scope: string }[] = [];
     for (const grantRow of grantRows) {
-      roleMap.set(grantRow.roleId, { id: grantRow.roleId, key: grantRow.roleKey, name: grantRow.roleName });
+      roleMap.set(grantRow.roleId, {
+        id: grantRow.roleId,
+        key: grantRow.roleKey,
+        name: grantRow.roleName,
+      });
       if (grantRow.permission && grantRow.scope) {
         grants.push({ permission: grantRow.permission, scope: grantRow.scope });
       }
@@ -143,12 +144,16 @@ export class AuthorizationContextService {
     for (const moduleRow of moduleRows) {
       if (!isModuleKey(moduleRow.moduleKey)) continue;
       if (moduleRow.enabled) enabledModules.add(moduleRow.moduleKey);
-      else if (!CORE_MODULES.includes(moduleRow.moduleKey)) enabledModules.delete(moduleRow.moduleKey);
+      else if (!CORE_MODULES.includes(moduleRow.moduleKey))
+        enabledModules.delete(moduleRow.moduleKey);
     }
 
     const permissions = PermissionSet.fromGrants(grants).restrictToModules(enabledModules);
     if (permissions.size < new Set(grants.map((grant) => grant.permission)).size) {
-      this.logger.debug({ membershipId }, 'Some role grants were ignored (invalid or disabled module)');
+      this.logger.debug(
+        { membershipId },
+        'Some role grants were ignored (invalid or disabled module)',
+      );
     }
 
     return {

@@ -17,7 +17,12 @@ import type {
   UpdateRoleRequest,
 } from '@repo/contracts';
 import { and, asc, eq, inArray, isNull, sql } from 'drizzle-orm';
-import { membershipRoles, memberships, rolePermissions, roles } from '../../platform/database/schema/index.js';
+import {
+  membershipRoles,
+  memberships,
+  rolePermissions,
+  roles,
+} from '../../platform/database/schema/index.js';
 import { ref } from '../../platform/database/sql.js';
 import { TenantDatabase } from '../../platform/database/tenant-database.service.js';
 import type { Transaction } from '../../platform/database/types.js';
@@ -82,7 +87,9 @@ export function validateGrants(actor: Actor, grants: readonly Grant[]): RoleGran
 
 /** Grants of disabled modules are inert and therefore never count as escalation. */
 export function assertNoEscalation(actor: Actor, grants: readonly RoleGrant[]): void {
-  const relevant = grants.filter((grant) => actor.enabledModules.has(getPermission(grant.permission).module));
+  const relevant = grants.filter((grant) =>
+    actor.enabledModules.has(getPermission(grant.permission).module),
+  );
   const escalations = findEscalations(actor.permissions, relevant);
   if (escalations.length > 0) {
     throw Errors.unprocessable(
@@ -116,7 +123,9 @@ export class RolesService {
   }
 
   async list(actor: Actor): Promise<Role[]> {
-    return this.db.transaction(actor.tenantScope(), (tx) => this.loadRoles(tx, actor.organizationId));
+    return this.db.transaction(actor.tenantScope(), (tx) =>
+      this.loadRoles(tx, actor.organizationId),
+    );
   }
 
   async create(actor: Actor, input: CreateRoleRequest): Promise<Role> {
@@ -126,7 +135,12 @@ export class RolesService {
       const existingKeys = await tx
         .select({ key: roles.key })
         .from(roles)
-        .where(and(eq(roles.organizationId, actor.organizationId), sql`${roles.key} LIKE ${`${baseKey}%`}`));
+        .where(
+          and(
+            eq(roles.organizationId, actor.organizationId),
+            sql`${roles.key} LIKE ${`${baseKey}%`}`,
+          ),
+        );
       const taken = new Set(existingKeys.map((row) => row.key));
       let key = baseKey;
       for (let suffix = 2; taken.has(key); suffix++) key = `${baseKey}-${suffix}`;
@@ -165,7 +179,8 @@ export class RolesService {
   async update(actor: Actor, roleId: string, input: UpdateRoleRequest): Promise<Role> {
     return this.db.transaction(actor.tenantScope(), async (tx) => {
       const role = await this.getRole(tx, actor.organizationId, roleId);
-      if (role.isSystem) throw Errors.conflict('ROLE_SYSTEM_READONLY', 'Built-in roles are read-only');
+      if (role.isSystem)
+        throw Errors.conflict('ROLE_SYSTEM_READONLY', 'Built-in roles are read-only');
 
       const changes = diffChanges(
         { name: role.name, description: role.description },
@@ -187,8 +202,12 @@ export class RolesService {
       let permissionChanges: Record<string, unknown> | null = null;
       if (input.grants) {
         const grants = validateGrants(actor, input.grants);
-        const before = new Map<string, string>(role.grants.map((grant) => [grant.permission, grant.scope]));
-        const after = new Map<string, string>(grants.map((grant) => [grant.permission, grant.scope]));
+        const before = new Map<string, string>(
+          role.grants.map((grant) => [grant.permission, grant.scope]),
+        );
+        const after = new Map<string, string>(
+          grants.map((grant) => [grant.permission, grant.scope]),
+        );
         const added = grants.filter((grant) => !before.has(grant.permission));
         const removed = role.grants.filter((grant) => !after.has(grant.permission));
         const rescoped = grants.filter(
@@ -197,7 +216,12 @@ export class RolesService {
         if (added.length || removed.length || rescoped.length) {
           await tx
             .delete(rolePermissions)
-            .where(and(eq(rolePermissions.organizationId, actor.organizationId), eq(rolePermissions.roleId, roleId)));
+            .where(
+              and(
+                eq(rolePermissions.organizationId, actor.organizationId),
+                eq(rolePermissions.roleId, roleId),
+              ),
+            );
           await tx.insert(rolePermissions).values(
             grants.map((grant) => ({
               organizationId: actor.organizationId,
@@ -229,7 +253,8 @@ export class RolesService {
   async archive(actor: Actor, roleId: string): Promise<void> {
     await this.db.transaction(actor.tenantScope(), async (tx) => {
       const role = await this.getRole(tx, actor.organizationId, roleId);
-      if (role.isSystem) throw Errors.conflict('ROLE_SYSTEM_READONLY', 'Built-in roles are read-only');
+      if (role.isSystem)
+        throw Errors.conflict('ROLE_SYSTEM_READONLY', 'Built-in roles are read-only');
       if (role.memberCount > 0) throw Errors.conflict('ROLE_IN_USE', 'Role is assigned to members');
       await tx
         .update(roles)
@@ -258,7 +283,12 @@ export class RolesService {
             tx
               .select({ id: membershipRoles.membershipId })
               .from(membershipRoles)
-              .where(and(eq(membershipRoles.organizationId, organizationId), eq(membershipRoles.roleId, roleId))),
+              .where(
+                and(
+                  eq(membershipRoles.organizationId, organizationId),
+                  eq(membershipRoles.roleId, roleId),
+                ),
+              ),
           ),
         ),
       );
@@ -270,7 +300,11 @@ export class RolesService {
     return role;
   }
 
-  private async loadRoles(tx: Transaction, organizationId: string, roleId?: string): Promise<Role[]> {
+  private async loadRoles(
+    tx: Transaction,
+    organizationId: string,
+    roleId?: string,
+  ): Promise<Role[]> {
     const roleRows = await tx
       .select({
         id: roles.id,

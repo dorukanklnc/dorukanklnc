@@ -78,7 +78,11 @@ export async function provisionOrganization(
 
   const enabled = new Set(PLAN_MODULES[input.planKey]);
   await db.insert(organizationModules).values(
-    MODULE_KEYS.map((moduleKey) => ({ organizationId, moduleKey, enabled: enabled.has(moduleKey) })),
+    MODULE_KEYS.map((moduleKey) => ({
+      organizationId,
+      moduleKey,
+      enabled: enabled.has(moduleKey),
+    })),
   );
 
   const language = locale.toLowerCase().startsWith('en') ? 'en' : 'tr';
@@ -137,7 +141,10 @@ export interface InvitedMember {
  * branch access and a single-use invitation token. Requires the system role (global users table).
  * Callers must have validated roles/branches against the organization beforehand.
  */
-export async function inviteMember(db: DbExecutor, input: InviteMemberInput): Promise<InvitedMember> {
+export async function inviteMember(
+  db: DbExecutor,
+  input: InviteMemberInput,
+): Promise<InvitedMember> {
   const email = input.email.trim().toLowerCase();
   const [existing] = await db
     .select({ id: users.id })

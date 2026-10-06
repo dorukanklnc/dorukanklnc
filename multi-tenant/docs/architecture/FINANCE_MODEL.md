@@ -49,19 +49,19 @@ erDiagram
   PAYMENT_PROVIDER_EVENT }o--|| PAYMENT_INTENT : "webhook inbox"
 ```
 
-| Entity | Purpose |
-| ------ | ------- |
-| `financial_accounts` | The student's receivable account ("cari hesap") in one currency. Anchor for balance, credit and statement. |
-| `tuition_agreements` | Contract for a service period (e.g. "2026–2027 eğitim ücreti"): gross amount, discounts, net amount, responsible guardian. |
-| `agreement_discounts` | Ordered discount lines: sibling, early payment, staff, corporate, **scholarship**; percentage (basis points) or fixed. Computed amount stored. |
-| `payment_plans` | Installment schedule of an agreement. Restructuring supersedes the active plan and creates a new one; history is kept. |
-| `receivables` | Everything a family owes: `kind = installment` (from a plan) or `kind = charge` (books, uniform, trip, transport…). Due date, amount, allocated amount, status. |
-| `payments` | Money received: amount, method, received_at, payer, receipt number, provider reference, idempotency key. Immutable once completed. |
-| `payment_allocations` | How a payment settles receivables. Insert-only; reversal marks rows as reversed. |
-| `refunds` | Return of a payment's unallocated credit. |
-| `payment_intents` | Online payment links (provider checkout); settled through webhooks. |
-| `payment_provider_events` | Webhook inbox: raw (sanitized) events, unique per provider event id. |
-| `document_sequences` | Per-organization numbering (receipt numbers, student numbers). |
+| Entity                    | Purpose                                                                                                                                                         |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `financial_accounts`      | The student's receivable account ("cari hesap") in one currency. Anchor for balance, credit and statement.                                                      |
+| `tuition_agreements`      | Contract for a service period (e.g. "2026–2027 eğitim ücreti"): gross amount, discounts, net amount, responsible guardian.                                      |
+| `agreement_discounts`     | Ordered discount lines: sibling, early payment, staff, corporate, **scholarship**; percentage (basis points) or fixed. Computed amount stored.                  |
+| `payment_plans`           | Installment schedule of an agreement. Restructuring supersedes the active plan and creates a new one; history is kept.                                          |
+| `receivables`             | Everything a family owes: `kind = installment` (from a plan) or `kind = charge` (books, uniform, trip, transport…). Due date, amount, allocated amount, status. |
+| `payments`                | Money received: amount, method, received_at, payer, receipt number, provider reference, idempotency key. Immutable once completed.                              |
+| `payment_allocations`     | How a payment settles receivables. Insert-only; reversal marks rows as reversed.                                                                                |
+| `refunds`                 | Return of a payment's unallocated credit.                                                                                                                       |
+| `payment_intents`         | Online payment links (provider checkout); settled through webhooks.                                                                                             |
+| `payment_provider_events` | Webhook inbox: raw (sanitized) events, unique per provider event id.                                                                                            |
+| `document_sequences`      | Per-organization numbering (receipt numbers, student numbers).                                                                                                  |
 
 **Deviation from the initial entity list:** `installments` and `charges` are one table,
 `receivables`, discriminated by `kind`. Allocation, overdue detection, aging, reminders and
@@ -137,41 +137,41 @@ A completed payment is **never edited or deleted**.
 
 - "Today" is the organization-local date (`organizations.timezone`, default `Europe/Istanbul`).
 - A receivable is **overdue** when it is open, has an outstanding amount and `due_date < today`.
-  Due today is *not* overdue.
+  Due today is _not_ overdue.
 - Aging buckets by days overdue: **not due**, **1–30**, **31–60**, **61–90**, **90+**.
 - A scheduled job marks newly overdue receivables (`overdue_marked_at`) and emits
   `installment.overdue` exactly once per receivable.
 
 ## 9. KPI definitions
 
-| KPI | Definition |
-| --- | ---------- |
-| Due today | Outstanding of open receivables with `due_date = today` |
-| Overdue receivables | Outstanding of open receivables with `due_date < today` |
-| Payments today | Sum of completed (non-reversed) payments with `received_at` on the local date |
-| Collected this month | Completed payments received in the current local month |
-| Expected this month | Outstanding of open receivables due between today and month end |
+| KPI                      | Definition                                                                                                          |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------- |
+| Due today                | Outstanding of open receivables with `due_date = today`                                                             |
+| Overdue receivables      | Outstanding of open receivables with `due_date < today`                                                             |
+| Payments today           | Sum of completed (non-reversed) payments with `received_at` on the local date                                       |
+| Collected this month     | Completed payments received in the current local month                                                              |
+| Expected this month      | Outstanding of open receivables due between today and month end                                                     |
 | Collection rate (period) | `allocated to receivables due in period ÷ amount due in period` (cancelled excluded, reversed allocations excluded) |
-| Aging | Outstanding per bucket (§8) |
-| Recurring late payers | Accounts with ≥ 2 receivables settled after their due date, or ≥ 2 currently overdue, in the last 6 months |
-| Risky plans | Active plans with ≥ 2 overdue installments or overdue outstanding ≥ 25 % of plan total |
+| Aging                    | Outstanding per bucket (§8)                                                                                         |
+| Recurring late payers    | Accounts with ≥ 2 receivables settled after their due date, or ≥ 2 currently overdue, in the last 6 months          |
+| Risky plans              | Active plans with ≥ 2 overdue installments or overdue outstanding ≥ 25 % of plan total                              |
 
 ## 10. Invariants and where they are enforced
 
-| Invariant | Enforcement |
-| --------- | ----------- |
-| Amounts are positive integers | `CHECK (amount_minor > 0)` |
-| Allocation total ≤ payment amount | `CHECK (allocated_minor + refunded_minor <= amount_minor)` on `payments`, maintained by trigger |
-| Receivable never over-allocated / negative balance | `CHECK (allocated_minor BETWEEN 0 AND amount_minor)` on `receivables`, maintained by trigger |
-| Same account and currency for payment, allocation and receivable | Trigger on `payment_allocations` |
-| Cross-tenant references impossible | Composite foreign keys `(organization_id, …)` |
-| Completed payments immutable; only `completed → reversed` | Trigger |
-| Allocations insert-only; reversal is one-way | Trigger |
-| No deletion of financial history | No `DELETE` grant for runtime roles; `ON DELETE RESTRICT`; students are archived, never deleted |
-| Manual payment idempotency | Unique `(organization_id, idempotency_key)` |
-| Webhook replay safety | Unique `(provider, provider_event_id)` + unique provider reference per payment |
-| Explicit currency | `currency char(3) NOT NULL CHECK (currency ~ '^[A-Z]{3}$')` |
-| Timezone meaning | Instants are `timestamptz`; due dates are `date` in the organization's timezone |
+| Invariant                                                        | Enforcement                                                                                     |
+| ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| Amounts are positive integers                                    | `CHECK (amount_minor > 0)`                                                                      |
+| Allocation total ≤ payment amount                                | `CHECK (allocated_minor + refunded_minor <= amount_minor)` on `payments`, maintained by trigger |
+| Receivable never over-allocated / negative balance               | `CHECK (allocated_minor BETWEEN 0 AND amount_minor)` on `receivables`, maintained by trigger    |
+| Same account and currency for payment, allocation and receivable | Trigger on `payment_allocations`                                                                |
+| Cross-tenant references impossible                               | Composite foreign keys `(organization_id, …)`                                                   |
+| Completed payments immutable; only `completed → reversed`        | Trigger                                                                                         |
+| Allocations insert-only; reversal is one-way                     | Trigger                                                                                         |
+| No deletion of financial history                                 | No `DELETE` grant for runtime roles; `ON DELETE RESTRICT`; students are archived, never deleted |
+| Manual payment idempotency                                       | Unique `(organization_id, idempotency_key)`                                                     |
+| Webhook replay safety                                            | Unique `(provider, provider_event_id)` + unique provider reference per payment                  |
+| Explicit currency                                                | `currency char(3) NOT NULL CHECK (currency ~ '^[A-Z]{3}$')`                                     |
+| Timezone meaning                                                 | Instants are `timestamptz`; due dates are `date` in the organization's timezone                 |
 
 Application code validates the same rules first to return friendly errors; the database is the
 backstop.
@@ -180,8 +180,10 @@ backstop.
 
 ```ts
 interface PaymentProvider {
-  readonly key: string;                     // 'mock', 'iyzico', 'paytr', 'stripe'
-  createPaymentLink(input): Promise<{ providerReference: string; checkoutUrl: string; expiresAt: Date }>;
+  readonly key: string; // 'mock', 'iyzico', 'paytr', 'stripe'
+  createPaymentLink(
+    input,
+  ): Promise<{ providerReference: string; checkoutUrl: string; expiresAt: Date }>;
   parseWebhook(rawBody: Buffer, headers: Headers): Promise<ProviderWebhookEvent>; // verifies signature
 }
 ```
@@ -198,13 +200,13 @@ interface PaymentProvider {
 
 Default reminder rules per organization (editable later with `finance.settings.manage`):
 
-| When | Action |
-| ---- | ------ |
+| When              | Action                                      |
+| ----------------- | ------------------------------------------- |
 | 7 days before due | E-mail reminder to the responsible guardian |
-| 1 day before due | E-mail + SMS |
-| On the due date | SMS |
-| 3 days overdue | Strong reminder (e-mail + SMS) |
-| 10 days overdue | Follow-up task for accounting |
+| 1 day before due  | E-mail + SMS                                |
+| On the due date   | SMS                                         |
+| 3 days overdue    | Strong reminder (e-mail + SMS)              |
+| 10 days overdue   | Follow-up task for accounting               |
 
 A daily planner computes due reminders per organization (local date), creates notifications with
 a dedupe key `(receivable, rule, date)` and enqueues delivery jobs; channels are adapters

@@ -12,7 +12,11 @@ import { z } from 'zod';
 import { UuidParam } from '../../platform/http/params.js';
 import { ApiZodBody, ApiZodResponse, ValidBody } from '../../platform/http/zod.js';
 import type { Actor } from '../authorization/actor.js';
-import { CurrentActor, RequireAnyPermission, RequirePermission } from '../authorization/decorators.js';
+import {
+  CurrentActor,
+  RequireAnyPermission,
+  RequirePermission,
+} from '../authorization/decorators.js';
 import { RolesService } from './roles.service.js';
 
 @ApiTags('roles')
@@ -38,7 +42,10 @@ export class RolesController {
   @Post('roles')
   @ApiZodBody(createRoleRequestSchema)
   @ApiZodResponse(201, roleSchema)
-  create(@CurrentActor() actor: Actor, @ValidBody(createRoleRequestSchema) body: CreateRoleRequest) {
+  create(
+    @CurrentActor() actor: Actor,
+    @ValidBody(createRoleRequestSchema) body: CreateRoleRequest,
+  ) {
     return this.roles.create(actor, body);
   }
 

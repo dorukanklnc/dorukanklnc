@@ -27,7 +27,10 @@ export class PaymentLinksController {
   @Post('finance/payment-links')
   @ApiZodBody(createPaymentLinkRequestSchema)
   @ApiZodResponse(201, paymentLinkSchema)
-  create(@CurrentActor() actor: Actor, @ValidBody(createPaymentLinkRequestSchema) body: CreatePaymentLinkRequest) {
+  create(
+    @CurrentActor() actor: Actor,
+    @ValidBody(createPaymentLinkRequestSchema) body: CreatePaymentLinkRequest,
+  ) {
     return this.links.create(actor, body);
   }
 

@@ -1,7 +1,11 @@
 import { AppError } from '../../platform/errors/app-error.js';
 import { agingBucket, daysOverdue } from './aging.js';
 import { applyDiscounts, buildSchedule } from './agreement-calculator.js';
-import { allocateOldestFirst, validateManualAllocation, type OpenReceivable } from './allocation.js';
+import {
+  allocateOldestFirst,
+  validateManualAllocation,
+  type OpenReceivable,
+} from './allocation.js';
 import { addMonthsClamped, daysBetween, monthBounds, todayIn } from './dates.js';
 import { applyBasisPoints, sum } from './money.js';
 
@@ -47,7 +51,9 @@ describe('applyDiscounts', () => {
   it('rejects fixed discounts above the remaining amount', () => {
     expectCode(
       () =>
-        applyDiscounts(10_000, [{ kind: 'fixed', category: 'other', label: 'x', amountMinor: 10_001 }]),
+        applyDiscounts(10_000, [
+          { kind: 'fixed', category: 'other', label: 'x', amountMinor: 10_001 },
+        ]),
       'FINANCE_DISCOUNT_EXCEEDS_AMOUNT',
     );
   });
@@ -61,9 +67,19 @@ describe('buildSchedule', () => {
   };
 
   it('rounds installments to whole currency units and puts the remainder last', () => {
-    const lines = buildSchedule({ ...base, netAmountMinor: 10_000_000, installmentCount: 12, firstDueDate: '2026-09-15' });
+    const lines = buildSchedule({
+      ...base,
+      netAmountMinor: 10_000_000,
+      installmentCount: 12,
+      firstDueDate: '2026-09-15',
+    });
     expect(lines).toHaveLength(12);
-    expect(lines[0]).toEqual({ sequenceNo: 1, dueDate: '2026-09-15', amountMinor: 833_300, isDownPayment: false });
+    expect(lines[0]).toEqual({
+      sequenceNo: 1,
+      dueDate: '2026-09-15',
+      amountMinor: 833_300,
+      isDownPayment: false,
+    });
     expect(lines[11]?.amountMinor).toBe(10_000_000 - 833_300 * 11);
     expect(lines[11]?.dueDate).toBe('2027-08-15');
     expect(sum(lines.map((line) => line.amountMinor))).toBe(10_000_000);
@@ -89,17 +105,32 @@ describe('buildSchedule', () => {
       installmentCount: 3,
       firstDueDate: '2026-09-05',
     });
-    expect(lines[0]).toEqual({ sequenceNo: 0, dueDate: '2026-08-20', amountMinor: 250_000, isDownPayment: true });
+    expect(lines[0]).toEqual({
+      sequenceNo: 0,
+      dueDate: '2026-08-20',
+      amountMinor: 250_000,
+      isDownPayment: true,
+    });
     expect(sum(lines.map((line) => line.amountMinor))).toBe(1_000_000);
   });
 
   it('clamps due dates to the end of shorter months', () => {
-    const lines = buildSchedule({ ...base, netAmountMinor: 300_000, installmentCount: 3, firstDueDate: '2027-01-31' });
+    const lines = buildSchedule({
+      ...base,
+      netAmountMinor: 300_000,
+      installmentCount: 3,
+      firstDueDate: '2027-01-31',
+    });
     expect(lines.map((line) => line.dueDate)).toEqual(['2027-01-31', '2027-02-28', '2027-03-31']);
   });
 
   it('falls back to minor units when the rounding unit is too coarse', () => {
-    const lines = buildSchedule({ ...base, netAmountMinor: 250, installmentCount: 3, firstDueDate: '2026-01-10' });
+    const lines = buildSchedule({
+      ...base,
+      netAmountMinor: 250,
+      installmentCount: 3,
+      firstDueDate: '2026-01-10',
+    });
     expect(lines.map((line) => line.amountMinor)).toEqual([83, 83, 84]);
   });
 
@@ -107,7 +138,12 @@ describe('buildSchedule', () => {
     for (const net of [1, 99, 1_234_567, 25_000_000, 999_999_999]) {
       for (const count of [1, 2, 7, 10, 12, 36]) {
         if (net < count) continue;
-        const lines = buildSchedule({ ...base, netAmountMinor: net, installmentCount: count, firstDueDate: '2026-02-28' });
+        const lines = buildSchedule({
+          ...base,
+          netAmountMinor: net,
+          installmentCount: count,
+          firstDueDate: '2026-02-28',
+        });
         expect(sum(lines.map((line) => line.amountMinor))).toBe(net);
         expect(lines.every((line) => line.amountMinor > 0)).toBe(true);
       }
@@ -116,22 +152,47 @@ describe('buildSchedule', () => {
 
   it('rejects invalid plans', () => {
     expectCode(
-      () => buildSchedule({ ...base, netAmountMinor: 100, downPaymentMinor: 200, installmentCount: 1, firstDueDate: '2026-01-01' }),
+      () =>
+        buildSchedule({
+          ...base,
+          netAmountMinor: 100,
+          downPaymentMinor: 200,
+          installmentCount: 1,
+          firstDueDate: '2026-01-01',
+        }),
       'FINANCE_INVALID_PLAN',
     );
     expectCode(
-      () => buildSchedule({ ...base, netAmountMinor: 2, installmentCount: 3, firstDueDate: '2026-01-01' }),
+      () =>
+        buildSchedule({
+          ...base,
+          netAmountMinor: 2,
+          installmentCount: 3,
+          firstDueDate: '2026-01-01',
+        }),
       'FINANCE_INVALID_PLAN',
     );
     expectCode(
-      () => buildSchedule({ ...base, netAmountMinor: 1000, downPaymentMinor: 100, installmentCount: 2, firstDueDate: '2026-01-01' }),
+      () =>
+        buildSchedule({
+          ...base,
+          netAmountMinor: 1000,
+          downPaymentMinor: 100,
+          installmentCount: 2,
+          firstDueDate: '2026-01-01',
+        }),
       'FINANCE_INVALID_PLAN',
     );
   });
 });
 
 describe('allocation', () => {
-  const receivable = (id: string, dueDate: string, outstandingMinor: number, extra: Partial<OpenReceivable> = {}): OpenReceivable => ({
+  const receivable = (
+    id: string,
+    dueDate: string,
+    outstandingMinor: number,
+    extra: Partial<OpenReceivable> = {},
+  ): OpenReceivable => ({
     id,
     kind: 'installment',
     sequenceNo: null,
@@ -162,9 +223,17 @@ describe('allocation', () => {
   });
 
   it('validates manual allocations', () => {
-    const open = new Map([['a', receivable('a', '2026-01-15', 1_000)], ['b', receivable('b', '2026-02-15', 1_000)]]);
-    expect(validateManualAllocation(1_500, [{ receivableId: 'b', amountMinor: 1_000 }], open)).toHaveLength(1);
-    expectCode(() => validateManualAllocation(1_500, [{ receivableId: 'a', amountMinor: 1_001 }], open), 'FINANCE_ALLOCATION_EXCEEDS_OUTSTANDING');
+    const open = new Map([
+      ['a', receivable('a', '2026-01-15', 1_000)],
+      ['b', receivable('b', '2026-02-15', 1_000)],
+    ]);
+    expect(
+      validateManualAllocation(1_500, [{ receivableId: 'b', amountMinor: 1_000 }], open),
+    ).toHaveLength(1);
+    expectCode(
+      () => validateManualAllocation(1_500, [{ receivableId: 'a', amountMinor: 1_001 }], open),
+      'FINANCE_ALLOCATION_EXCEEDS_OUTSTANDING',
+    );
     expectCode(
       () =>
         validateManualAllocation(
@@ -177,7 +246,10 @@ describe('allocation', () => {
         ),
       'FINANCE_ALLOCATION_EXCEEDS_PAYMENT',
     );
-    expectCode(() => validateManualAllocation(100, [{ receivableId: 'zzz', amountMinor: 1 }], open), 'FINANCE_RECEIVABLE_NOT_OPEN');
+    expectCode(
+      () => validateManualAllocation(100, [{ receivableId: 'zzz', amountMinor: 1 }], open),
+      'FINANCE_RECEIVABLE_NOT_OPEN',
+    );
     expectCode(
       () =>
         validateManualAllocation(

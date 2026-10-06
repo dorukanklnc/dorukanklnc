@@ -50,7 +50,11 @@ export class OrganizationService {
   async update(actor: Actor, input: UpdateOrganizationRequest): Promise<Organization> {
     await this.db.transaction(actor.tenantScope(), async (tx) => {
       const [before] = await tx
-        .select({ name: organizations.name, legalName: organizations.legalName, timezone: organizations.timezone })
+        .select({
+          name: organizations.name,
+          legalName: organizations.legalName,
+          timezone: organizations.timezone,
+        })
         .from(organizations)
         .where(eq(organizations.id, actor.organizationId))
         .for('update');

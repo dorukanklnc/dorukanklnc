@@ -73,10 +73,17 @@ export interface SeedSummary {
  * structure, students with guardians and a realistic collections history relative to `today`.
  * Runs as the system role. Refuses to run twice.
  */
-export async function seedDemoData(config: AppConfig, options: SeedOptions = {}): Promise<SeedSummary> {
+export async function seedDemoData(
+  config: AppConfig,
+  options: SeedOptions = {},
+): Promise<SeedSummary> {
   const log = options.log ?? ((message: string) => console.log(message));
   const today = options.today ?? todayIn(TIMEZONE);
-  const pool = createPool({ connectionString: config.DATABASE_SYSTEM_URL, max: 2, applicationName: 'campusos-seed' });
+  const pool = createPool({
+    connectionString: config.DATABASE_SYSTEM_URL,
+    max: 2,
+    applicationName: 'campusos-seed',
+  });
   const db = createDatabase(pool);
   const fieldEncryption = new FieldEncryptionService(config);
   const summary: SeedSummary = { organizations: {}, today };
@@ -92,7 +99,11 @@ export async function seedDemoData(config: AppConfig, options: SeedOptions = {})
       return summary;
     }
 
-    const passwordHash = await hash(DEMO_PASSWORD, { memoryCost: 19_456, timeCost: 2, parallelism: 1 });
+    const passwordHash = await hash(DEMO_PASSWORD, {
+      memoryCost: 19_456,
+      timeCost: 2,
+      parallelism: 1,
+    });
     await db.insert(users).values({
       email: PLATFORM_ADMIN.email,
       fullName: PLATFORM_ADMIN.fullName,
@@ -122,7 +133,11 @@ interface SeedContext {
   fieldEncryption: FieldEncryptionService;
 }
 
-async function seedOrganization(tx: Transaction, definition: DemoOrganization, context: SeedContext) {
+async function seedOrganization(
+  tx: Transaction,
+  definition: DemoOrganization,
+  context: SeedContext,
+) {
   const random = createRandom(definition.seed);
   const [firstBranch, ...otherBranches] = definition.branches;
   if (!firstBranch) throw new Error('Demo organization needs a branch');
@@ -146,7 +161,13 @@ async function seedOrganization(tx: Transaction, definition: DemoOrganization, c
   for (const branch of otherBranches) {
     const [row] = await tx
       .insert(branches)
-      .values({ organizationId, code: branch.code, name: branch.name, city: branch.city, district: branch.district })
+      .values({
+        organizationId,
+        code: branch.code,
+        name: branch.name,
+        city: branch.city,
+        district: branch.district,
+      })
       .returning({ id: branches.id });
     branchIds.set(branch.code, row!.id);
   }
@@ -175,7 +196,13 @@ async function seedOrganization(tx: Transaction, definition: DemoOrganization, c
   for (const [index, grade] of definition.grades.entries()) {
     const [row] = await tx
       .insert(gradeLevels)
-      .values({ organizationId, code: grade.code, name: grade.name, stage: grade.stage, sortOrder: index })
+      .values({
+        organizationId,
+        code: grade.code,
+        name: grade.name,
+        stage: grade.stage,
+        sortOrder: index,
+      })
       .returning({ id: gradeLevels.id });
     gradeIds.set(grade.code, row!.id);
   }
@@ -204,9 +231,13 @@ async function seedOrganization(tx: Transaction, definition: DemoOrganization, c
       }),
     );
     if (!member.allBranches && member.branches.length > 0) {
-      await tx
-        .insert(membershipBranches)
-        .values(member.branches.map((code) => ({ organizationId, membershipId, branchId: branchId(code) })));
+      await tx.insert(membershipBranches).values(
+        member.branches.map((code) => ({
+          organizationId,
+          membershipId,
+          branchId: branchId(code),
+        })),
+      );
     }
     if (member.personnel) {
       const [firstName, ...rest] = member.fullName.split(' ');
@@ -304,11 +335,16 @@ async function seedOrganization(tx: Transaction, definition: DemoOrganization, c
     for (let index = 0; index < definition.studentsPerClass; index++) {
       const female = random.chance(0.5);
       const sibling: boolean = previousGuardians !== null && random.chance(0.15);
-      const lastName: string = sibling && previousGuardians ? previousGuardians.surname : random.pick(SURNAMES);
+      const lastName: string =
+        sibling && previousGuardians ? previousGuardians.surname : random.pick(SURNAMES);
       const firstName = random.pick(female ? FEMALE_NAMES : MALE_NAMES);
       const grade = Number(classDefinition.grade);
       const birthYear = startYear - (grade + 6) + (random.chance(0.3) ? -1 : 0);
-      const studentNumber = await nextSequenceValue(tx, { organizationId, key: 'student_number', start: 1001 });
+      const studentNumber = await nextSequenceValue(tx, {
+        organizationId,
+        key: 'student_number',
+        start: 1001,
+      });
       const nationalId =
         definition.slug === 'atlas' && nationalIdIndex < TEST_NATIONAL_IDS.length && index === 0
           ? TEST_NATIONAL_IDS[nationalIdIndex++]
@@ -329,10 +365,15 @@ async function seedOrganization(tx: Transaction, definition: DemoOrganization, c
           nationalIdHash: protectedId?.hash ?? null,
           nationalIdLast4: protectedId?.last4 ?? null,
           status: 'active',
-          enrolledOn: grade > 9 && random.chance(0.6) ? formatIsoDate(startYear - (grade - 9), 9, 1) : yearStart,
+          enrolledOn:
+            grade > 9 && random.chance(0.6)
+              ? formatIsoDate(startYear - (grade - 9), 9, 1)
+              : yearStart,
           address: `${random.pick(['Moda', 'Fenerbahçe', 'Göztepe', 'Kozyatağı', 'Bahçelievler', 'Kavaklıdere'])} Mah. Kurgu Sok. No:${random.int(1, 80)}`,
           // Registered during the spring/summer registration season, not "today".
-          createdAt: new Date(`${formatIsoDate(startYear, random.int(3, 7), random.int(1, 28))}T10:00:00+03:00`),
+          createdAt: new Date(
+            `${formatIsoDate(startYear, random.int(3, 7), random.int(1, 28))}T10:00:00+03:00`,
+          ),
         })
         .returning({ id: students.id });
       const studentId = student!.id;
@@ -344,7 +385,9 @@ async function seedOrganization(tx: Transaction, definition: DemoOrganization, c
         guardianIds = previousGuardians.ids;
       } else {
         guardianIds = [];
-        const parents = random.chance(0.75) ? (['mother', 'father'] as const) : ([random.pick(['mother', 'father'] as const)] as const);
+        const parents = random.chance(0.75)
+          ? (['mother', 'father'] as const)
+          : ([random.pick(['mother', 'father'] as const)] as const);
         for (const relationship of parents) {
           const guardianFirst = random.pick(relationship === 'mother' ? FEMALE_NAMES : MALE_NAMES);
           const [guardian] = await tx
@@ -366,7 +409,12 @@ async function seedOrganization(tx: Transaction, definition: DemoOrganization, c
           organizationId,
           studentId,
           guardianId,
-          relationship: guardianIds.length === 2 ? (guardianIndex === 0 ? 'mother' : 'father') : random.pick(['mother', 'father'] as const),
+          relationship:
+            guardianIds.length === 2
+              ? guardianIndex === 0
+                ? 'mother'
+                : 'father'
+              : random.pick(['mother', 'father'] as const),
           isPrimaryContact: guardianIndex === 0,
           isFinanciallyResponsible: guardianIndex === 0,
         });
@@ -421,7 +469,11 @@ async function seedOrganization(tx: Transaction, definition: DemoOrganization, c
 }
 
 async function upsertUser(tx: Transaction, email: string, fullName: string, passwordHash: string) {
-  const [existing] = await tx.select({ id: users.id }).from(users).where(eq(users.email, email)).limit(1);
+  const [existing] = await tx
+    .select({ id: users.id })
+    .from(users)
+    .where(eq(users.email, email))
+    .limit(1);
   if (existing) return existing.id;
   const [created] = await tx
     .insert(users)
@@ -451,11 +503,23 @@ interface StudentFinanceInput {
   today: string;
 }
 
-async function seedStudentFinance(tx: Transaction, random: Random, input: StudentFinanceInput): Promise<number> {
+async function seedStudentFinance(
+  tx: Transaction,
+  random: Random,
+  input: StudentFinanceInput,
+): Promise<number> {
   const { organizationId, branchId, studentId } = input;
   const profile: PayerProfile = random.pick([
-    'on_time', 'on_time', 'on_time', 'on_time', 'on_time', 'on_time',
-    'late_last', 'late_last', 'chronic', 'prepaid',
+    'on_time',
+    'on_time',
+    'on_time',
+    'on_time',
+    'on_time',
+    'on_time',
+    'late_last',
+    'late_last',
+    'chronic',
+    'prepaid',
   ] as const);
 
   const [account] = await tx
@@ -465,11 +529,28 @@ async function seedStudentFinance(tx: Transaction, random: Random, input: Studen
   const accountId = account!.id;
 
   const discounts: DiscountInput[] = [];
-  if (input.sibling) discounts.push({ kind: 'percentage', category: 'sibling', label: 'Kardeş indirimi', percentageBps: 1000 });
+  if (input.sibling)
+    discounts.push({
+      kind: 'percentage',
+      category: 'sibling',
+      label: 'Kardeş indirimi',
+      percentageBps: 1000,
+    });
   if (random.chance(0.08)) {
-    discounts.push({ kind: 'percentage', category: 'scholarship', label: 'Başarı bursu', percentageBps: random.pick([2500, 5000]) });
+    discounts.push({
+      kind: 'percentage',
+      category: 'scholarship',
+      label: 'Başarı bursu',
+      percentageBps: random.pick([2500, 5000]),
+    });
   }
-  if (profile === 'prepaid') discounts.push({ kind: 'percentage', category: 'early_payment', label: 'Erken ödeme indirimi', percentageBps: 500 });
+  if (profile === 'prepaid')
+    discounts.push({
+      kind: 'percentage',
+      category: 'early_payment',
+      label: 'Erken ödeme indirimi',
+      percentageBps: 500,
+    });
 
   const calculation = applyDiscounts(input.tuitionMinor, discounts);
   const downPaymentMinor = Math.floor((calculation.netAmountMinor * 0.2) / 100) * 100;
@@ -583,26 +664,45 @@ async function seedStudentFinance(tx: Transaction, random: Random, input: Studen
         dueDate,
       })
       .returning({ id: receivables.id, createdAt: receivables.createdAt });
-    open.push({ id: row!.id, kind: 'charge', sequenceNo: null, dueDate, outstandingMinor: BOOKS_FEE_MINOR, createdAt: row!.createdAt });
+    open.push({
+      id: row!.id,
+      kind: 'charge',
+      sequenceNo: null,
+      dueDate,
+      outstandingMinor: BOOKS_FEE_MINOR,
+      createdAt: row!.createdAt,
+    });
   }
 
   // Payment history up to yesterday, shaped by the payer profile.
-  const dueBeforeToday = open.filter((receivable) => receivable.dueDate < input.today).sort((a, b) => (a.dueDate < b.dueDate ? -1 : 1));
+  const dueBeforeToday = open
+    .filter((receivable) => receivable.dueDate < input.today)
+    .sort((a, b) => (a.dueDate < b.dueDate ? -1 : 1));
   const plannedPayments: { date: string; amountMinor: number }[] = [];
   switch (profile) {
     case 'on_time':
       for (const receivable of dueBeforeToday) {
-        plannedPayments.push({ date: addDays(receivable.dueDate, -random.int(0, 4)), amountMinor: receivable.outstandingMinor });
+        plannedPayments.push({
+          date: addDays(receivable.dueDate, -random.int(0, 4)),
+          amountMinor: receivable.outstandingMinor,
+        });
       }
       break;
     case 'late_last':
       for (const receivable of dueBeforeToday.slice(0, -1)) {
-        plannedPayments.push({ date: addDays(receivable.dueDate, random.int(0, 6)), amountMinor: receivable.outstandingMinor });
+        plannedPayments.push({
+          date: addDays(receivable.dueDate, random.int(0, 6)),
+          amountMinor: receivable.outstandingMinor,
+        });
       }
       break;
     case 'chronic': {
       const first = dueBeforeToday[0];
-      if (first) plannedPayments.push({ date: addDays(first.dueDate, random.int(8, 15)), amountMinor: Math.floor(first.outstandingMinor / 2 / 100) * 100 });
+      if (first)
+        plannedPayments.push({
+          date: addDays(first.dueDate, random.int(8, 15)),
+          amountMinor: Math.floor(first.outstandingMinor / 2 / 100) * 100,
+        });
       break;
     }
     case 'prepaid': {
@@ -612,7 +712,10 @@ async function seedStudentFinance(tx: Transaction, random: Random, input: Studen
           .filter((receivable) => receivable.kind === 'installment')
           .slice(0, 4)
           .reduce((sum, receivable) => sum + receivable.outstandingMinor, 0);
-        plannedPayments.push({ date: addDays(first.dueDate, -random.int(5, 10)), amountMinor: total });
+        plannedPayments.push({
+          date: addDays(first.dueDate, -random.int(5, 10)),
+          amountMinor: total,
+        });
       }
       break;
     }
@@ -628,7 +731,13 @@ async function seedStudentFinance(tx: Transaction, random: Random, input: Studen
       receiptYear,
       await nextSequenceValue(tx, { organizationId, key: 'receipt', period: receiptYear }),
     );
-    const method: PaymentMethod = random.pick(['bank_transfer', 'bank_transfer', 'credit_card', 'pos', 'cash']);
+    const method: PaymentMethod = random.pick([
+      'bank_transfer',
+      'bank_transfer',
+      'credit_card',
+      'pos',
+      'cash',
+    ]);
     const hour = String(random.int(9, 17)).padStart(2, '0');
     const minute = String(random.int(0, 59)).padStart(2, '0');
     const [payment] = await tx

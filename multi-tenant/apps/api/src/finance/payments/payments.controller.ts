@@ -13,7 +13,13 @@ import {
 } from '@repo/contracts';
 import type { Response } from 'express';
 import { UuidParam } from '../../platform/http/params.js';
-import { ApiZodBody, ApiZodQuery, ApiZodResponse, ValidBody, ValidQuery } from '../../platform/http/zod.js';
+import {
+  ApiZodBody,
+  ApiZodQuery,
+  ApiZodResponse,
+  ValidBody,
+  ValidQuery,
+} from '../../platform/http/zod.js';
 import type { Actor } from '../../core/authorization/actor.js';
 import { CurrentActor, RequirePermission } from '../../core/authorization/decorators.js';
 import { PaymentsService } from './payments.service.js';
@@ -41,7 +47,11 @@ export class PaymentsController {
   /** 201 for a new payment, 200 when the idempotency key replays an earlier request. */
   @RequirePermission('finance.payments.create')
   @Post()
-  @ApiHeader({ name: 'Idempotency-Key', required: true, description: 'Unique per submission (e.g. a UUID)' })
+  @ApiHeader({
+    name: 'Idempotency-Key',
+    required: true,
+    description: 'Unique per submission (e.g. a UUID)',
+  })
   @ApiZodBody(recordPaymentRequestSchema)
   @ApiZodResponse(201, paymentSchema)
   async record(

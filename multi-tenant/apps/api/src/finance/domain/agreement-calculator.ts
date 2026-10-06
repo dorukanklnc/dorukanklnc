@@ -13,7 +13,10 @@ export interface DiscountResult {
  * Applies discounts in order; each percentage applies to the amount remaining after the previous
  * discounts (see FINANCE_MODEL §4). Fixed discounts larger than the remainder are rejected.
  */
-export function applyDiscounts(grossAmountMinor: number, discounts: readonly DiscountInput[]): DiscountResult {
+export function applyDiscounts(
+  grossAmountMinor: number,
+  discounts: readonly DiscountInput[],
+): DiscountResult {
   assertAmount(grossAmountMinor, 'grossAmountMinor');
   let remaining = grossAmountMinor;
   const lines: DiscountLine[] = [];
@@ -23,7 +26,11 @@ export function applyDiscounts(grossAmountMinor: number, discounts: readonly Dis
         ? applyBasisPoints(remaining, discount.percentageBps)
         : discount.amountMinor;
     if (amountMinor > remaining) {
-      throw new AppError('FINANCE_DISCOUNT_EXCEEDS_AMOUNT', 422, 'Discount exceeds the remaining amount');
+      throw new AppError(
+        'FINANCE_DISCOUNT_EXCEEDS_AMOUNT',
+        422,
+        'Discount exceeds the remaining amount',
+      );
     }
     remaining -= amountMinor;
     lines.push({
@@ -55,14 +62,20 @@ export function buildSchedule(input: ScheduleInput): ScheduleLine[] {
   const net = assertAmount(input.netAmountMinor, 'netAmountMinor');
   const down = assertAmount(input.downPaymentMinor, 'downPaymentMinor');
   const count = input.installmentCount;
-  if (!Number.isInteger(count) || count < 1 || count > 36) throw invalidPlan('Installment count must be 1–36');
+  if (!Number.isInteger(count) || count < 1 || count > 36)
+    throw invalidPlan('Installment count must be 1–36');
   if (down > net) throw invalidPlan('Down payment exceeds the net amount');
 
   const lines: ScheduleLine[] = [];
   if (down > 0) {
     if (!input.downPaymentDueDate) throw invalidPlan('Down payment due date is required');
     parseIsoDate(input.downPaymentDueDate);
-    lines.push({ sequenceNo: 0, dueDate: input.downPaymentDueDate, amountMinor: down, isDownPayment: true });
+    lines.push({
+      sequenceNo: 0,
+      dueDate: input.downPaymentDueDate,
+      amountMinor: down,
+      isDownPayment: true,
+    });
   }
 
   const remaining = net - down;

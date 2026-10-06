@@ -233,7 +233,11 @@ export const studentGuardians = pgTable(
       foreignColumns: [guardians.organizationId, guardians.id],
     }),
     index('student_guardians_guardian_idx').on(t.organizationId, t.guardianId),
-    enumCheck('student_guardians_relationship_ck', 'relationship', guardianRelationshipSchema.options),
+    enumCheck(
+      'student_guardians_relationship_ck',
+      'relationship',
+      guardianRelationshipSchema.options,
+    ),
   ],
 );
 

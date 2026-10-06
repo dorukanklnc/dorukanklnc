@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { RequestContext } from '../../platform/context/request-context.js';
-import { type ActorType, type AuditChanges, auditLogs } from '../../platform/database/schema/index.js';
+import {
+  type ActorType,
+  type AuditChanges,
+  auditLogs,
+} from '../../platform/database/schema/index.js';
 import type { DbExecutor } from '../../platform/database/types.js';
 
 export interface AuditActor {

@@ -14,4 +14,10 @@ export function agingBucket(overdueDays: number): AgingBucket {
   return 'd90_plus';
 }
 
-export const AGING_BUCKETS: readonly AgingBucket[] = ['not_due', 'd1_30', 'd31_60', 'd61_90', 'd90_plus'];
+export const AGING_BUCKETS: readonly AgingBucket[] = [
+  'not_due',
+  'd1_30',
+  'd31_60',
+  'd61_90',
+  'd90_plus',
+];

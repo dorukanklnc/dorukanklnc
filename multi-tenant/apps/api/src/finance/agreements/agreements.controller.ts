@@ -25,7 +25,10 @@ export class AgreementsController {
   @HttpCode(200)
   @ApiZodBody(agreementPreviewRequestSchema)
   @ApiZodResponse(200, agreementPreviewSchema)
-  preview(@CurrentActor() actor: Actor, @ValidBody(agreementPreviewRequestSchema) body: AgreementPreviewRequest) {
+  preview(
+    @CurrentActor() actor: Actor,
+    @ValidBody(agreementPreviewRequestSchema) body: AgreementPreviewRequest,
+  ) {
     return this.agreements.preview(actor, body);
   }
 
@@ -33,7 +36,10 @@ export class AgreementsController {
   @Post('agreements')
   @ApiZodBody(createAgreementRequestSchema)
   @ApiZodResponse(201, agreementSchema)
-  create(@CurrentActor() actor: Actor, @ValidBody(createAgreementRequestSchema) body: CreateAgreementRequest) {
+  create(
+    @CurrentActor() actor: Actor,
+    @ValidBody(createAgreementRequestSchema) body: CreateAgreementRequest,
+  ) {
     return this.agreements.create(actor, body);
   }
 

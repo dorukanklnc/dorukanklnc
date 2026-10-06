@@ -25,7 +25,13 @@ export class RedisThrottlerStorage implements ThrottlerStorage {
     this.redis = new Redis(url, { lazyConnect: false, maxRetriesPerRequest: 2 });
   }
 
-  async increment(key: string, ttl: number, limit: number, blockDuration: number, throttlerName: string) {
+  async increment(
+    key: string,
+    ttl: number,
+    limit: number,
+    blockDuration: number,
+    throttlerName: string,
+  ) {
     const base = `ratelimit:${throttlerName}:${key}`;
     const [totalHits, ttlMs, blocked, blockMs] = (await this.redis.eval(
       SCRIPT,

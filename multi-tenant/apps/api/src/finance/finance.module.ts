@@ -28,7 +28,11 @@ import { FinanceSummaryService } from './summary/finance-summary.service.js';
     PaymentsService,
     FinanceSummaryService,
     MockPaymentProvider,
-    { provide: PAYMENT_PROVIDERS, inject: [MockPaymentProvider], useFactory: (mock: MockPaymentProvider) => [mock] },
+    {
+      provide: PAYMENT_PROVIDERS,
+      inject: [MockPaymentProvider],
+      useFactory: (mock: MockPaymentProvider) => [mock],
+    },
     PaymentProviderRegistry,
     PaymentWebhookService,
     PaymentLinksService,

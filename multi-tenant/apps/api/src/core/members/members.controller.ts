@@ -11,7 +11,13 @@ import {
   updateMemberRequestSchema,
 } from '@repo/contracts';
 import { UuidParam } from '../../platform/http/params.js';
-import { ApiZodBody, ApiZodQuery, ApiZodResponse, ValidBody, ValidQuery } from '../../platform/http/zod.js';
+import {
+  ApiZodBody,
+  ApiZodQuery,
+  ApiZodResponse,
+  ValidBody,
+  ValidQuery,
+} from '../../platform/http/zod.js';
 import type { Actor } from '../authorization/actor.js';
 import { CurrentActor, RequirePermission } from '../authorization/decorators.js';
 import { MembersService } from './members.service.js';
@@ -40,7 +46,10 @@ export class MembersController {
   @Post('invitations')
   @ApiZodBody(inviteMemberRequestSchema)
   @ApiZodResponse(201, memberSchema)
-  invite(@CurrentActor() actor: Actor, @ValidBody(inviteMemberRequestSchema) body: InviteMemberRequest) {
+  invite(
+    @CurrentActor() actor: Actor,
+    @ValidBody(inviteMemberRequestSchema) body: InviteMemberRequest,
+  ) {
     return this.members.invite(actor, body);
   }
 

@@ -1,9 +1,19 @@
 import type { AllocationInput } from '@repo/contracts';
 import { and, asc, eq } from 'drizzle-orm';
-import { paymentAllocations, payments, receivables, type PaymentMethod } from '../../platform/database/schema/index.js';
+import {
+  paymentAllocations,
+  payments,
+  receivables,
+  type PaymentMethod,
+} from '../../platform/database/schema/index.js';
 import { formatReceiptNumber, nextSequenceValue } from '../../platform/database/sequences.js';
 import type { DbExecutor } from '../../platform/database/types.js';
-import { type AllocationLine, type OpenReceivable, allocateOldestFirst, validateManualAllocation } from '../domain/allocation.js';
+import {
+  type AllocationLine,
+  type OpenReceivable,
+  allocateOldestFirst,
+  validateManualAllocation,
+} from '../domain/allocation.js';
 import { todayIn } from '../domain/dates.js';
 
 export interface RecordPaymentParams {
@@ -42,7 +52,10 @@ export interface RecordedPayment {
  * Open receivables of the account are locked (FOR UPDATE) before allocating, so concurrent
  * payments serialize per account; database constraints remain the final guard.
  */
-export async function recordPayment(db: DbExecutor, params: RecordPaymentParams): Promise<RecordedPayment> {
+export async function recordPayment(
+  db: DbExecutor,
+  params: RecordPaymentParams,
+): Promise<RecordedPayment> {
   const openRows = await db
     .select({
       id: receivables.id,
@@ -85,7 +98,11 @@ export async function recordPayment(db: DbExecutor, params: RecordPaymentParams)
   const receiptYear = todayIn(params.timezone, params.receivedAt).slice(0, 4);
   const receiptNumber = formatReceiptNumber(
     receiptYear,
-    await nextSequenceValue(db, { organizationId: params.organizationId, key: 'receipt', period: receiptYear }),
+    await nextSequenceValue(db, {
+      organizationId: params.organizationId,
+      key: 'receipt',
+      period: receiptYear,
+    }),
   );
 
   const [payment] = await db

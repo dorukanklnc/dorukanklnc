@@ -51,7 +51,10 @@ export class StudentsService {
     return this.db.transaction(actor.tenantScope(), async (tx) => {
       const where = and(
         eq(students.organizationId, actor.organizationId),
-        studentScopePredicate(actor, 'students.read', { studentId: students.id, branchId: students.branchId }),
+        studentScopePredicate(actor, 'students.read', {
+          studentId: students.id,
+          branchId: students.branchId,
+        }),
         query.includeArchived ? undefined : isNull(students.archivedAt),
         query.status ? eq(students.status, query.status) : undefined,
         query.branchId ? eq(students.branchId, query.branchId) : undefined,
@@ -59,7 +62,9 @@ export class StudentsService {
           ? sql`EXISTS (SELECT 1 FROM class_enrollments ce WHERE ce.organization_id = ${students.organizationId}
               AND ce.student_id = ${students.id} AND ce.class_id = ${query.classId} AND ce.status = 'active')`
           : undefined,
-        query.q ? sql`${students.searchText} LIKE '%' || app.search_normalize(${query.q}) || '%'` : undefined,
+        query.q
+          ? sql`${students.searchText} LIKE '%' || app.search_normalize(${query.q}) || '%'`
+          : undefined,
       );
 
       const direction = query.direction === 'desc' ? desc : asc;
@@ -70,7 +75,10 @@ export class StudentsService {
             ? [direction(students.createdAt)]
             : query.sort === 'status'
               ? [direction(students.status), asc(sql`${students.lastName} ${TR}`)]
-              : [direction(sql`${students.lastName} ${TR}`), direction(sql`${students.firstName} ${TR}`)];
+              : [
+                  direction(sql`${students.lastName} ${TR}`),
+                  direction(sql`${students.firstName} ${TR}`),
+                ];
 
       const [total] = await tx.select({ value: count() }).from(students).where(where);
       const rows = await tx
@@ -99,7 +107,11 @@ export class StudentsService {
   async revealNationalId(actor: Actor, studentId: string): Promise<{ nationalId: string | null }> {
     return this.db.transaction(actor.tenantScope(), async (tx) => {
       const student = await this.load(tx, actor, studentId);
-      actor.assertWithinScope('students.sensitive.read', { branchIds: [student.branch.id] }, 'Student');
+      actor.assertWithinScope(
+        'students.sensitive.read',
+        { branchIds: [student.branch.id] },
+        'Student',
+      );
       const [row] = await tx
         .select({ ciphertext: students.nationalIdCiphertext })
         .from(students)
@@ -230,7 +242,11 @@ export class StudentsService {
     });
   }
 
-  async update(actor: Actor, studentId: string, input: UpdateStudentRequest): Promise<StudentDetail> {
+  async update(
+    actor: Actor,
+    studentId: string,
+    input: UpdateStudentRequest,
+  ): Promise<StudentDetail> {
     return this.db.transaction(actor.tenantScope(), async (tx) => {
       const [current] = await tx
         .select({
@@ -287,7 +303,9 @@ export class StudentsService {
         await tx
           .update(students)
           .set({ ...next, ...nationalIdColumns })
-          .where(and(eq(students.organizationId, actor.organizationId), eq(students.id, studentId)));
+          .where(
+            and(eq(students.organizationId, actor.organizationId), eq(students.id, studentId)),
+          );
         await this.audit.record(tx, {
           organizationId: actor.organizationId,
           branchId,
@@ -362,67 +380,74 @@ export class StudentsService {
         and(
           eq(students.organizationId, actor.organizationId),
           eq(students.id, studentId),
-          studentScopePredicate(actor, 'students.read', { studentId: students.id, branchId: students.branchId }),
+          studentScopePredicate(actor, 'students.read', {
+            studentId: students.id,
+            branchId: students.branchId,
+          }),
         ),
       )
       .limit(1);
     if (!row) throw Errors.notFound('Student');
 
-    const [classRows, enrollmentRows, guardianRows] = await Promise.all([
-      tx
-        .select({ id: classes.id, name: classes.name })
-        .from(classEnrollments)
-        .innerJoin(classes, eq(classes.id, classEnrollments.classId))
-        .innerJoin(academicYears, eq(academicYears.id, classes.academicYearId))
-        .where(
-          and(
-            eq(classEnrollments.organizationId, actor.organizationId),
-            eq(classEnrollments.studentId, studentId),
-            eq(classEnrollments.status, 'active'),
-            eq(academicYears.isCurrent, true),
-          ),
-        )
-        .orderBy(asc(classes.name)),
-      tx
-        .select({
-          id: enrollments.id,
-          status: enrollments.status,
-          enrolledOn: enrollments.enrolledOn,
-          academicYearId: academicYears.id,
-          academicYearName: academicYears.name,
-          gradeLevelId: gradeLevels.id,
-          gradeLevelName: gradeLevels.name,
-        })
-        .from(enrollments)
-        .innerJoin(academicYears, eq(academicYears.id, enrollments.academicYearId))
-        .leftJoin(gradeLevels, eq(gradeLevels.id, enrollments.gradeLevelId))
-        .where(and(eq(enrollments.organizationId, actor.organizationId), eq(enrollments.studentId, studentId)))
-        .orderBy(desc(academicYears.isCurrent), desc(academicYears.startsOn))
-        .limit(1),
-      actor.can('guardians.read')
-        ? tx
-            .select({
-              id: guardians.id,
-              firstName: guardians.firstName,
-              lastName: guardians.lastName,
-              phone: guardians.phone,
-              email: guardians.email,
-              relationship: studentGuardians.relationship,
-              isPrimaryContact: studentGuardians.isPrimaryContact,
-              isFinanciallyResponsible: studentGuardians.isFinanciallyResponsible,
-            })
-            .from(studentGuardians)
-            .innerJoin(guardians, eq(guardians.id, studentGuardians.guardianId))
-            .where(
-              and(
-                eq(studentGuardians.organizationId, actor.organizationId),
-                eq(studentGuardians.studentId, studentId),
-                isNull(guardians.archivedAt),
-              ),
-            )
-            .orderBy(desc(studentGuardians.isPrimaryContact), asc(studentGuardians.createdAt))
-        : Promise.resolve(null),
-    ]);
+    // Sequential on purpose: queries inside one transaction share a single connection.
+    const classRows = await tx
+      .select({ id: classes.id, name: classes.name })
+      .from(classEnrollments)
+      .innerJoin(classes, eq(classes.id, classEnrollments.classId))
+      .innerJoin(academicYears, eq(academicYears.id, classes.academicYearId))
+      .where(
+        and(
+          eq(classEnrollments.organizationId, actor.organizationId),
+          eq(classEnrollments.studentId, studentId),
+          eq(classEnrollments.status, 'active'),
+          eq(academicYears.isCurrent, true),
+        ),
+      )
+      .orderBy(asc(classes.name));
+    const enrollmentRows = await tx
+      .select({
+        id: enrollments.id,
+        status: enrollments.status,
+        enrolledOn: enrollments.enrolledOn,
+        academicYearId: academicYears.id,
+        academicYearName: academicYears.name,
+        gradeLevelId: gradeLevels.id,
+        gradeLevelName: gradeLevels.name,
+      })
+      .from(enrollments)
+      .innerJoin(academicYears, eq(academicYears.id, enrollments.academicYearId))
+      .leftJoin(gradeLevels, eq(gradeLevels.id, enrollments.gradeLevelId))
+      .where(
+        and(
+          eq(enrollments.organizationId, actor.organizationId),
+          eq(enrollments.studentId, studentId),
+        ),
+      )
+      .orderBy(desc(academicYears.isCurrent), desc(academicYears.startsOn))
+      .limit(1);
+    const guardianRows = await (actor.can('guardians.read')
+      ? tx
+          .select({
+            id: guardians.id,
+            firstName: guardians.firstName,
+            lastName: guardians.lastName,
+            phone: guardians.phone,
+            email: guardians.email,
+            relationship: studentGuardians.relationship,
+            isPrimaryContact: studentGuardians.isPrimaryContact,
+            isFinanciallyResponsible: studentGuardians.isFinanciallyResponsible,
+          })
+          .from(studentGuardians)
+          .innerJoin(guardians, eq(guardians.id, studentGuardians.guardianId))
+          .where(
+            and(
+              eq(studentGuardians.organizationId, actor.organizationId),
+              eq(studentGuardians.studentId, studentId),
+              isNull(guardians.archivedAt),
+            ),
+          )
+          .orderBy(desc(studentGuardians.isPrimaryContact), asc(studentGuardians.createdAt))
+      : null);
     const enrollment = enrollmentRows[0];
 
     return {
@@ -471,9 +496,13 @@ export class StudentsService {
         })
         .from(classes)
         .innerJoin(academicYears, eq(academicYears.id, classes.academicYearId))
-        .where(and(eq(classes.organizationId, actor.organizationId), eq(classes.id, input.classId)));
+        .where(
+          and(eq(classes.organizationId, actor.organizationId), eq(classes.id, input.classId)),
+        );
       if (!klass || klass.branchId !== input.branchId) {
-        throw Errors.validation([{ path: 'classId', code: 'invalid_class', message: 'Class not found in branch' }]);
+        throw Errors.validation([
+          { path: 'classId', code: 'invalid_class', message: 'Class not found in branch' },
+        ]);
       }
       return {
         classId: input.classId,
@@ -489,19 +518,31 @@ export class StudentsService {
       .where(
         and(
           eq(academicYears.organizationId, actor.organizationId),
-          input.academicYearId ? eq(academicYears.id, input.academicYearId) : eq(academicYears.isCurrent, true),
+          input.academicYearId
+            ? eq(academicYears.id, input.academicYearId)
+            : eq(academicYears.isCurrent, true),
         ),
       )
       .limit(1);
     if (input.academicYearId && !year) {
-      throw Errors.validation([{ path: 'academicYearId', code: 'invalid', message: 'Unknown academic year' }]);
+      throw Errors.validation([
+        { path: 'academicYearId', code: 'invalid', message: 'Unknown academic year' },
+      ]);
     }
     if (input.gradeLevelId) {
       const [grade] = await tx
         .select({ id: gradeLevels.id })
         .from(gradeLevels)
-        .where(and(eq(gradeLevels.organizationId, actor.organizationId), eq(gradeLevels.id, input.gradeLevelId)));
-      if (!grade) throw Errors.validation([{ path: 'gradeLevelId', code: 'invalid', message: 'Unknown grade level' }]);
+        .where(
+          and(
+            eq(gradeLevels.organizationId, actor.organizationId),
+            eq(gradeLevels.id, input.gradeLevelId),
+          ),
+        );
+      if (!grade)
+        throw Errors.validation([
+          { path: 'gradeLevelId', code: 'invalid', message: 'Unknown grade level' },
+        ]);
     }
     return {
       classId: null,
@@ -535,7 +576,10 @@ export class StudentsService {
               isNull(guardians.archivedAt),
             ),
           );
-        if (!existing) throw Errors.validation([{ path: `guardians.${index}`, code: 'invalid', message: 'Unknown guardian' }]);
+        if (!existing)
+          throw Errors.validation([
+            { path: `guardians.${index}`, code: 'invalid', message: 'Unknown guardian' },
+          ]);
       } else {
         const protectedId = input.nationalId ? this.encryption.protect(input.nationalId) : null;
         const [created] = await tx

@@ -20,7 +20,10 @@ export class GuardiansController {
   @Get()
   @ApiZodQuery(guardianListQuerySchema)
   @ApiZodResponse(200, paginatedSchema(guardianListItemSchema))
-  list(@CurrentActor() actor: Actor, @ValidQuery(guardianListQuerySchema) query: GuardianListQuery) {
+  list(
+    @CurrentActor() actor: Actor,
+    @ValidQuery(guardianListQuerySchema) query: GuardianListQuery,
+  ) {
     return this.guardians.list(actor, query);
   }
 }

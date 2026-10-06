@@ -33,7 +33,10 @@ export interface PaymentProvider {
   readonly key: string;
   createPaymentLink(input: CreatePaymentLinkInput): Promise<PaymentLinkResult>;
   /** Verifies the signature and normalizes the event; throws on invalid signatures. */
-  parseWebhook(rawBody: Buffer, headers: Record<string, string | string[] | undefined>): ProviderWebhookEvent;
+  parseWebhook(
+    rawBody: Buffer,
+    headers: Record<string, string | string[] | undefined>,
+  ): ProviderWebhookEvent;
 }
 
 export const PAYMENT_PROVIDERS = Symbol('PAYMENT_PROVIDERS');

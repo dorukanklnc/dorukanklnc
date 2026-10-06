@@ -1,5 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import type { CreateChargeRequest, Paginated, Receivable, ReceivableListQuery } from '@repo/contracts';
+import type {
+  CreateChargeRequest,
+  Paginated,
+  Receivable,
+  ReceivableListQuery,
+} from '@repo/contracts';
 import { type SQL, and, asc, count, desc, eq, gte, lt, lte, sql } from 'drizzle-orm';
 import {
   type ReceivableCategory,
@@ -63,7 +68,8 @@ export interface ReceivableRow {
 
 export function toReceivable(row: ReceivableRow, today: string): Receivable {
   const outstandingMinor = row.amountMinor - row.allocatedMinor;
-  const overdueDays = row.status === 'open' && outstandingMinor > 0 ? daysOverdue(row.dueDate, today) : 0;
+  const overdueDays =
+    row.status === 'open' && outstandingMinor > 0 ? daysOverdue(row.dueDate, today) : 0;
   return {
     id: row.id,
     kind: row.kind,
@@ -113,14 +119,19 @@ export class ReceivablesService {
         query.dueTo ? lte(receivables.dueDate, query.dueTo) : undefined,
         query.studentId ? eq(receivables.studentId, query.studentId) : undefined,
         query.branchId ? eq(receivables.branchId, query.branchId) : undefined,
-        query.q ? sql`${students.searchText} LIKE '%' || app.search_normalize(${query.q}) || '%'` : undefined,
+        query.q
+          ? sql`${students.searchText} LIKE '%' || app.search_normalize(${query.q}) || '%'`
+          : undefined,
       );
       const direction = query.direction === 'desc' ? desc : asc;
       const orderBy: SQL[] =
         query.sort === 'amount'
           ? [direction(sql`${receivables.amountMinor} - ${receivables.allocatedMinor}`)]
           : query.sort === 'student'
-            ? [direction(sql`${students.lastName} COLLATE "tr-x-icu"`), direction(sql`${students.firstName} COLLATE "tr-x-icu"`)]
+            ? [
+                direction(sql`${students.lastName} COLLATE "tr-x-icu"`),
+                direction(sql`${students.firstName} COLLATE "tr-x-icu"`),
+              ]
             : [direction(receivables.dueDate), asc(receivables.sequenceNo)];
 
       const [total] = await tx
@@ -149,7 +160,12 @@ export class ReceivablesService {
   async createCharge(actor: Actor, input: CreateChargeRequest): Promise<Receivable> {
     const today = todayIn(actor.tenant().organization.timezone);
     return this.db.transaction(actor.tenantScope(), async (tx) => {
-      const student = await loadStudentForFinance(tx, actor, input.studentId, 'finance.collections.write');
+      const student = await loadStudentForFinance(
+        tx,
+        actor,
+        input.studentId,
+        'finance.collections.write',
+      );
       const accountId = await findOrCreateAccount(tx, {
         organizationId: actor.organizationId,
         branchId: student.branchId,
@@ -180,7 +196,12 @@ export class ReceivablesService {
         action: 'charge.created',
         resourceType: 'receivable',
         resourceId: charge.id,
-        metadata: { studentId: student.id, amountMinor: input.amountMinor, currency: input.currency, category: input.category },
+        metadata: {
+          studentId: student.id,
+          amountMinor: input.amountMinor,
+          currency: input.currency,
+          category: input.category,
+        },
       });
       await this.outbox.publish(tx, {
         organizationId: actor.organizationId,
@@ -207,7 +228,11 @@ export class ReceivablesService {
     const today = todayIn(actor.tenant().organization.timezone);
     return this.db.transaction(actor.tenantScope(), async (tx) => {
       const [current] = await tx
-        .select({ status: receivables.status, allocatedMinor: receivables.allocatedMinor, branchId: receivables.branchId })
+        .select({
+          status: receivables.status,
+          allocatedMinor: receivables.allocatedMinor,
+          branchId: receivables.branchId,
+        })
         .from(receivables)
         .where(
           and(
@@ -219,12 +244,20 @@ export class ReceivablesService {
         .for('update');
       if (!current) throw Errors.notFound('Receivable');
       if (current.status !== 'open' || current.allocatedMinor > 0) {
-        throw Errors.unprocessable('FINANCE_RECEIVABLE_NOT_OPEN', 'Only unpaid open receivables can be cancelled');
+        throw Errors.unprocessable(
+          'FINANCE_RECEIVABLE_NOT_OPEN',
+          'Only unpaid open receivables can be cancelled',
+        );
       }
       await tx
         .update(receivables)
         .set({ status: 'cancelled', cancelledAt: sql`now()`, cancelReason: reason })
-        .where(and(eq(receivables.organizationId, actor.organizationId), eq(receivables.id, receivableId)));
+        .where(
+          and(
+            eq(receivables.organizationId, actor.organizationId),
+            eq(receivables.id, receivableId),
+          ),
+        );
       await this.audit.record(tx, {
         organizationId: actor.organizationId,
         branchId: current.branchId,
@@ -239,7 +272,12 @@ export class ReceivablesService {
     });
   }
 
-  private async load(tx: Transaction, actor: Actor, receivableId: string, today: string): Promise<Receivable> {
+  private async load(
+    tx: Transaction,
+    actor: Actor,
+    receivableId: string,
+    today: string,
+  ): Promise<Receivable> {
     const [row] = await tx
       .select(receivableColumns)
       .from(receivables)

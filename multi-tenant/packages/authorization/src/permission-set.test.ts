@@ -45,9 +45,9 @@ describe('PermissionSet', () => {
   });
 
   it('detects organization-wide access', () => {
-    expect(PermissionSet.fromGrants(ROLE_TEMPLATES.teacher.grants).hasOrganizationWideAccess()).toBe(
-      false,
-    );
+    expect(
+      PermissionSet.fromGrants(ROLE_TEMPLATES.teacher.grants).hasOrganizationWideAccess(),
+    ).toBe(false);
     expect(PermissionSet.fromGrants(ROLE_TEMPLATES.owner.grants).hasOrganizationWideAccess()).toBe(
       true,
     );

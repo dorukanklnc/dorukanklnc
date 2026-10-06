@@ -46,7 +46,10 @@ export class MockPaymentProvider implements PaymentProvider {
     });
   }
 
-  parseWebhook(rawBody: Buffer, headers: Record<string, string | string[] | undefined>): ProviderWebhookEvent {
+  parseWebhook(
+    rawBody: Buffer,
+    headers: Record<string, string | string[] | undefined>,
+  ): ProviderWebhookEvent {
     const header = headers[SIGNATURE_HEADER];
     const signature = Array.isArray(header) ? header[0] : header;
     const parts = new Map(
@@ -57,8 +60,10 @@ export class MockPaymentProvider implements PaymentProvider {
     );
     const timestamp = Number(parts.get('t'));
     const provided = parts.get('v1') ?? '';
-    const invalid = () => new AppError('WEBHOOK_SIGNATURE_INVALID', 400, 'Invalid webhook signature');
-    if (!Number.isFinite(timestamp) || Math.abs(Date.now() / 1000 - timestamp) > TOLERANCE_SECONDS) throw invalid();
+    const invalid = () =>
+      new AppError('WEBHOOK_SIGNATURE_INVALID', 400, 'Invalid webhook signature');
+    if (!Number.isFinite(timestamp) || Math.abs(Date.now() / 1000 - timestamp) > TOLERANCE_SECONDS)
+      throw invalid();
     if (!safeEqual(this.sign(timestamp, rawBody.toString('utf8')), provided)) throw invalid();
 
     let parsed: z.infer<typeof eventSchema>;
@@ -100,11 +105,16 @@ export class MockPaymentProvider implements PaymentProvider {
     const timestamp = Math.floor(Date.now() / 1000);
     return {
       body,
-      headers: { [SIGNATURE_HEADER]: `t=${timestamp},v1=${this.sign(timestamp, body)}`, 'content-type': 'application/json' },
+      headers: {
+        [SIGNATURE_HEADER]: `t=${timestamp},v1=${this.sign(timestamp, body)}`,
+        'content-type': 'application/json',
+      },
     };
   }
 
   private sign(timestamp: number, body: string): string {
-    return createHmac('sha256', this.config.PAYMENT_MOCK_WEBHOOK_SECRET).update(`${timestamp}.${body}`).digest('hex');
+    return createHmac('sha256', this.config.PAYMENT_MOCK_WEBHOOK_SECRET)
+      .update(`${timestamp}.${body}`)
+      .digest('hex');
   }
 }

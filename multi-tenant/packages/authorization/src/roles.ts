@@ -37,7 +37,9 @@ export const ROLE_TEMPLATES = {
       tr: 'Kurumun tüm modüllerine ve ayarlarına tam erişim.',
       en: 'Full access to every module and setting of the organization.',
     },
-    grants: PERMISSION_KEYS.map((permission) => grant(permission, broadestAllowedScope(permission))),
+    grants: PERMISSION_KEYS.map((permission) =>
+      grant(permission, broadestAllowedScope(permission)),
+    ),
   },
   principal: {
     key: 'principal',

@@ -96,7 +96,10 @@ export class BranchesService {
         .for('update');
       if (!before) throw Errors.notFound('Branch');
       if (input.status === 'inactive' && before.isHeadquarters) {
-        throw Errors.unprocessable('VALIDATION_FAILED', 'The headquarters branch cannot be deactivated');
+        throw Errors.unprocessable(
+          'VALIDATION_FAILED',
+          'The headquarters branch cannot be deactivated',
+        );
       }
       const after = {
         name: input.name ?? before.name,

@@ -7,7 +7,13 @@ export const searchQuerySchema = z.object({
 });
 export type SearchQuery = z.infer<typeof searchQuerySchema>;
 
-export const searchResultTypeSchema = z.enum(['student', 'guardian', 'personnel', 'payment', 'class']);
+export const searchResultTypeSchema = z.enum([
+  'student',
+  'guardian',
+  'personnel',
+  'payment',
+  'class',
+]);
 export type SearchResultType = z.infer<typeof searchResultTypeSchema>;
 
 export const searchResultSchema = z.object({

@@ -151,7 +151,8 @@ export class MembersService {
         .innerJoin(users, eq(users.id, memberships.userId))
         .where(and(eq(memberships.organizationId, organizationId), eq(users.email, input.email)))
         .limit(1);
-      if (existing) throw Errors.conflict('MEMBER_ALREADY_EXISTS', 'This person is already a member');
+      if (existing)
+        throw Errors.conflict('MEMBER_ALREADY_EXISTS', 'This person is already a member');
 
       const invited = await inviteMember(tx, {
         organizationId,
@@ -218,7 +219,12 @@ export class MembersService {
         })
         .from(memberships)
         .innerJoin(users, eq(users.id, memberships.userId))
-        .where(and(eq(memberships.organizationId, actor.organizationId), eq(memberships.id, membershipId)))
+        .where(
+          and(
+            eq(memberships.organizationId, actor.organizationId),
+            eq(memberships.id, membershipId),
+          ),
+        )
         .limit(1);
       if (!row) throw Errors.notFound('Member');
       const details = await this.loadRolesAndBranches(tx, actor.organizationId, [row.id]);
@@ -239,7 +245,9 @@ export class MembersService {
       const target = await this.loadTarget(tx, actor, membershipId);
       const isSelf = membershipId === actor.membershipId;
       const changesAccess =
-        input.roleIds !== undefined || input.allBranches !== undefined || input.branchIds !== undefined;
+        input.roleIds !== undefined ||
+        input.allBranches !== undefined ||
+        input.branchIds !== undefined;
       if (isSelf && changesAccess) {
         throw Errors.conflict('MEMBER_SELF_ACTION', 'You cannot change your own access');
       }
@@ -283,7 +291,8 @@ export class MembersService {
       if (input.roleIds !== undefined) {
         await this.assertRolesGrantable(tx, actor, input.roleIds);
         const removesOwner =
-          target.roleKeys.includes('owner') && !(await this.rolesIncludeOwner(tx, actor, input.roleIds));
+          target.roleKeys.includes('owner') &&
+          !(await this.rolesIncludeOwner(tx, actor, input.roleIds));
         if (removesOwner) await this.assertNotLastOwner(tx, actor.organizationId, membershipId);
         await tx
           .delete(membershipRoles)
@@ -316,7 +325,12 @@ export class MembersService {
           ...(input.title !== undefined ? { title: input.title } : {}),
           authzVersion: sql`${memberships.authzVersion} + 1`,
         })
-        .where(and(eq(memberships.organizationId, actor.organizationId), eq(memberships.id, membershipId)));
+        .where(
+          and(
+            eq(memberships.organizationId, actor.organizationId),
+            eq(memberships.id, membershipId),
+          ),
+        );
       await this.audit.record(tx, {
         organizationId: actor.organizationId,
         actor: actor.auditActor(),
@@ -347,7 +361,12 @@ export class MembersService {
           suspendedAt: sql`now()`,
           authzVersion: sql`${memberships.authzVersion} + 1`,
         })
-        .where(and(eq(memberships.organizationId, actor.organizationId), eq(memberships.id, membershipId)));
+        .where(
+          and(
+            eq(memberships.organizationId, actor.organizationId),
+            eq(memberships.id, membershipId),
+          ),
+        );
       await this.audit.record(tx, {
         organizationId: actor.organizationId,
         actor: actor.auditActor(),
@@ -376,7 +395,12 @@ export class MembersService {
           suspendedAt: null,
           authzVersion: sql`${memberships.authzVersion} + 1`,
         })
-        .where(and(eq(memberships.organizationId, actor.organizationId), eq(memberships.id, membershipId)));
+        .where(
+          and(
+            eq(memberships.organizationId, actor.organizationId),
+            eq(memberships.id, membershipId),
+          ),
+        );
       await this.audit.record(tx, {
         organizationId: actor.organizationId,
         actor: actor.auditActor(),
@@ -428,7 +452,11 @@ export class MembersService {
     const branchesInScope = actor.branchesFor('settings.users.manage');
     if (branchesInScope === '*') return;
     const allowed = new Set(branchesInScope);
-    if (target.allBranches || target.branchIds.length === 0 || !target.branchIds.every((id) => allowed.has(id))) {
+    if (
+      target.allBranches ||
+      target.branchIds.length === 0 ||
+      !target.branchIds.every((id) => allowed.has(id))
+    ) {
       throw Errors.forbidden('This member is outside your branches');
     }
   }
@@ -437,7 +465,10 @@ export class MembersService {
     const branchesInScope = actor.branchesFor('settings.users.manage');
     if (branchesInScope === '*') return;
     if (access.allBranches) {
-      throw Errors.unprocessable('BRANCH_NOT_ALLOWED', 'Only organization-wide admins can grant all branches');
+      throw Errors.unprocessable(
+        'BRANCH_NOT_ALLOWED',
+        'Only organization-wide admins can grant all branches',
+      );
     }
     const allowed = new Set(branchesInScope);
     if (!access.branchIds.every((id) => allowed.has(id))) {
@@ -467,19 +498,34 @@ export class MembersService {
     }
   }
 
-  private async assertRolesGrantable(db: DbExecutor, actor: Actor, roleIds: readonly string[]): Promise<void> {
+  private async assertRolesGrantable(
+    db: DbExecutor,
+    actor: Actor,
+    roleIds: readonly string[],
+  ): Promise<void> {
     const unique = [...new Set(roleIds)];
     const roleRows = await db
       .select({ id: roles.id })
       .from(roles)
-      .where(and(eq(roles.organizationId, actor.organizationId), inArray(roles.id, unique), isNull(roles.archivedAt)));
+      .where(
+        and(
+          eq(roles.organizationId, actor.organizationId),
+          inArray(roles.id, unique),
+          isNull(roles.archivedAt),
+        ),
+      );
     if (roleRows.length !== unique.length) {
       throw Errors.validation([{ path: 'roleIds', code: 'unknown_role', message: 'Unknown role' }]);
     }
     const grants = await db
       .select({ permission: rolePermissions.permissionKey, scope: rolePermissions.scope })
       .from(rolePermissions)
-      .where(and(eq(rolePermissions.organizationId, actor.organizationId), inArray(rolePermissions.roleId, unique)));
+      .where(
+        and(
+          eq(rolePermissions.organizationId, actor.organizationId),
+          inArray(rolePermissions.roleId, unique),
+        ),
+      );
     assertNoEscalation(
       actor,
       grants.flatMap((grant) =>
@@ -490,7 +536,11 @@ export class MembersService {
     );
   }
 
-  private async rolesIncludeOwner(db: DbExecutor, actor: Actor, roleIds: readonly string[]): Promise<boolean> {
+  private async rolesIncludeOwner(
+    db: DbExecutor,
+    actor: Actor,
+    roleIds: readonly string[],
+  ): Promise<boolean> {
     if (roleIds.length === 0) return false;
     const [row] = await db
       .select({ value: count() })
@@ -507,7 +557,11 @@ export class MembersService {
   }
 
   /** An organization always keeps at least one active owner. */
-  private async assertNotLastOwner(db: DbExecutor, organizationId: string, membershipId: string): Promise<void> {
+  private async assertNotLastOwner(
+    db: DbExecutor,
+    organizationId: string,
+    membershipId: string,
+  ): Promise<void> {
     const [row] = await db
       .select({ value: count() })
       .from(membershipRoles)
@@ -540,7 +594,9 @@ export class MembersService {
       })
       .from(memberships)
       .innerJoin(users, eq(users.id, memberships.userId))
-      .where(and(eq(memberships.organizationId, actor.organizationId), eq(memberships.id, membershipId)))
+      .where(
+        and(eq(memberships.organizationId, actor.organizationId), eq(memberships.id, membershipId)),
+      )
       .for('update', { of: memberships })
       .limit(1);
     if (!row) throw Errors.notFound('Member');
@@ -554,41 +610,50 @@ export class MembersService {
     };
   }
 
-  private async loadRolesAndBranches(db: DbExecutor, organizationId: string, membershipIds: string[]) {
-    const rolesByMember = new Map<string, { id: string; key: string; name: string; isSystem: boolean }[]>();
+  private async loadRolesAndBranches(
+    db: DbExecutor,
+    organizationId: string,
+    membershipIds: string[],
+  ) {
+    const rolesByMember = new Map<
+      string,
+      { id: string; key: string; name: string; isSystem: boolean }[]
+    >();
     const branchesByMember = new Map<string, { id: string; name: string }[]>();
     if (membershipIds.length === 0) return { roles: rolesByMember, branches: branchesByMember };
 
-    const [roleRows, branchRows] = await Promise.all([
-      db
-        .select({
-          membershipId: membershipRoles.membershipId,
-          id: roles.id,
-          key: roles.key,
-          name: roles.name,
-          isSystem: roles.isSystem,
-        })
-        .from(membershipRoles)
-        .innerJoin(roles, eq(roles.id, membershipRoles.roleId))
-        .where(
-          and(
-            eq(membershipRoles.organizationId, organizationId),
-            inArray(membershipRoles.membershipId, membershipIds),
-          ),
-        )
-        .orderBy(asc(roles.name)),
-      db
-        .select({ membershipId: membershipBranches.membershipId, id: branches.id, name: branches.name })
-        .from(membershipBranches)
-        .innerJoin(branches, eq(branches.id, membershipBranches.branchId))
-        .where(
-          and(
-            eq(membershipBranches.organizationId, organizationId),
-            inArray(membershipBranches.membershipId, membershipIds),
-          ),
-        )
-        .orderBy(asc(branches.name)),
-    ]);
+    const roleRows = await db
+      .select({
+        membershipId: membershipRoles.membershipId,
+        id: roles.id,
+        key: roles.key,
+        name: roles.name,
+        isSystem: roles.isSystem,
+      })
+      .from(membershipRoles)
+      .innerJoin(roles, eq(roles.id, membershipRoles.roleId))
+      .where(
+        and(
+          eq(membershipRoles.organizationId, organizationId),
+          inArray(membershipRoles.membershipId, membershipIds),
+        ),
+      )
+      .orderBy(asc(roles.name));
+    const branchRows = await db
+      .select({
+        membershipId: membershipBranches.membershipId,
+        id: branches.id,
+        name: branches.name,
+      })
+      .from(membershipBranches)
+      .innerJoin(branches, eq(branches.id, membershipBranches.branchId))
+      .where(
+        and(
+          eq(membershipBranches.organizationId, organizationId),
+          inArray(membershipBranches.membershipId, membershipIds),
+        ),
+      )
+      .orderBy(asc(branches.name));
     for (const { membershipId, ...role } of roleRows) {
       rolesByMember.set(membershipId, [...(rolesByMember.get(membershipId) ?? []), role]);
     }

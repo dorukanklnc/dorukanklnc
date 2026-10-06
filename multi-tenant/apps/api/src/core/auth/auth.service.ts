@@ -215,7 +215,12 @@ export class AuthService {
   async requestPasswordReset(email: string, client: ClientInfo): Promise<void> {
     const db = this.systemDb.db;
     const [user] = await db
-      .select({ id: users.id, fullName: users.fullName, locale: users.locale, status: users.status })
+      .select({
+        id: users.id,
+        fullName: users.fullName,
+        locale: users.locale,
+        status: users.status,
+      })
       .from(users)
       .where(eq(users.email, email))
       .limit(1);
@@ -315,7 +320,10 @@ export class AuthService {
     await this.systemDb.transaction(async (tx) => {
       await tx
         .update(users)
-        .set({ passwordHash: await this.passwords.hash(input.newPassword), passwordChangedAt: sql`now()` })
+        .set({
+          passwordHash: await this.passwords.hash(input.newPassword),
+          passwordChangedAt: sql`now()`,
+        })
         .where(eq(users.id, actor.userId));
       await this.sessions.revokeAllForUser(actor.userId, 'password_changed', {
         exceptSessionId: actor.sessionId,
@@ -366,7 +374,8 @@ export class AuthService {
         .from(invitations)
         .where(eq(invitations.id, invitation.id))
         .for('update');
-      if (locked?.status !== 'pending') throw new AppError('INVITATION_INVALID', 404, 'Invalid invitation');
+      if (locked?.status !== 'pending')
+        throw new AppError('INVITATION_INVALID', 404, 'Invalid invitation');
 
       await tx
         .update(invitations)
@@ -428,7 +437,10 @@ export class AuthService {
     if (!issued) return { response };
     return {
       response,
-      result: { issued, session: await this.buildSession(invitation.userId, invitation.membershipId) },
+      result: {
+        issued,
+        session: await this.buildSession(invitation.userId, invitation.membershipId),
+      },
     };
   }
 
@@ -565,13 +577,22 @@ export class AuthService {
             .select({ id: branches.id, name: branches.name, code: branches.code })
             .from(membershipBranches)
             .innerJoin(branches, eq(branches.id, membershipBranches.branchId))
-            .where(and(eq(membershipBranches.membershipId, membership.id), eq(branches.status, 'active')))
+            .where(
+              and(
+                eq(membershipBranches.membershipId, membership.id),
+                eq(branches.status, 'active'),
+              ),
+            )
             .orderBy(asc(branches.name));
     }
 
     const platformPermissions =
       user.platformRole === 'platform_admin'
-        ? (['platform.organizations.manage', 'platform.support.access', 'platform.audit.read'] as const)
+        ? ([
+            'platform.organizations.manage',
+            'platform.support.access',
+            'platform.audit.read',
+          ] as const)
         : user.platformRole === 'platform_support'
           ? (['platform.support.access'] as const)
           : ([] as const);

@@ -1,6 +1,11 @@
 import type { PermissionKey } from '@repo/authorization';
 import { and, eq, isNull } from 'drizzle-orm';
-import { financialAccounts, studentGuardians, guardians, students } from '../platform/database/schema/index.js';
+import {
+  financialAccounts,
+  studentGuardians,
+  guardians,
+  students,
+} from '../platform/database/schema/index.js';
 import type { DbExecutor } from '../platform/database/types.js';
 import { Errors } from '../platform/errors/app-error.js';
 import type { Actor } from '../core/authorization/actor.js';
@@ -95,7 +100,9 @@ export async function loadLinkedGuardian(
       ),
     );
   if (!guardian) {
-    throw Errors.validation([{ path: 'guardianId', code: 'not_linked', message: 'Guardian is not linked to the student' }]);
+    throw Errors.validation([
+      { path: 'guardianId', code: 'not_linked', message: 'Guardian is not linked to the student' },
+    ]);
   }
   return { id: guardian.id, fullName: `${guardian.firstName} ${guardian.lastName}` };
 }

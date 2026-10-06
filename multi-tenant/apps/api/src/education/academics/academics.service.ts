@@ -10,7 +10,10 @@ import {
 import { ref } from '../../platform/database/sql.js';
 import { TenantDatabase } from '../../platform/database/tenant-database.service.js';
 import type { Actor } from '../../core/authorization/actor.js';
-import { assignedClassesPredicate, branchPredicate } from '../../core/authorization/scope-filters.js';
+import {
+  assignedClassesPredicate,
+  branchPredicate,
+} from '../../core/authorization/scope-filters.js';
 
 @Injectable()
 export class AcademicsService {
@@ -107,9 +110,15 @@ export class AcademicsService {
         capacity: row.capacity,
         branch: { id: row.branchId, name: row.branchName },
         academicYear: { id: row.academicYearId, name: row.academicYearName },
-        gradeLevel: row.gradeLevelId && row.gradeLevelName ? { id: row.gradeLevelId, name: row.gradeLevelName } : null,
+        gradeLevel:
+          row.gradeLevelId && row.gradeLevelName
+            ? { id: row.gradeLevelId, name: row.gradeLevelName }
+            : null,
         studentCount: row.studentCount,
-        homeroomTeacher: row.homeroomId && row.homeroomName ? { id: row.homeroomId, name: row.homeroomName } : null,
+        homeroomTeacher:
+          row.homeroomId && row.homeroomName
+            ? { id: row.homeroomId, name: row.homeroomName }
+            : null,
       }));
     });
   }

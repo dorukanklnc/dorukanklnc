@@ -5,15 +5,15 @@ Docker Compose (`infra/docker`) and does not require any cloud account.
 
 When the first hosted environment is created, this directory will contain modules for:
 
-| Module       | Purpose                                                                 |
-| ------------ | ----------------------------------------------------------------------- |
-| `network`    | VPC, private subnets, security groups                                   |
-| `database`   | Managed PostgreSQL (encrypted at rest, PITR backups, the three DB roles) |
-| `cache`      | Managed Redis for BullMQ and rate limiting                              |
-| `storage`    | S3 bucket(s) with public access blocked, SSE, lifecycle rules            |
-| `compute`    | Container services for `api`, `worker` and `web`                        |
-| `secrets`    | Secret manager entries consumed as environment variables                 |
-| `observability` | OTLP collector, log retention, alerting                              |
+| Module          | Purpose                                                                  |
+| --------------- | ------------------------------------------------------------------------ |
+| `network`       | VPC, private subnets, security groups                                    |
+| `database`      | Managed PostgreSQL (encrypted at rest, PITR backups, the three DB roles) |
+| `cache`         | Managed Redis for BullMQ and rate limiting                               |
+| `storage`       | S3 bucket(s) with public access blocked, SSE, lifecycle rules            |
+| `compute`       | Container services for `api`, `worker` and `web`                         |
+| `secrets`       | Secret manager entries consumed as environment variables                 |
+| `observability` | OTLP collector, log retention, alerting                                  |
 
 Rules that already apply:
 

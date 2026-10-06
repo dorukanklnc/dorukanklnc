@@ -41,7 +41,9 @@ export function isWithinScope(
     case 'assigned':
       return resource.assigned === true;
     case 'own':
-      return Boolean(resource.ownerMembershipId) && resource.ownerMembershipId === subject.membershipId;
+      return (
+        Boolean(resource.ownerMembershipId) && resource.ownerMembershipId === subject.membershipId
+      );
   }
 }
 

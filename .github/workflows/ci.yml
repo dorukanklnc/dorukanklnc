@@ -1,0 +1,60 @@
+# CI for the CampusOS monorepo, which lives in multi-tenant/ (see docs/decisions/0014).
+name: CI
+
+on:
+  push:
+    branches: ['**']
+    paths: ['multi-tenant/**', '.github/workflows/ci.yml']
+  pull_request:
+    paths: ['multi-tenant/**', '.github/workflows/ci.yml']
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: multi-tenant
+
+jobs:
+  verify:
+    name: Lint · typecheck · tests · build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    env:
+      # The integration suite creates its own database and the three application roles.
+      TEST_DATABASE_ADMIN_URL: postgres://postgres:postgres@localhost:5432/postgres
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: multi-tenant/package.json
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: multi-tenant/.nvmrc
+          cache: pnpm
+          cache-dependency-path: multi-tenant/pnpm-lock.yaml
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm format:check
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm build

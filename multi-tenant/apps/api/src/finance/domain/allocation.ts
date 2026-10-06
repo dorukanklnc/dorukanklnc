@@ -25,7 +25,10 @@ export function compareForAllocation(a: OpenReceivable, b: OpenReceivable): numb
 }
 
 /** Automatic allocation (default policy). Any remainder stays as account credit. */
-export function allocateOldestFirst(amountMinor: number, receivables: readonly OpenReceivable[]): AllocationLine[] {
+export function allocateOldestFirst(
+  amountMinor: number,
+  receivables: readonly OpenReceivable[],
+): AllocationLine[] {
   const lines: AllocationLine[] = [];
   let remaining = amountMinor;
   for (const receivable of [...receivables].sort(compareForAllocation)) {
@@ -52,14 +55,27 @@ export function validateManualAllocation(
     }
     seen.add(item.receivableId);
     const receivable = receivables.get(item.receivableId);
-    if (!receivable) throw new AppError('FINANCE_RECEIVABLE_NOT_OPEN', 422, 'Receivable is not open on this account');
+    if (!receivable)
+      throw new AppError(
+        'FINANCE_RECEIVABLE_NOT_OPEN',
+        422,
+        'Receivable is not open on this account',
+      );
     if (item.amountMinor > receivable.outstandingMinor) {
-      throw new AppError('FINANCE_ALLOCATION_EXCEEDS_OUTSTANDING', 422, 'Allocation exceeds the outstanding amount');
+      throw new AppError(
+        'FINANCE_ALLOCATION_EXCEEDS_OUTSTANDING',
+        422,
+        'Allocation exceeds the outstanding amount',
+      );
     }
     total += item.amountMinor;
   }
   if (total > amountMinor) {
-    throw new AppError('FINANCE_ALLOCATION_EXCEEDS_PAYMENT', 422, 'Allocations exceed the payment amount');
+    throw new AppError(
+      'FINANCE_ALLOCATION_EXCEEDS_PAYMENT',
+      422,
+      'Allocations exceed the payment amount',
+    );
   }
   return [...items];
 }

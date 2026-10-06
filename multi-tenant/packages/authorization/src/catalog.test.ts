@@ -25,7 +25,10 @@ describe('permission catalog', () => {
       expect(scopes.length, key).toBeGreaterThan(0);
       for (const scope of scopes) expect(SCOPES).toContain(scope);
       const ranks = scopes.map(scopeRank);
-      expect([...ranks].sort((a, b) => a - b), key).toEqual(ranks);
+      expect(
+        [...ranks].sort((a, b) => a - b),
+        key,
+      ).toEqual(ranks);
     }
   });
 

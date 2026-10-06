@@ -39,12 +39,21 @@ export class DashboardService {
     const dashboard: Dashboard = { asOf: today };
 
     const studentScope = actor.permissions.scopeOf('students.read');
-    const [studentsSection, teaching, administration] = await this.db.transaction(actor.tenantScope(), (tx) =>
-      Promise.all([
-        studentScope === 'branch' || studentScope === 'organization' ? this.students(tx, actor, today) : null,
-        actor.tenant().membership.personnelId && actor.can('academics.read') ? this.teaching(tx, actor) : null,
-        actor.can('settings.users.read') ? this.administration(tx, actor) : null,
-      ]),
+    const { studentsSection, teaching, administration } = await this.db.transaction(
+      actor.tenantScope(),
+      async (tx) => ({
+        studentsSection:
+          studentScope === 'branch' || studentScope === 'organization'
+            ? await this.students(tx, actor, today)
+            : null,
+        teaching:
+          actor.tenant().membership.personnelId && actor.can('academics.read')
+            ? await this.teaching(tx, actor)
+            : null,
+        administration: actor.can('settings.users.read')
+          ? await this.administration(tx, actor)
+          : null,
+      }),
     );
     if (studentsSection) dashboard.students = studentsSection;
     if (teaching) dashboard.teaching = teaching;
@@ -63,7 +72,11 @@ export class DashboardService {
 
   private async students(tx: Transaction, actor: Actor, today: string) {
     const scope = branchPredicate(actor, 'students.read', students.branchId);
-    const base = and(eq(students.organizationId, actor.organizationId), isNull(students.archivedAt), scope);
+    const base = and(
+      eq(students.organizationId, actor.organizationId),
+      isNull(students.archivedAt),
+      scope,
+    );
     const { start } = monthBounds(today);
     const [active] = await tx
       .select({ value: count() })
@@ -187,7 +200,9 @@ export class DashboardService {
     const [active] = await tx
       .select({ value: count() })
       .from(memberships)
-      .where(and(eq(memberships.organizationId, actor.organizationId), eq(memberships.status, 'active')));
+      .where(
+        and(eq(memberships.organizationId, actor.organizationId), eq(memberships.status, 'active')),
+      );
     const [pending] = await tx
       .select({ value: count() })
       .from(invitations)

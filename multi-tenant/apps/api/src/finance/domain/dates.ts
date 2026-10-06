@@ -35,7 +35,9 @@ export function addMonthsClamped(isoDate: string, months: number, anchorDay?: nu
 export function daysBetween(from: string, to: string): number {
   const a = parseIsoDate(from);
   const b = parseIsoDate(to);
-  return Math.round((Date.UTC(b.year, b.month - 1, b.day) - Date.UTC(a.year, a.month - 1, a.day)) / 86_400_000);
+  return Math.round(
+    (Date.UTC(b.year, b.month - 1, b.day) - Date.UTC(a.year, a.month - 1, a.day)) / 86_400_000,
+  );
 }
 
 export function addDays(isoDate: string, days: number): string {
@@ -56,5 +58,8 @@ export function todayIn(timeZone: string, now: Date = new Date()): string {
 
 export function monthBounds(isoDate: string): { start: string; end: string } {
   const { year, month } = parseIsoDate(isoDate);
-  return { start: formatIsoDate(year, month, 1), end: formatIsoDate(year, month, daysInMonth(year, month)) };
+  return {
+    start: formatIsoDate(year, month, 1),
+    end: formatIsoDate(year, month, daysInMonth(year, month)),
+  };
 }

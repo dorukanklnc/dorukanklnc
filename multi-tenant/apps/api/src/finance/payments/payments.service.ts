@@ -89,14 +89,19 @@ function toListItem(row: PaymentRow): PaymentListItem {
   return {
     id: row.id,
     receiptNumber: row.receiptNumber,
-    student: { id: row.studentId, fullName: `${row.studentFirstName} ${row.studentLastName}`, studentNumber: row.studentNumber },
+    student: {
+      id: row.studentId,
+      fullName: `${row.studentFirstName} ${row.studentLastName}`,
+      studentNumber: row.studentNumber,
+    },
     accountId: row.accountId,
     branch: { id: row.branchId, name: row.branchName },
     currency: row.currency,
     amountMinor: row.amountMinor,
     allocatedMinor: row.allocatedMinor,
     refundedMinor: row.refundedMinor,
-    unallocatedMinor: row.status === 'completed' ? row.amountMinor - row.allocatedMinor - row.refundedMinor : 0,
+    unallocatedMinor:
+      row.status === 'completed' ? row.amountMinor - row.allocatedMinor - row.refundedMinor : 0,
     method: row.method,
     status: row.status,
     receivedAt: row.receivedAt.toISOString(),
@@ -128,9 +133,17 @@ export class PaymentsService {
    * Flow 5: records a payment, allocates it (oldest first or manual), updates balances through
    * database triggers, writes the audit record and the `payment.received` event — atomically.
    */
-  async record(actor: Actor, input: RecordPaymentRequest, idempotencyKey: string | undefined): Promise<RecordPaymentResult> {
+  async record(
+    actor: Actor,
+    input: RecordPaymentRequest,
+    idempotencyKey: string | undefined,
+  ): Promise<RecordPaymentResult> {
     if (!idempotencyKey || !IDEMPOTENCY_KEY.test(idempotencyKey)) {
-      throw new AppError('IDEMPOTENCY_KEY_REQUIRED', 400, 'An Idempotency-Key header (8–128 URL-safe characters) is required');
+      throw new AppError(
+        'IDEMPOTENCY_KEY_REQUIRED',
+        400,
+        'An Idempotency-Key header (8–128 URL-safe characters) is required',
+      );
     }
     const requestHash = hashPayload(input);
     const organization = actor.tenant().organization;
@@ -140,7 +153,12 @@ export class PaymentsService {
         const replay = await this.findReplay(tx, actor, idempotencyKey, requestHash);
         if (replay) return replay;
 
-        const student = await loadStudentForFinance(tx, actor, input.studentId, 'finance.payments.create');
+        const student = await loadStudentForFinance(
+          tx,
+          actor,
+          input.studentId,
+          'finance.payments.create',
+        );
         const accountId = await findOrCreateAccount(tx, {
           organizationId: actor.organizationId,
           branchId: student.branchId,
@@ -225,8 +243,18 @@ export class PaymentsService {
       const where = and(
         eq(payments.organizationId, actor.organizationId),
         branchPredicate(actor, 'finance.payments.read', payments.branchId),
-        query.from ? gte(sql`(${payments.receivedAt} AT TIME ZONE ${timezone})::date`, sql`${query.from}::date`) : undefined,
-        query.to ? lt(sql`(${payments.receivedAt} AT TIME ZONE ${timezone})::date`, sql`${query.to}::date + 1`) : undefined,
+        query.from
+          ? gte(
+              sql`(${payments.receivedAt} AT TIME ZONE ${timezone})::date`,
+              sql`${query.from}::date`,
+            )
+          : undefined,
+        query.to
+          ? lt(
+              sql`(${payments.receivedAt} AT TIME ZONE ${timezone})::date`,
+              sql`${query.to}::date + 1`,
+            )
+          : undefined,
         query.method ? eq(payments.method, query.method) : undefined,
         query.status ? eq(payments.status, query.status) : undefined,
         query.studentId ? eq(payments.studentId, query.studentId) : undefined,
@@ -243,7 +271,12 @@ export class PaymentsService {
         .where(where);
       const rows = await this.baseQuery(tx)
         .where(where)
-        .orderBy(query.sort === 'amount' ? direction(payments.amountMinor) : direction(payments.receivedAt), desc(payments.id))
+        .orderBy(
+          query.sort === 'amount'
+            ? direction(payments.amountMinor)
+            : direction(payments.receivedAt),
+          desc(payments.id),
+        )
         .limit(query.pageSize)
         .offset((query.page - 1) * query.pageSize);
       return {
@@ -295,7 +328,11 @@ export class PaymentsService {
 
       const reversedAllocations = await tx
         .update(paymentAllocations)
-        .set({ reversedAt: sql`now()`, reversedByMembershipId: actor.membershipId, reversalReason: reason })
+        .set({
+          reversedAt: sql`now()`,
+          reversedByMembershipId: actor.membershipId,
+          reversalReason: reason,
+        })
         .where(
           and(
             eq(paymentAllocations.organizationId, actor.organizationId),
@@ -303,7 +340,10 @@ export class PaymentsService {
             isNull(paymentAllocations.reversedAt),
           ),
         )
-        .returning({ receivableId: paymentAllocations.receivableId, amountMinor: paymentAllocations.amountMinor });
+        .returning({
+          receivableId: paymentAllocations.receivableId,
+          amountMinor: paymentAllocations.amountMinor,
+        });
 
       await tx
         .update(payments)
@@ -353,11 +393,19 @@ export class PaymentsService {
     const [existing] = await tx
       .select({ id: payments.id, requestHash: payments.requestHash })
       .from(payments)
-      .where(and(eq(payments.organizationId, actor.organizationId), eq(payments.idempotencyKey, idempotencyKey)))
+      .where(
+        and(
+          eq(payments.organizationId, actor.organizationId),
+          eq(payments.idempotencyKey, idempotencyKey),
+        ),
+      )
       .limit(1);
     if (!existing) return null;
     if (existing.requestHash !== requestHash) {
-      throw Errors.conflict('IDEMPOTENCY_KEY_REUSED', 'This idempotency key was used for a different request');
+      throw Errors.conflict(
+        'IDEMPOTENCY_KEY_REUSED',
+        'This idempotency key was used for a different request',
+      );
     }
     return { payment: await this.load(tx, actor, existing.id), replayed: true };
   }
@@ -394,7 +442,12 @@ export class PaymentsService {
       })
       .from(paymentAllocations)
       .innerJoin(receivables, eq(receivables.id, paymentAllocations.receivableId))
-      .where(and(eq(paymentAllocations.organizationId, actor.organizationId), eq(paymentAllocations.paymentId, paymentId)))
+      .where(
+        and(
+          eq(paymentAllocations.organizationId, actor.organizationId),
+          eq(paymentAllocations.paymentId, paymentId),
+        ),
+      )
       .orderBy(asc(receivables.dueDate), asc(receivables.sequenceNo));
     return {
       ...toListItem(row),
