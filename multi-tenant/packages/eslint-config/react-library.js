@@ -14,7 +14,11 @@ export function reactLibrary(options) {
     reactHooks.configs.flat['recommended-latest'] ?? reactHooks.configs['recommended-latest'],
     {
       languageOptions: { globals: { ...globals.browser } },
+    },
+    {
+      files: ['**/*.ts', '**/*.tsx'],
       rules: {
+        // Async event handlers (onClick={async () => …}) are idiomatic in React.
         '@typescript-eslint/no-misused-promises': [
           'error',
           { checksVoidReturn: { attributes: false } },
