@@ -18,9 +18,14 @@
   "otherPortsAttributes": { "onAutoForward": "silent" },
   "containerEnv": { "COREPACK_ENABLE_DOWNLOAD_PROMPT": "0" },
   "postCreateCommand": "bash .devcontainer/setup.sh",
+  // Show the setup log until the app is installed instead of an idle editor.
+  "waitFor": "postCreateCommand",
   "postAttachCommand": "bash .devcontainer/start.sh",
   "hostRequirements": { "cpus": 2, "memory": "4gb" },
   "customizations": {
+    "codespaces": {
+      "openFiles": [".devcontainer/WELCOME.md"]
+    },
     "vscode": {
       "extensions": ["dbaeumer.vscode-eslint", "esbenp.prettier-vscode"]
     }

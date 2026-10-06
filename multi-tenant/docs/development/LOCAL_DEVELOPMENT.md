@@ -12,7 +12,7 @@ PostgreSQL (plus the optional Redis, MinIO and Mailpit); without Docker, use Git
 | ---------------- | ----------------------------------- | -------------------------------------------------------------- |
 | Node.js          | 22 LTS (see `.nvmrc`)               | `nvm use` or `fnm use`                                         |
 | pnpm             | 10.28 (see `packageManager`)        | `corepack enable` installs the pinned version                  |
-| PostgreSQL       | 16 or newer                         | Via Docker (§2.1), Codespaces (§2.2) or a local install (§2.3) |
+| PostgreSQL       | 16 or newer (tested with 16–18)     | Via Docker (§2.1), Codespaces (§2.2) or a local install (§2.3) |
 | Docker           | 24+ with Compose v2                 | Optional                                                       |
 | A modern browser | Chrome, Edge, Firefox, Safari 16.4+ |                                                                |
 
@@ -52,8 +52,13 @@ for live code changes stop it (<kbd>Ctrl</kbd>+<kbd>C</kbd> in its terminal) and
 
 ### 2.3 With a locally installed PostgreSQL
 
-1. Install Node.js 22 LTS from <https://nodejs.org>, then run `corepack enable`.
-2. Install PostgreSQL 16 or 17:
+**macOS and Linux, one command:** with Node.js 22+ installed and PostgreSQL running (steps 1–2),
+`bash scripts/local-setup.sh` in `multi-tenant/` enables pnpm, installs dependencies, creates
+`.env` (detecting the Postgres.app/Homebrew superuser), creates the demo database, builds, starts
+the app and opens <http://localhost:3000>. Afterwards `pnpm start` is enough. Step by step:
+
+1. Install Node.js 22 LTS or newer from <https://nodejs.org>, then run `corepack enable`.
+2. Install PostgreSQL 16 or newer:
    - **Windows:** the installer from <https://www.postgresql.org/download/windows/>; give the
      `postgres` user the password `postgres` (or use your own in `DATABASE_ADMIN_URL`).
    - **macOS:** [Postgres.app](https://postgresapp.com) or `brew install postgresql@17`; both create
