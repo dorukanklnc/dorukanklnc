@@ -1,0 +1,28 @@
+// GitHub Codespaces / Dev Containers: runs CampusOS in the browser, nothing to install locally.
+// What happens: PostgreSQL 17 starts next to the workspace, `setup.sh` installs dependencies,
+// creates and seeds the database and builds the apps once; `start.sh` starts the API and the web
+// app whenever the editor opens, and port 3000 opens in a browser tab.
+// Guide: multi-tenant/docs/development/LOCAL_DEVELOPMENT.md ("Without Docker").
+{
+  "name": "CampusOS",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  "shutdownAction": "stopCompose",
+  "forwardPorts": [3000],
+  "portsAttributes": {
+    "3000": { "label": "CampusOS", "onAutoForward": "openBrowser" },
+    "4000": { "label": "CampusOS API (internal)", "onAutoForward": "silent" },
+    "5432": { "label": "PostgreSQL", "onAutoForward": "silent" }
+  },
+  "otherPortsAttributes": { "onAutoForward": "silent" },
+  "containerEnv": { "COREPACK_ENABLE_DOWNLOAD_PROMPT": "0" },
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+  "postAttachCommand": "bash .devcontainer/start.sh",
+  "hostRequirements": { "cpus": 2, "memory": "4gb" },
+  "customizations": {
+    "vscode": {
+      "extensions": ["dbaeumer.vscode-eslint", "esbenp.prettier-vscode"]
+    }
+  }
+}

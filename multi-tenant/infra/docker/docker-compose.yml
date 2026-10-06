@@ -44,8 +44,8 @@ services:
       timeout: 3s
       retries: 20
 
-  # S3-compatible object storage. Optional: the API defaults to the local
-  # filesystem storage driver; set STORAGE_DRIVER=s3 to exercise this.
+  # S3-compatible object storage. Optional and not used by the application yet:
+  # file storage is planned (see docs/IMPLEMENTATION_CHECKLIST.md).
   minio:
     image: minio/minio:RELEASE.2025-04-22T22-12-26Z
     restart: unless-stopped

@@ -14,6 +14,7 @@
     "dev": "pnpm build:packages && pnpm --parallel --filter \"./packages/**\" --filter @repo/api --filter @repo/web --if-present run dev",
     "dev:worker": "pnpm --filter @repo/api run dev:worker",
     "build": "pnpm -r --if-present run build",
+    "start": "pnpm --parallel --filter @repo/api --filter @repo/web run start",
     "lint": "pnpm build:packages && pnpm -r --if-present run lint",
     "typecheck": "pnpm build:packages && pnpm -r --if-present run typecheck",
     "test": "pnpm build:packages && pnpm -r --if-present run test",
@@ -23,10 +24,10 @@
     "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build",
     "infra:up": "docker compose -f infra/docker/docker-compose.yml up -d",
     "infra:down": "docker compose -f infra/docker/docker-compose.yml down",
-    "db:migrate": "pnpm --filter @repo/api run db:migrate",
-    "db:seed": "pnpm --filter @repo/api run db:seed",
-    "db:reset": "pnpm --filter @repo/api run db:reset",
-    "db:generate": "pnpm --filter @repo/api run db:generate"
+    "db:migrate": "pnpm build:packages && pnpm --filter @repo/api run db:migrate",
+    "db:seed": "pnpm build:packages && pnpm --filter @repo/api run db:seed",
+    "db:reset": "pnpm build:packages && pnpm --filter @repo/api run db:reset",
+    "db:generate": "pnpm build:packages && pnpm --filter @repo/api run db:generate"
   },
   "devDependencies": {
     "prettier": "3.9.9",

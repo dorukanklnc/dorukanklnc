@@ -3,6 +3,13 @@ import createNextIntlPlugin from 'next-intl/plugin';
 
 const apiUrl = process.env.API_INTERNAL_URL ?? 'http://localhost:4000';
 const isProduction = process.env.NODE_ENV === 'production';
+// GitHub Codespaces serves the dev server on a forwarded hostname, which `next dev` would
+// otherwise treat as a foreign origin.
+const { CODESPACE_NAME, GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN } = process.env;
+const codespacesHost =
+  CODESPACE_NAME && GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN
+    ? `${CODESPACE_NAME}-3000.${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}`
+    : undefined;
 
 /**
  * The browser only talks to this origin (ADR-0011): `/api/*` is proxied to the API so session
@@ -13,6 +20,7 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   transpilePackages: ['@repo/ui'],
   typedRoutes: false,
+  allowedDevOrigins: codespacesHost ? [codespacesHost] : [],
   rewrites() {
     return Promise.resolve([{ source: '/api/:path*', destination: `${apiUrl}/api/:path*` }]);
   },

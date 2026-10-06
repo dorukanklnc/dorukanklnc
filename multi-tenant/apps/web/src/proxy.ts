@@ -19,6 +19,8 @@ export function proxy(request: NextRequest) {
     const url = request.nextUrl.clone();
     url.pathname = '/login';
     url.search = pathname === '/dashboard' ? '' : `?next=${encodeURIComponent(pathname + search)}`;
+    // Same host as the request, so Next sends a relative Location header: it keeps working behind
+    // reverse proxies that rewrite the Host header (e.g. GitHub Codespaces port forwarding).
     return NextResponse.redirect(url);
   }
 

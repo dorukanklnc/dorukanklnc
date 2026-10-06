@@ -80,6 +80,7 @@ pnpm test:e2e                     # see §4
 - Dates: organization time zone for "today", calendar dates never shifted, month clamping.
 - Navigation per built-in role (hidden, not disabled), disabled modules, platform-only users.
 - Security helpers: open-redirect guard for `?next=`, problem+json parsing, CSRF vs. 403.
+- Request proxy: login redirect, nonce-based CSP, `upgrade-insecure-requests` only behind TLS.
 - Message catalogs: identical keys and ICU arguments in every locale, every API error code and
   every permission labelled.
 - Components: data table (sorting, paging, row navigation, empty/error states), status badges,
@@ -87,8 +88,9 @@ pnpm test:e2e                     # see §4
 
 ### End-to-end (`apps/web/e2e`)
 
-- Authentication: redirect to login and back, enumeration-safe errors, external redirect targets
-  ignored, sign-out protects pages, platform staff land on the console, language switch.
+- Authentication: redirect to login and back (with a relative `Location`, so it survives proxies that
+  rewrite the host), enumeration-safe errors, external redirect targets ignored, sign-out protects
+  pages, platform staff land on the console, language switch.
 - Authorization in the UI: teacher sees no finance and gets the "no access" page by URL, accountant
   has no administration, principal sees KPIs only, another tenant's student URL is "not found",
   organization switching.

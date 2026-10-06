@@ -21,6 +21,10 @@ pnpm dev                   # web http://localhost:3000 · api http://localhost:4
 
 Demo accounts are listed in [`docs/development/LOCAL_DEVELOPMENT.md`](docs/development/LOCAL_DEVELOPMENT.md).
 
+No Docker? Only PostgreSQL 16+ is required. Run it in the browser with **GitHub Codespaces**
+(Code → Codespaces → Create codespace; the dev container sets everything up) or use a locally
+installed PostgreSQL — both are described in the same guide.
+
 ## Layout
 
 ```

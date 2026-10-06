@@ -1,19 +1,24 @@
 # Local development
 
-Everything runs locally without paid third-party accounts: PostgreSQL, Redis, MinIO (S3) and
-Mailpit come from Docker; payments use the built-in mock provider; e-mails are logged or captured
-by Mailpit.
+Everything runs without paid third-party accounts. The only required service is
+**PostgreSQL 16+**: payments use the built-in mock provider, rate limiting runs in memory and
+e-mails are written to the API log by default. Docker Compose is the quickest way to get
+PostgreSQL (plus the optional Redis, MinIO and Mailpit); without Docker, use GitHub Codespaces
+(§2.2) or a locally installed PostgreSQL (§2.3).
 
 ## 1. Prerequisites
 
-| Tool             | Version                             | Notes                                         |
-| ---------------- | ----------------------------------- | --------------------------------------------- |
-| Node.js          | 22 LTS (see `.nvmrc`)               | `nvm use` or `fnm use`                        |
-| pnpm             | 10.28 (see `packageManager`)        | `corepack enable` installs the pinned version |
-| Docker           | 24+ with Compose v2                 | Only for the local infrastructure             |
-| A modern browser | Chrome, Edge, Firefox, Safari 16.4+ |                                               |
+| Tool             | Version                             | Notes                                                          |
+| ---------------- | ----------------------------------- | -------------------------------------------------------------- |
+| Node.js          | 22 LTS (see `.nvmrc`)               | `nvm use` or `fnm use`                                         |
+| pnpm             | 10.28 (see `packageManager`)        | `corepack enable` installs the pinned version                  |
+| PostgreSQL       | 16 or newer                         | Via Docker (§2.1), Codespaces (§2.2) or a local install (§2.3) |
+| Docker           | 24+ with Compose v2                 | Optional                                                       |
+| A modern browser | Chrome, Edge, Firefox, Safari 16.4+ |                                                                |
 
 ## 2. First run
+
+### 2.1 With Docker
 
 ```bash
 cd multi-tenant
@@ -27,14 +32,57 @@ pnpm dev                      # API on :4000, web on :3000 (watch mode)
 
 Open <http://localhost:3000> and sign in with one of the demo accounts below.
 
+### 2.2 In the browser with GitHub Codespaces (nothing to install)
+
+The repository contains a dev container (`.devcontainer/` at the repository root) with
+PostgreSQL 17.
+
+1. On GitHub, open the repository and select the branch to run.
+2. **Code → Codespaces → Create codespace on _branch_.**
+3. The first start takes a few minutes: dependencies are installed, the database is created with
+   demo data and the apps are built (`.devcontainer/setup.sh`). Then the API and the web app
+   start (`.devcontainer/start.sh`) and port 3000 opens in a new browser tab. If it does not, open
+   the **Ports** tab and click the address of port 3000.
+4. Sign in with a demo account (§3).
+
+The forwarded address is private to your GitHub account. Codespaces stop after 30 minutes of
+inactivity and use the free monthly allowance of personal accounts; stop or delete the codespace
+from <https://github.com/codespaces> when you are done. The app runs from production builds there;
+for live code changes stop it (<kbd>Ctrl</kbd>+<kbd>C</kbd> in its terminal) and run `pnpm dev`.
+
+### 2.3 With a locally installed PostgreSQL
+
+1. Install Node.js 22 LTS from <https://nodejs.org>, then run `corepack enable`.
+2. Install PostgreSQL 16 or 17:
+   - **Windows:** the installer from <https://www.postgresql.org/download/windows/>; give the
+     `postgres` user the password `postgres` (or use your own in `DATABASE_ADMIN_URL`).
+   - **macOS:** [Postgres.app](https://postgresapp.com) or `brew install postgresql@17`; both create
+     a superuser named after your macOS account without a password, so set
+     `DATABASE_ADMIN_URL=postgres://<your-user>@localhost:5432/postgres`.
+   - **Linux (Debian/Ubuntu):** `sudo apt install postgresql`, then
+     `sudo -u postgres psql -c "ALTER USER postgres PASSWORD 'postgres';"`.
+3. In `multi-tenant/`:
+
+   ```bash
+   pnpm install
+   cp .env.example .env    # adjust DATABASE_ADMIN_URL if your superuser differs
+   pnpm db:reset           # creates the three application roles and the database
+   pnpm dev
+   ```
+
+Only `DATABASE_ADMIN_URL` needs a superuser; `db:reset` creates the application roles itself.
+Redis, MinIO and Mailpit are not needed with the default `.env`.
+
+### 2.4 Addresses on your machine
+
 | Service              | URL                                                                       |
 | -------------------- | ------------------------------------------------------------------------- |
 | Web app              | <http://localhost:3000>                                                   |
 | API (proxied by web) | <http://localhost:3000/api/v1/…> (direct: <http://localhost:4000/api/v1>) |
 | OpenAPI / Swagger    | <http://localhost:4000/api/docs> (disabled in production)                 |
 | Health               | <http://localhost:4000/api/health/live>, `/api/health/ready`              |
-| Mailpit (e-mails)    | <http://localhost:8025> (set `MAIL_DRIVER=smtp`)                          |
-| MinIO console        | <http://localhost:9001>                                                   |
+| Mailpit (e-mails)    | <http://localhost:8025> (Docker only; set `MAIL_DRIVER=smtp`)             |
+| MinIO console        | <http://localhost:9001> (Docker only; not used by the app yet)            |
 
 The browser only talks to the web origin; `/api/*` is proxied to the API so session cookies stay
 first-party (ADR-0011).
@@ -87,6 +135,7 @@ Run from `multi-tenant/`.
 | Command                        | What it does                                                            |
 | ------------------------------ | ----------------------------------------------------------------------- |
 | `pnpm dev`                     | Builds shared packages, then API and web in watch mode                  |
+| `pnpm start`                   | API and web from production builds (run `pnpm build` first)             |
 | `pnpm dev:worker`              | Outbox relay worker in watch mode (optional locally)                    |
 | `pnpm db:migrate`              | Applies pending migrations (as `app_owner`)                             |
 | `pnpm db:seed`                 | Loads demo data into an empty database                                  |

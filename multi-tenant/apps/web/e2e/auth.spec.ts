@@ -14,6 +14,14 @@ test.describe('authentication', () => {
     await expect(page.getByRole('heading', { name: 'Öğrenciler' })).toBeVisible();
   });
 
+  test('redirects with a relative Location, which survives proxies that rewrite the host', async ({
+    request,
+  }) => {
+    const response = await request.get('/students?tab=finance', { maxRedirects: 0 });
+    expect(response.status()).toBe(307);
+    expect(response.headers()['location']).toBe('/login?next=%2Fstudents%3Ftab%3Dfinance');
+  });
+
   test('gives the same answer for a wrong password and an unknown account', async ({ page }) => {
     for (const email of [USERS.atlasOwner, 'nobody@unknown.test']) {
       await page.goto('/login');
